@@ -4,21 +4,34 @@ import CustomTextInput from "@/components/CustomTextInput";
 import CustomButton from "@/components/CustomButton";
 import {useRouter} from "expo-router";
 
-const LoginScreen = () => {
+const NewPasswordScreen = () => {
     const router = useRouter();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
     const validateFields = () => {
-        if (!email.trim() || !password) {
+        if (!newPassword || !confirmPassword) {
             return "Wszystkie pola muszą być wypełnione.";
+        }
+
+        if (newPassword.length > 60) {
+            return "Hasło nie może przekraczać 60 znaków.";
+        }
+
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,60}$/;
+        if (!passwordRegex.test(newPassword)) {
+            return "Hasło musi mieć co najmniej 8 znaków, zawierać co najmniej jedną wielką literę i jedną cyfrę.";
+        }
+
+        if (newPassword !== confirmPassword) {
+            return "Hasła muszą być takie same.";
         }
 
         return null;
     };
 
-    const handleLogin = () => {
+    const handleNewPassword = () => {
         const validationError = validateFields();
 
         if (validationError) {
@@ -27,6 +40,7 @@ const LoginScreen = () => {
         }
 
         setErrorMessage("");
+        router.push("/biznes/zaloguj");
     };
 
     return (
@@ -38,29 +52,23 @@ const LoginScreen = () => {
             </View>
             <View className="flex-1 justify-center items-center px-6">
                 <View className="w-full max-w-xl">
-                    <Text className="text-center text-xl font-bold text-gray-700">
-                        Logowanie
+                    <Text className="text-center text-xl font-bold mb-6 text-gray-700">
+                        Ustaw nowe hasło
                     </Text>
-                    <Text className="text-center text-gray-500 mt-4 mb-4">
-                        Jesteś tutaj nowy?{" "}
-                        <Text
-                            className="text-gray-700"
-                            onPress={() => router.push("/biznes/zarejestruj")}
-                        >
-                            Zarejestruj się tutaj
-                        </Text>
+                    <Text className="text-center text-gray-500 mb-4">
+                        Wprowadź swój adres email, a wyślemy Ci link do resetowania hasła.
                     </Text>
                     <CustomTextInput
-                        placeholder="Email"
-                        keyboardType="email-address"
-                        value={email}
-                        onChangeText={setEmail}
+                        placeholder="Nowe hasło"
+                        secureTextEntry
+                        value={newPassword}
+                        onChangeText={setNewPassword}
                     />
                     <CustomTextInput
-                        placeholder="Hasło"
+                        placeholder="Potwierdź nowe hasło"
                         secureTextEntry
-                        value={password}
-                        onChangeText={setPassword}
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
                     />
                     {errorMessage && (
                         <Text className="text-red-500 text-center mt-2">
@@ -68,15 +76,11 @@ const LoginScreen = () => {
                         </Text>
                     )}
                     <CustomButton
-                        title="Zaloguj się"
-                        onPress={handleLogin}
+                        title="Zmień hasło"
+                        onPress={handleNewPassword}
                         containerStyles="bg-gray-700 mt-4 self-center w-3/5"
                         textStyles="text-white font-bold"
                     />
-                    <Text className="text-center text-gray-700 mt-4"
-                          onPress={() => router.push("/biznes/przypomnij-haslo")}>
-                        Zapomniałeś hasła?
-                    </Text>
                 </View>
             </View>
             <StatusBar backgroundColor="#374151"/>
@@ -84,4 +88,4 @@ const LoginScreen = () => {
     );
 };
 
-export default LoginScreen;
+export default NewPasswordScreen;
