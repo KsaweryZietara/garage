@@ -17,7 +17,7 @@ const CustomButton = ({
     return (
         <TouchableOpacity
             activeOpacity={0.7}
-            className={`rounded-xl bg-gray-400 min-h-[62px] justify-center items-center ${containerStyles} `}
+            className={`rounded-xl bg-gray-400 py-3 justify-center items-center ${containerStyles} `}
             onPress={onPress}
         >
             <Text

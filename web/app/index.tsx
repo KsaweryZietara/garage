@@ -1,37 +1,53 @@
-import React from 'react';
-import {Platform, Text, View} from 'react-native';
+import React from "react";
+import {Platform, StatusBar, Text, View} from "react-native";
 import CustomButton from "@/components/CustomButton";
 import {useRouter} from "expo-router";
 
-export default function App() {
+const App = () => {
+    const router = useRouter();
     const isMobile = Platform.OS === "android" || Platform.OS === "ios";
-    const router = useRouter()
 
     return (
         <View style={{flex: 1, flexDirection: isMobile ? "column" : "row"}}>
-            <View className="flex-1 bg-red-500">
-                <View className="flex-1">
-                    <Text className="text-center m-5 text-4xl font-bold text-white">GARAGE</Text>
-                    <Text className="text-center m-5 text-white text-xl">
-                        Odkryj nalepsze warsztaty w twojej okolicy
+            <View className="flex-1 bg-red-500 rounded-lg m-4 shadow-lg">
+                <View className="flex-1 justify-center px-6">
+                    <Text className="text-center text-4xl font-bold text-white mb-4">
+                        GARAGE
+                    </Text>
+                    <Text className="text-center text-white text-xl leading-relaxed">
+                        Odkryj najlepsze warsztaty w twojej okolicy
                     </Text>
                 </View>
-                <View className="flex-1 justify-start items-center">
-                    <CustomButton onPress={() => router.push("/zaloguj")} title={"Umów wizyte"}
-                                  containerStyles={"w-1/3 m-5"} textStyles={"text-white"}></CustomButton>
+                <View className="flex-1 justify-start items-center mt-4">
+                    <CustomButton
+                        onPress={() => router.push("/zaloguj")}
+                        title="Umów wizytę"
+                        containerStyles="bg-white shadow-md w-2/3 py-3"
+                        textStyles="text-red-500 font-semibold text-lg"
+                    />
                 </View>
             </View>
-            <View className="flex-1 bg-gray-500">
-                <View className="flex-1">
-                    <Text className="text-center m-5 text-4xl font-bold text-white">GARAGA DLA BIZNESU</Text>
-                    <Text className="text-center m-5 text-white text-xl">Aplikacja dla ciebie i twoich
-                        pracowników</Text>
+            <View className="flex-1 bg-gray-700 rounded-lg m-4 shadow-lg">
+                <View className="flex-1 justify-center px-6">
+                    <Text className="text-center text-4xl font-bold text-white mb-4">
+                        GARAGE DLA BIZNESU
+                    </Text>
+                    <Text className="text-center text-white text-xl leading-relaxed">
+                        Aplikacja dla ciebie i twoich pracowników
+                    </Text>
                 </View>
-                <View className="flex-1 justify-start items-center">
-                    <CustomButton onPress={() => router.push("/biznes/zarejestruj")} title={"Zarejestruj się"}
-                                  containerStyles={"w-1/3 bg-white m-5"} textStyles={"text-gray-500"}></CustomButton>
+                <View className="flex-1 justify-start items-center mt-4">
+                    <CustomButton
+                        onPress={() => router.push("/biznes/zarejestruj")}
+                        title="Zarejestruj się"
+                        containerStyles="bg-white shadow-md w-2/3 py-3"
+                        textStyles="text-gray-700 font-semibold text-lg"
+                    />
                 </View>
             </View>
+            <StatusBar backgroundColor="black"/>
         </View>
     );
 };
+
+export default App;
