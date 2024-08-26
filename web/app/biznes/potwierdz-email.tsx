@@ -2,8 +2,10 @@ import React, {useState} from "react";
 import {StatusBar, Text, View} from "react-native";
 import CustomTextInput from "@/components/CustomTextInput";
 import CustomButton from "@/components/CustomButton";
+import {useRouter} from "expo-router";
 
 const ConfirmEmailScreen = () => {
+    const router = useRouter();
     const [code, setCode] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -28,6 +30,7 @@ const ConfirmEmailScreen = () => {
         }
 
         setErrorMessage("");
+        router.push("/biznes/kreator-warsztatu")
     };
 
     return (
