@@ -40,7 +40,7 @@ const NewPasswordScreen = () => {
         }
 
         setErrorMessage("");
-        router.push("/biznes/zaloguj");
+        router.push("/business/login");
     };
 
     return (

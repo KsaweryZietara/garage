@@ -45,7 +45,7 @@ const LoginScreen = () => {
                         Jesteś tutaj nowy?{" "}
                         <Text
                             className="text-gray-700"
-                            onPress={() => router.push("/biznes/zarejestruj")}
+                            onPress={() => router.push("/business/register")}
                         >
                             Zarejestruj się tutaj
                         </Text>
@@ -74,7 +74,7 @@ const LoginScreen = () => {
                         textStyles="text-white font-bold"
                     />
                     <Text className="text-center text-gray-700 mt-4"
-                          onPress={() => router.push("/biznes/przypomnij-haslo")}>
+                          onPress={() => router.push("/business/recover-password")}>
                         Zapomniałeś hasła?
                     </Text>
                 </View>

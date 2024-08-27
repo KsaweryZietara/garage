@@ -58,7 +58,7 @@ const CreateAccountScreen = () => {
         }
 
         setErrorMessage("");
-        router.push("/biznes/potwierdz-email");
+        router.push("/business/confirm-email");
     };
 
     return (
@@ -116,7 +116,7 @@ const CreateAccountScreen = () => {
                         Masz już konto?{" "}
                         <Text
                             className="text-gray-700"
-                            onPress={() => router.push("/biznes/zaloguj")}
+                            onPress={() => router.push("/business/login")}
                         >
                             Zaloguj się tutaj
                         </Text>

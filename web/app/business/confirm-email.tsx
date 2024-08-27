@@ -30,7 +30,7 @@ const ConfirmEmailScreen = () => {
         }
 
         setErrorMessage("");
-        router.push("/biznes/kreator-warsztatu")
+        router.push("/business/creator")
     };
 
     return (

@@ -20,7 +20,7 @@ const App = () => {
                 </View>
                 <View className="flex-1 justify-start items-center mt-4">
                     <CustomButton
-                        onPress={() => router.push("/zaloguj")}
+                        onPress={() => router.push("/login")}
                         title="Umów wizytę"
                         containerStyles="bg-white shadow-md w-2/3 py-3"
                         textStyles="text-red-500 font-semibold text-lg"
@@ -38,7 +38,7 @@ const App = () => {
                 </View>
                 <View className="flex-1 justify-start items-center mt-4">
                     <CustomButton
-                        onPress={() => router.push("/biznes/zarejestruj")}
+                        onPress={() => router.push("/business/register")}
                         title="Zarejestruj się"
                         containerStyles="bg-white shadow-md w-2/3 py-3"
                         textStyles="text-gray-700 font-semibold text-lg"

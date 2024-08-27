@@ -1,9 +1,10 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     View,
     Text,
     StatusBar,
-    ScrollView
+    ScrollView,
+    Keyboard
 } from "react-native";
 import CustomTextInput from "@/components/CustomTextInput";
 import CustomButton from "@/components/CustomButton";
@@ -38,6 +39,21 @@ const CreatorScreen = () => {
 
     const [errorMessage, setErrorMessage] = useState("");
     const [errors, setErrors] = useState(true);
+
+    const [buttonsVisible, setButtonsVisible] = useState(false)
+    useEffect(() => {
+        const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+            setButtonsVisible(true);
+        })
+        const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+            setButtonsVisible(false)
+        })
+
+        return () => {
+            showSubscription.remove();
+            hideSubscription.remove();
+        }
+    }, [])
 
     const validateGarage = () => {
         if (
@@ -167,6 +183,7 @@ const CreatorScreen = () => {
                         }}
                         onNext={handleGarage}
                         errors={errors}
+                        removeBtnRow={buttonsVisible}
                     >
                         <View className="flex-1 justify-center items-center px-6 mt-12">
                             <View className="w-full max-w-xl">
@@ -224,6 +241,7 @@ const CreatorScreen = () => {
                             marginLeft: 20,
                         }}
                         previousBtnTextStyle={{color: "#374151", padding: 12}}
+                        removeBtnRow={buttonsVisible}
                     >
                         <View className="flex-1 justify-center items-center px-6 mt-6">
                             <View className="w-full max-w-xl">
@@ -291,6 +309,7 @@ const CreatorScreen = () => {
                         }}
                         previousBtnTextStyle={{color: "#374151", padding: 12}}
                         onSubmit={handleSubmit}
+                        removeBtnRow={buttonsVisible}
                     >
                         <View className="flex-1 justify-center items-center px-6 mt-6">
                             <View className="w-full max-w-xl">
