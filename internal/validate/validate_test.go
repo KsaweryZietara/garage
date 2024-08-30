@@ -11,44 +11,93 @@ import (
 
 func TestRegisterDTO(t *testing.T) {
 	t.Run("should return error when any field is empty", func(t *testing.T) {
-		dto := internal.RegisterDTO{Name: "", Surname: "Smith", Email: "john@example.com", Password: "Password1", ConfirmPassword: "Password1"}
+		dto := internal.RegisterDTO{
+			Name:            "",
+			Surname:         "Smith",
+			Email:           "john@example.com",
+			Password:        "Password1",
+			ConfirmPassword: "Password1",
+			Role:            internal.Mechanic,
+		}
 		err := RegisterDTO(dto)
 		assert.EqualError(t, err, "fields cannot be empty")
 	})
 
 	t.Run("should return error when any field exceeds 255 characters", func(t *testing.T) {
 		longString := strings.Repeat("a", 256)
-		dto := internal.RegisterDTO{Name: longString, Surname: "Smith", Email: "john@example.com", Password: "Password1", ConfirmPassword: "Password1"}
+		dto := internal.RegisterDTO{
+			Name:            longString,
+			Surname:         "Smith",
+			Email:           "john@example.com",
+			Password:        "Password1",
+			ConfirmPassword: "Password1",
+			Role:            internal.Mechanic,
+		}
 		err := RegisterDTO(dto)
 		assert.EqualError(t, err, "fields cannot have more than 255 characters")
 	})
 
 	t.Run("should return error when name or surname contains numbers", func(t *testing.T) {
-		dto := internal.RegisterDTO{Name: "John123", Surname: "Smith", Email: "john@example.com", Password: "Password1", ConfirmPassword: "Password1"}
+		dto := internal.RegisterDTO{
+			Name:            "John123",
+			Surname:         "Smith",
+			Email:           "john@example.com",
+			Password:        "Password1",
+			ConfirmPassword: "Password1",
+			Role:            internal.Owner,
+		}
 		err := RegisterDTO(dto)
 		assert.EqualError(t, err, "name and surname cannot contain numbers")
 	})
 
 	t.Run("should return error for invalid email format", func(t *testing.T) {
-		dto := internal.RegisterDTO{Name: "John", Surname: "Smith", Email: "johnexample.com", Password: "Password1", ConfirmPassword: "Password1"}
+		dto := internal.RegisterDTO{
+			Name:            "John",
+			Surname:         "Smith",
+			Email:           "johnexample.com",
+			Password:        "Password1",
+			ConfirmPassword: "Password1",
+			Role:            internal.Owner,
+		}
 		err := RegisterDTO(dto)
 		assert.EqualError(t, err, "invalid email format")
 	})
 
 	t.Run("should return error for invalid password", func(t *testing.T) {
-		dto := internal.RegisterDTO{Name: "John", Surname: "Smith", Email: "john@example.com", Password: "password", ConfirmPassword: "password"}
+		dto := internal.RegisterDTO{
+			Name:            "John",
+			Surname:         "Smith",
+			Email:           "john@example.com",
+			Password:        "password",
+			ConfirmPassword: "password",
+			Role:            internal.Mechanic,
+		}
 		err := RegisterDTO(dto)
 		assert.EqualError(t, err, "password must have at least one number, one capital letter and be at least 8 characters long")
 	})
 
 	t.Run("should return error for different passwords", func(t *testing.T) {
-		dto := internal.RegisterDTO{Name: "John", Surname: "Smith", Email: "john@example.com", Password: "password", ConfirmPassword: "password2"}
+		dto := internal.RegisterDTO{
+			Name:            "John",
+			Surname:         "Smith",
+			Email:           "john@example.com",
+			Password:        "password",
+			ConfirmPassword: "password2",
+			Role:            internal.Owner,
+		}
 		err := RegisterDTO(dto)
 		assert.EqualError(t, err, "passwords must be identical")
 	})
 
 	t.Run("should pass with valid input", func(t *testing.T) {
-		dto := internal.RegisterDTO{Name: "John", Surname: "Smith", Email: "john@example.com", Password: "Password1", ConfirmPassword: "Password1"}
+		dto := internal.RegisterDTO{
+			Name:            "John",
+			Surname:         "Smith",
+			Email:           "john@example.com",
+			Password:        "Password1",
+			ConfirmPassword: "Password1",
+			Role:            internal.Owner,
+		}
 		err := RegisterDTO(dto)
 		assert.NoError(t, err)
 	})

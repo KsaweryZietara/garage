@@ -6,6 +6,7 @@ import {useRouter} from "expo-router";
 import axios from "axios";
 
 const CreateAccountScreen = () => {
+    const role = "OWNER"
     const router = useRouter();
     const [name, setName] = useState("");
     const [surname, setSurname] = useState("");
@@ -64,6 +65,7 @@ const CreateAccountScreen = () => {
             email,
             password,
             confirmPassword,
+            role,
         })
             .then(function (response) {
                 setErrorMessage("");

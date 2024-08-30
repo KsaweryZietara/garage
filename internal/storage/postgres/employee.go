@@ -20,7 +20,7 @@ func NewEmployee(connection *dbr.Connection) *Employee {
 func (e *Employee) Insert(employee internal.Employee) error {
 	sess := e.connection.NewSession(nil)
 	_, err := sess.InsertInto(employeesTable).
-		Columns("name", "surname", "email", "password").
+		Columns("name", "surname", "email", "password", "role").
 		Record(employee).
 		Exec()
 

@@ -19,6 +19,7 @@ func TestRegisterEndpoint(t *testing.T) {
 		Email:           "john.doe@example.com",
 		Password:        "Password123",
 		ConfirmPassword: "Password123",
+		Role:            "MECHANIC",
 	}
 
 	employeeJSON, _ := json.Marshal(employee)

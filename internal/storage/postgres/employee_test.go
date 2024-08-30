@@ -18,6 +18,7 @@ func TestInsert(t *testing.T) {
 		Surname:  "Doe",
 		Email:    "john.doe@example.com",
 		Password: "password123",
+		Role:     "OWNER",
 	}
 
 	err := employeeRepo.Insert(newEmployee)
@@ -30,4 +31,5 @@ func TestInsert(t *testing.T) {
 	assert.Equal(t, newEmployee.Surname, retrievedEmployee.Surname)
 	assert.Equal(t, newEmployee.Email, retrievedEmployee.Email)
 	assert.Equal(t, newEmployee.Password, retrievedEmployee.Password)
+	assert.Equal(t, newEmployee.Role, retrievedEmployee.Role)
 }
