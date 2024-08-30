@@ -1,10 +1,18 @@
 package auth
 
 import (
+	"github.com/KsaweryZietara/garage/internal"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestCreateToken(t *testing.T) {
+	auth := New("testKey")
+	token, err := auth.CreateToken("john@example.com", internal.Owner)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, token.JWT)
+}
 
 func TestHashPassword(t *testing.T) {
 	t.Run("should successfully hash a password", func(t *testing.T) {
