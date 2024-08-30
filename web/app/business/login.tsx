@@ -1,8 +1,27 @@
 import React, {useState} from "react";
-import {View, Text, StatusBar} from "react-native";
+import {Platform, StatusBar, Text, View} from "react-native";
 import CustomTextInput from "@/components/CustomTextInput";
 import CustomButton from "@/components/CustomButton";
 import {useRouter} from "expo-router";
+import axios from "axios";
+import * as SecureStore from 'expo-secure-store';
+import Cookies from 'js-cookie';
+
+async function save(key: string, value: string) {
+    if (Platform.OS === "android" || Platform.OS === "ios") {
+        await SecureStore.setItemAsync(key, value);
+    } else {
+        Cookies.set(key, value);
+    }
+}
+
+async function getValueFor(key: string) {
+    if (Platform.OS === "android" || Platform.OS === "ios") {
+        return await SecureStore.getItemAsync(key)
+    } else {
+        return Cookies.get(key)
+    }
+}
 
 const LoginScreen = () => {
     const router = useRouter();
@@ -15,10 +34,15 @@ const LoginScreen = () => {
             return "Wszystkie pola muszą być wypełnione.";
         }
 
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return "Nieprawidłowy format adresu e-mail.";
+        }
+
         return null;
     };
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         const validationError = validateFields();
 
         if (validationError) {
@@ -26,7 +50,22 @@ const LoginScreen = () => {
             return;
         }
 
-        setErrorMessage("");
+        await axios.post('/api/business/login', {
+            email,
+            password,
+        })
+            .then(function (response) {
+                setErrorMessage("");
+                save("jwt", response.data.jwt)
+                router.push("/business/creator");
+            })
+            .catch(function (error) {
+                if (error.response.status === 400) {
+                    setErrorMessage(error.response.data.message);
+                } else {
+                    setErrorMessage("Nieprawidłowy email lub hasło.")
+                }
+            });
     };
 
     return (
