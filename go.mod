@@ -5,6 +5,7 @@ go 1.22.6
 require (
 	github.com/gocraft/dbr/v2 v2.7.6
 	github.com/lib/pq v1.10.9
+	github.com/rs/cors v1.11.1
 	github.com/stretchr/testify v1.9.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.33.0
 	golang.org/x/crypto v0.26.0

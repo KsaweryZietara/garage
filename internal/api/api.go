@@ -9,6 +9,8 @@ import (
 
 	"github.com/KsaweryZietara/garage/internal"
 	"github.com/KsaweryZietara/garage/internal/storage"
+
+	"github.com/rs/cors"
 )
 
 type Config struct {
@@ -35,7 +37,7 @@ func (a *API) Start() {
 	router := http.NewServeMux()
 
 	a.attachRoutes(router)
-	a.server.Handler = router
+	a.server.Handler = cors.Default().Handler(router)
 
 	a.log.Info("starting garage")
 	log.Fatal(a.server.ListenAndServe())

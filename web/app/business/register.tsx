@@ -3,6 +3,7 @@ import {View, Text, StatusBar} from "react-native";
 import CustomTextInput from "@/components/CustomTextInput";
 import CustomButton from "@/components/CustomButton";
 import {useRouter} from "expo-router";
+import axios from "axios";
 
 const CreateAccountScreen = () => {
     const router = useRouter();
@@ -24,7 +25,7 @@ const CreateAccountScreen = () => {
             return "Wszystkie pola muszą być wypełnione.";
         }
 
-        if (name.length > 40 || surname.length > 40 || email.length > 40) {
+        if (name.length > 255 || surname.length > 255 || email.length > 255 || password.length > 255 || confirmPassword.length > 255) {
             return "Imię, Nazwisko i Email nie mogą przekraczać 40 znaków.";
         }
 
@@ -49,7 +50,7 @@ const CreateAccountScreen = () => {
         return null;
     };
 
-    const handleCreateAccount = () => {
+    const handleCreateAccount = async () => {
         const validationError = validateFields();
 
         if (validationError) {
@@ -57,8 +58,20 @@ const CreateAccountScreen = () => {
             return;
         }
 
-        setErrorMessage("");
-        router.push("/business/confirm-email");
+        await axios.post('/api/business/register', {
+            name,
+            surname,
+            email,
+            password,
+            confirmPassword,
+        })
+            .then(function (response) {
+                setErrorMessage("");
+                router.push("/business/confirm-email");
+            })
+            .catch(function (error) {
+                setErrorMessage(error.response.data.message);
+            });
     };
 
     return (

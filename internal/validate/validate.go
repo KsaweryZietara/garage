@@ -9,11 +9,11 @@ import (
 )
 
 func RegisterDTO(dto internal.RegisterDTO) error {
-	if dto.Name == "" || dto.Surname == "" || dto.Email == "" || dto.Password == "" {
+	if dto.Name == "" || dto.Surname == "" || dto.Email == "" || dto.Password == "" || dto.ConfirmPassword == "" {
 		return errors.New("fields cannot be empty")
 	}
 
-	if len(dto.Name) > 255 || len(dto.Surname) > 255 || len(dto.Email) > 255 || len(dto.Password) > 255 {
+	if len(dto.Name) > 255 || len(dto.Surname) > 255 || len(dto.Email) > 255 || len(dto.Password) > 255 || len(dto.ConfirmPassword) > 255 {
 		return errors.New("fields cannot have more than 255 characters")
 	}
 
