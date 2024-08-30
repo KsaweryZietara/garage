@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/KsaweryZietara/garage/internal/api"
+	"github.com/KsaweryZietara/garage/internal/auth"
 	"github.com/KsaweryZietara/garage/internal/storage"
 	"github.com/KsaweryZietara/garage/internal/storage/postgres"
 )
@@ -23,12 +24,15 @@ func main() {
 	}
 
 	log := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
 	storage, err := storage.New(database.ConnectionURL(), log)
 	if err != nil {
 		log.Error(err.Error())
 		os.Exit(1)
 	}
-	api := api.New(server, log, storage)
 
+	auth := auth.New("secret-key")
+
+	api := api.New(server, log, storage, auth)
 	api.Start()
 }

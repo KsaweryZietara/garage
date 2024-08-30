@@ -103,6 +103,35 @@ func TestRegisterDTO(t *testing.T) {
 	})
 }
 
+func TestLoginDTO(t *testing.T) {
+	t.Run("should return error when field is empty", func(t *testing.T) {
+		dto := internal.LoginDTO{
+			Email:    "",
+			Password: "Password1",
+		}
+		err := LoginDTO(dto)
+		assert.EqualError(t, err, "fields cannot be empty")
+	})
+
+	t.Run("should return error for invalid email format", func(t *testing.T) {
+		dto := internal.LoginDTO{
+			Email:    "johnexample.com",
+			Password: "Password1",
+		}
+		err := LoginDTO(dto)
+		assert.EqualError(t, err, "invalid email format")
+	})
+
+	t.Run("should pass with valid input", func(t *testing.T) {
+		dto := internal.LoginDTO{
+			Email:    "john@example.com",
+			Password: "Password1",
+		}
+		err := LoginDTO(dto)
+		assert.NoError(t, err)
+	})
+}
+
 func TestIsAlpha(t *testing.T) {
 	t.Run("should return true with only alphabetic characters", func(t *testing.T) {
 		result := isAlpha("HelloWorld")

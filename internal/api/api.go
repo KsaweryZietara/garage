@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/KsaweryZietara/garage/internal"
+	"github.com/KsaweryZietara/garage/internal/auth"
 	"github.com/KsaweryZietara/garage/internal/storage"
 
 	"github.com/rs/cors"
@@ -21,15 +22,17 @@ type API struct {
 	server  *http.Server
 	log     *slog.Logger
 	storage storage.Storage
+	auth    *auth.Auth
 }
 
-func New(cfg Config, log *slog.Logger, storage storage.Storage) *API {
+func New(cfg Config, log *slog.Logger, storage storage.Storage, auth *auth.Auth) *API {
 	return &API{
 		server: &http.Server{
 			Addr: fmt.Sprintf(":%s", cfg.Port),
 		},
 		log:     log,
 		storage: storage,
+		auth:    auth,
 	}
 }
 
@@ -45,6 +48,7 @@ func (a *API) Start() {
 
 func (a *API) attachRoutes(router *http.ServeMux) {
 	router.HandleFunc("POST /api/business/register", a.Register)
+	router.HandleFunc("POST /api/business/login", a.Login)
 }
 
 func (a *API) sendResponse(writer http.ResponseWriter, response interface{}, HTTPStatusCode int) {

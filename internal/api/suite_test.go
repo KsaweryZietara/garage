@@ -10,7 +10,9 @@ import (
 	"os"
 	"testing"
 
+	"github.com/KsaweryZietara/garage/internal/auth"
 	"github.com/KsaweryZietara/garage/internal/storage"
+
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 )
@@ -54,7 +56,8 @@ func NewSuite(t *testing.T) *Suite {
 	log := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	storage, cleanup, err := storage.NewForTests(connString, log)
 	require.NoError(t, err)
-	api := New(Config{}, log, storage)
+	auth := auth.New("secret-key")
+	api := New(Config{}, log, storage, auth)
 	router := http.NewServeMux()
 	api.attachRoutes(router)
 	server := httptest.NewServer(router)

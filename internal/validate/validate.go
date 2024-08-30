@@ -40,6 +40,18 @@ func RegisterDTO(dto internal.RegisterDTO) error {
 	return nil
 }
 
+func LoginDTO(dto internal.LoginDTO) error {
+	if dto.Email == "" || dto.Password == "" {
+		return errors.New("fields cannot be empty")
+	}
+
+	if !isEmail(dto.Email) {
+		return errors.New("invalid email format")
+	}
+
+	return nil
+}
+
 func isAlpha(s string) bool {
 	for _, r := range s {
 		if !unicode.IsLetter(r) {
