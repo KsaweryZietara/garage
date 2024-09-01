@@ -1,9 +1,12 @@
 package auth
 
 import (
-	"github.com/KsaweryZietara/garage/internal"
 	"testing"
+	"time"
 
+	"github.com/KsaweryZietara/garage/internal"
+
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -12,6 +15,45 @@ func TestCreateToken(t *testing.T) {
 	token, err := auth.CreateToken("john@example.com", internal.Owner)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, token.JWT)
+}
+
+func TestVerifyToken(t *testing.T) {
+	auth := New("testKey")
+
+	t.Run("should return email and role for valid token", func(t *testing.T) {
+		token, _ := auth.CreateToken("john@example.com", internal.Owner)
+		email, role, err := auth.VerifyToken(token.JWT)
+		assert.NoError(t, err)
+		assert.Equal(t, "john@example.com", email)
+		assert.Equal(t, internal.Owner, role)
+	})
+
+	t.Run("should return error for invalid token", func(t *testing.T) {
+		_, _, err := auth.VerifyToken("invalidToken")
+		assert.EqualError(t, err, "invalid token")
+	})
+
+	t.Run("should return error for token without email claim", func(t *testing.T) {
+		noEmailToken := jwt.NewWithClaims(jwt.SigningMethodHS256,
+			jwt.MapClaims{
+				"role": internal.Owner,
+				"exp":  time.Now().Add(time.Hour * 24).Unix(),
+			})
+		noEmailTokenString, _ := noEmailToken.SignedString(auth.key)
+		_, _, err := auth.VerifyToken(noEmailTokenString)
+		assert.EqualError(t, err, "unable to extract email")
+	})
+
+	t.Run("should return error for token without role claim", func(t *testing.T) {
+		noRoleToken := jwt.NewWithClaims(jwt.SigningMethodHS256,
+			jwt.MapClaims{
+				"email": "john@example.com",
+				"exp":   time.Now().Add(time.Hour * 24).Unix(),
+			})
+		noRoleTokenString, _ := noRoleToken.SignedString(auth.key)
+		_, _, err := auth.VerifyToken(noRoleTokenString)
+		assert.EqualError(t, err, "unable to extract role")
+	})
 }
 
 func TestHashPassword(t *testing.T) {

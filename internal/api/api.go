@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -12,6 +13,11 @@ import (
 	"github.com/KsaweryZietara/garage/internal/storage"
 
 	"github.com/rs/cors"
+)
+
+const (
+	bearerPrefix = "Bearer "
+	emailKey     = "email"
 )
 
 type Config struct {
@@ -49,6 +55,35 @@ func (a *API) Start() {
 func (a *API) attachRoutes(router *http.ServeMux) {
 	router.HandleFunc("POST /api/business/register", a.Register)
 	router.HandleFunc("POST /api/business/login", a.Login)
+}
+
+func (a *API) authMiddleware(next http.Handler, role internal.Role) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			a.sendResponse(w, nil, 401)
+			return
+		}
+		if len(authHeader) < len(bearerPrefix) || authHeader[:len(bearerPrefix)] != bearerPrefix {
+			a.sendResponse(w, nil, 401)
+			return
+		}
+
+		token := authHeader[len(bearerPrefix):]
+
+		email, tokenRole, err := a.auth.VerifyToken(token)
+		if err != nil {
+			a.sendResponse(w, nil, 401)
+			return
+		}
+		if tokenRole != role {
+			a.sendResponse(w, nil, 401)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), emailKey, email)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
 
 func (a *API) sendResponse(writer http.ResponseWriter, response interface{}, HTTPStatusCode int) {
