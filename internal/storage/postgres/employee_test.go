@@ -4,10 +4,11 @@ import (
 	"testing"
 
 	"github.com/KsaweryZietara/garage/internal"
+
 	"github.com/stretchr/testify/assert"
 )
 
-func TestInsert(t *testing.T) {
+func TestInsertEmployee(t *testing.T) {
 	cleanup := NewSuite(t)
 	defer cleanup()
 
@@ -21,7 +22,7 @@ func TestInsert(t *testing.T) {
 		Role:     "OWNER",
 	}
 
-	err := employeeRepo.Insert(newEmployee)
+	_, err := employeeRepo.Insert(newEmployee)
 	assert.NoError(t, err)
 
 	retrievedEmployee, err := employeeRepo.GetByEmail(newEmployee.Email)

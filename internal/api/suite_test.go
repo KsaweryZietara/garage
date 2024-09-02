@@ -10,6 +10,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/KsaweryZietara/garage/internal"
 	"github.com/KsaweryZietara/garage/internal/auth"
 	"github.com/KsaweryZietara/garage/internal/storage"
 
@@ -50,6 +51,7 @@ type Suite struct {
 	server  *httptest.Server
 	client  *http.Client
 	cleanup func() error
+	api     *API
 }
 
 func NewSuite(t *testing.T) *Suite {
@@ -57,7 +59,9 @@ func NewSuite(t *testing.T) *Suite {
 	storage, cleanup, err := storage.NewForTests(connString, log)
 	require.NoError(t, err)
 	auth := auth.New("secret-key")
+
 	api := New(Config{}, log, storage, auth)
+
 	router := http.NewServeMux()
 	api.attachRoutes(router)
 	server := httptest.NewServer(router)
@@ -68,12 +72,24 @@ func NewSuite(t *testing.T) *Suite {
 		server:  server,
 		client:  server.Client(),
 		cleanup: cleanup,
+		api:     api,
 	}
 }
 
-func (s *Suite) CallAPI(method string, path string, body []byte) *http.Response {
+func (s *Suite) CreateEmployee(t *testing.T, employee internal.Employee) *internal.Token {
+	_, err := s.api.storage.Employees().Insert(employee)
+	require.NoError(t, err)
+	token, err := s.api.auth.CreateToken(employee.Email, employee.Role)
+	require.NoError(t, err)
+	return &token
+}
+
+func (s *Suite) CallAPI(method string, path string, body []byte, token *internal.Token) *http.Response {
 	request, err := http.NewRequest(method, fmt.Sprintf("%s%s", s.server.URL, path), bytes.NewBuffer(body))
 	require.NoError(s.t, err)
+	if token != nil {
+		request.Header.Add("Authorization", "Bearer "+token.JWT)
+	}
 	response, err := s.client.Do(request)
 	require.NoError(s.t, err)
 	return response

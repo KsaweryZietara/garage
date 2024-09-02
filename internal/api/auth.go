@@ -31,7 +31,7 @@ func (a *API) Register(writer http.ResponseWriter, request *http.Request) {
 	dto.Password = hash
 
 	employee := internal.NewEmployee(dto)
-	err = a.storage.Employees().Insert(employee)
+	_, err = a.storage.Employees().Insert(employee)
 	if err != nil {
 		a.handleError(writer, err, 500)
 		return

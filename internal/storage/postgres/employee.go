@@ -17,14 +17,21 @@ func NewEmployee(connection *dbr.Connection) *Employee {
 	}
 }
 
-func (e *Employee) Insert(employee internal.Employee) error {
+func (e *Employee) Insert(employee internal.Employee) (internal.Employee, error) {
 	sess := e.connection.NewSession(nil)
-	_, err := sess.InsertInto(employeesTable).
-		Columns("name", "surname", "email", "password", "role").
+	var id int
+	err := sess.InsertInto(employeesTable).
+		Columns("name", "surname", "email", "password", "role", "garage_id").
 		Record(employee).
-		Exec()
+		Returning("id").
+		Load(&id)
 
-	return err
+	if err != nil {
+		return internal.Employee{}, err
+	}
+
+	employee.ID = id
+	return employee, nil
 }
 
 func (e *Employee) GetByEmail(email string) (internal.Employee, error) {

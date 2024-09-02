@@ -46,7 +46,12 @@ func (a *API) Start() {
 	router := http.NewServeMux()
 
 	a.attachRoutes(router)
-	a.server.Handler = cors.Default().Handler(router)
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:8081"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"Content-Type", "Authorization"},
+	})
+	a.server.Handler = c.Handler(router)
 
 	a.log.Info("starting garage")
 	log.Fatal(a.server.ListenAndServe())
@@ -55,6 +60,7 @@ func (a *API) Start() {
 func (a *API) attachRoutes(router *http.ServeMux) {
 	router.HandleFunc("POST /api/business/register", a.Register)
 	router.HandleFunc("POST /api/business/login", a.Login)
+	router.Handle("POST /api/business/creator", a.authMiddleware(http.HandlerFunc(a.Creator), internal.Owner))
 }
 
 func (a *API) authMiddleware(next http.Handler, role internal.Role) http.Handler {
@@ -84,6 +90,11 @@ func (a *API) authMiddleware(next http.Handler, role internal.Role) http.Handler
 		ctx := context.WithValue(r.Context(), emailKey, email)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func (a *API) emailFromContext(ctx context.Context) (string, bool) {
+	email, ok := ctx.Value(emailKey).(string)
+	return email, ok
 }
 
 func (a *API) sendResponse(writer http.ResponseWriter, response interface{}, HTTPStatusCode int) {

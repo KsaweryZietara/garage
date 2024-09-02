@@ -6,20 +6,33 @@ import (
 
 	"github.com/KsaweryZietara/garage/internal"
 	"github.com/KsaweryZietara/garage/internal/storage/postgres"
+
 	_ "github.com/lib/pq"
 )
 
 type IStorage interface {
 	Employees() Employees
+	Garages() Garages
+	Services() Services
 }
 
 type Employees interface {
-	Insert(employee internal.Employee) error
+	Insert(employee internal.Employee) (internal.Employee, error)
 	GetByEmail(email string) (internal.Employee, error)
+}
+
+type Garages interface {
+	Insert(garage internal.Garage) (internal.Garage, error)
+}
+
+type Services interface {
+	Insert(garage internal.Service) (internal.Service, error)
 }
 
 type Storage struct {
 	employees Employees
+	garages   Garages
+	services  Services
 }
 
 func New(url string, log *slog.Logger) (Storage, error) {
@@ -35,6 +48,8 @@ func New(url string, log *slog.Logger) (Storage, error) {
 
 	return Storage{
 		employees: postgres.NewEmployee(connection),
+		garages:   postgres.NewGarage(connection),
+		services:  postgres.NewService(connection),
 	}, nil
 }
 
@@ -59,9 +74,19 @@ func NewForTests(url string, log *slog.Logger) (Storage, func() error, error) {
 
 	return Storage{
 		employees: postgres.NewEmployee(connection),
+		garages:   postgres.NewGarage(connection),
+		services:  postgres.NewService(connection),
 	}, cleanup, nil
 }
 
 func (s Storage) Employees() Employees {
 	return s.employees
+}
+
+func (s Storage) Garages() Garages {
+	return s.garages
+}
+
+func (s Storage) Services() Services {
+	return s.services
 }

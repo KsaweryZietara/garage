@@ -154,6 +154,144 @@ func TestIsAlpha(t *testing.T) {
 	})
 }
 
+func TestCreatorDTO(t *testing.T) {
+	t.Run("should return error when any field is empty", func(t *testing.T) {
+		dto := internal.CreatorDTO{
+			Name:        "",
+			City:        "City",
+			Street:      "Street",
+			Number:      "Number",
+			PostalCode:  "12-345",
+			PhoneNumber: "123456789",
+		}
+		err := CreatorDTO(dto)
+		assert.EqualError(t, err, "fields cannot be empty")
+	})
+
+	t.Run("should return error when any field exceeds character limit", func(t *testing.T) {
+		longString := strings.Repeat("a", 256)
+		dto := internal.CreatorDTO{
+			Name:        longString,
+			City:        "City",
+			Street:      "Street",
+			Number:      "Number",
+			PostalCode:  "12-345",
+			PhoneNumber: "123456789",
+		}
+		err := CreatorDTO(dto)
+		assert.EqualError(t, err, "name, city and street cannot have more than 255 characters")
+	})
+
+	t.Run("should return error for invalid postal code format", func(t *testing.T) {
+		dto := internal.CreatorDTO{
+			Name:        "Name",
+			City:        "City",
+			Street:      "Street",
+			Number:      "Number",
+			PostalCode:  "12345",
+			PhoneNumber: "123456789",
+		}
+		err := CreatorDTO(dto)
+		assert.EqualError(t, err, "invalid postal code format")
+	})
+
+	t.Run("should return error for invalid phone number format", func(t *testing.T) {
+		dto := internal.CreatorDTO{
+			Name:        "Name",
+			City:        "City",
+			Street:      "Street",
+			Number:      "Number",
+			PostalCode:  "12-345",
+			PhoneNumber: "12345678901",
+		}
+		err := CreatorDTO(dto)
+		assert.EqualError(t, err, "invalid phone number format")
+	})
+
+	t.Run("should return error when service name is empty", func(t *testing.T) {
+		dto := internal.CreatorDTO{
+			Name:        "Name",
+			City:        "City",
+			Street:      "Street",
+			Number:      "Number",
+			PostalCode:  "12-345",
+			PhoneNumber: "123456789",
+			Services: []internal.ServiceDTO{
+				{Name: "", Time: 1, Price: 1},
+			},
+		}
+		err := CreatorDTO(dto)
+		assert.EqualError(t, err, "service name cannot be empty")
+	})
+
+	t.Run("should return error when service time is zero", func(t *testing.T) {
+		dto := internal.CreatorDTO{
+			Name:        "Name",
+			City:        "City",
+			Street:      "Street",
+			Number:      "Number",
+			PostalCode:  "12-345",
+			PhoneNumber: "123456789",
+			Services: []internal.ServiceDTO{
+				{Name: "Service", Time: 0, Price: 1},
+			},
+		}
+		err := CreatorDTO(dto)
+		assert.EqualError(t, err, "service time must be greater than zero")
+	})
+
+	t.Run("should return error when service price is zero", func(t *testing.T) {
+		dto := internal.CreatorDTO{
+			Name:        "Name",
+			City:        "City",
+			Street:      "Street",
+			Number:      "Number",
+			PostalCode:  "12-345",
+			PhoneNumber: "123456789",
+			Services: []internal.ServiceDTO{
+				{Name: "Service", Time: 1, Price: 0},
+			},
+		}
+		err := CreatorDTO(dto)
+		assert.EqualError(t, err, "service price must be greater than zero")
+	})
+
+	t.Run("should return error for invalid email format", func(t *testing.T) {
+		dto := internal.CreatorDTO{
+			Name:        "Name",
+			City:        "City",
+			Street:      "Street",
+			Number:      "Number",
+			PostalCode:  "12-345",
+			PhoneNumber: "123456789",
+			EmployeeEmails: []string{
+				"johnexample.com",
+			},
+		}
+		err := CreatorDTO(dto)
+		assert.EqualError(t, err, "invalid email format")
+	})
+
+	t.Run("should pass with valid input", func(t *testing.T) {
+		dto := internal.CreatorDTO{
+			Name:        "Name",
+			City:        "City",
+			Street:      "Street",
+			Number:      "Number",
+			PostalCode:  "12-345",
+			PhoneNumber: "123456789",
+			Services: []internal.ServiceDTO{
+				{Name: "Service", Time: 1, Price: 1},
+			},
+			EmployeeEmails: []string{
+				"john@example.com",
+			},
+		}
+		err := CreatorDTO(dto)
+		assert.NoError(t, err)
+	})
+}
+
 func TestIsEmail(t *testing.T) {
 	t.Run("should return true with valid email", func(t *testing.T) {
 		result := isEmail("test@example.com")
@@ -204,6 +342,50 @@ func TestIsPassword(t *testing.T) {
 
 	t.Run("should return false with less than eight characters", func(t *testing.T) {
 		result := isPassword("Pass1")
+		assert.False(t, result)
+	})
+}
+
+func TestIsPostalCode(t *testing.T) {
+	t.Run("should return true with valid postal code", func(t *testing.T) {
+		result := isPostalCode("12-345")
+		assert.True(t, result)
+	})
+
+	t.Run("should return false with missing dash", func(t *testing.T) {
+		result := isPostalCode("12345")
+		assert.False(t, result)
+	})
+
+	t.Run("should return false with extra characters", func(t *testing.T) {
+		result := isPostalCode("12-3456")
+		assert.False(t, result)
+	})
+
+	t.Run("should return false with letters included", func(t *testing.T) {
+		result := isPostalCode("12-AB5")
+		assert.False(t, result)
+	})
+}
+
+func TestIsPhoneNumber(t *testing.T) {
+	t.Run("should return true with valid phone number", func(t *testing.T) {
+		result := isPhoneNumber("123456789")
+		assert.True(t, result)
+	})
+
+	t.Run("should return false with less than 9 digits", func(t *testing.T) {
+		result := isPhoneNumber("+12345678")
+		assert.False(t, result)
+	})
+
+	t.Run("should return false with more than 15 digits", func(t *testing.T) {
+		result := isPhoneNumber("+1234567890123456")
+		assert.False(t, result)
+	})
+
+	t.Run("should return false with letters included", func(t *testing.T) {
+		result := isPhoneNumber("+12345678A901")
 		assert.False(t, result)
 	})
 }
