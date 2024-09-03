@@ -48,12 +48,18 @@ func TestCreatorEndpoint(t *testing.T) {
 			"jane@example.com",
 		},
 	}
-
 	creatorJSON, err := json.Marshal(creator)
 	require.NoError(t, err)
 
 	response := suite.CallAPI(http.MethodPost, "/api/business/creator", creatorJSON, token)
 	assert.Equal(t, http.StatusCreated, response.StatusCode)
+
+	creator.PhoneNumber = "987654321"
+	creatorJSON, err = json.Marshal(creator)
+	require.NoError(t, err)
+
+	response = suite.CallAPI(http.MethodPost, "/api/business/creator", creatorJSON, token)
+	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
 
 	response = suite.CallAPI(http.MethodPost, "/api/business/creator", creatorJSON, nil)
 	assert.Equal(t, http.StatusUnauthorized, response.StatusCode)

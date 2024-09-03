@@ -34,9 +34,11 @@ func TestInsertGarage(t *testing.T) {
 		PhoneNumber: "1234567890",
 		OwnerID:     employee.ID,
 	}
-	garage, err := garageRepo.Insert(newGarage)
+	createdGarage, err := garageRepo.Insert(newGarage)
 	assert.NoError(t, err)
-	newGarage.ID = garage.ID
 
-	assert.Equal(t, newGarage, garage)
+	garage, err := garageRepo.GetByEmployeeID(employee.ID)
+	assert.NoError(t, err)
+
+	assert.Equal(t, createdGarage, garage)
 }

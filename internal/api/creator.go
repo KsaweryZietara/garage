@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/KsaweryZietara/garage/internal"
@@ -30,6 +31,12 @@ func (a *API) Creator(writer http.ResponseWriter, request *http.Request) {
 	employee, err := a.storage.Employees().GetByEmail(email)
 	if err != nil {
 		a.handleError(writer, err, 400)
+		return
+	}
+
+	_, err = a.storage.Garages().GetByEmployeeID(employee.ID)
+	if err == nil {
+		a.handleError(writer, errors.New("cannot create more than one garage"), 400)
 		return
 	}
 

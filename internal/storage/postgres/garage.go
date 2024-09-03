@@ -35,3 +35,15 @@ func (e *Garage) Insert(garage internal.Garage) (internal.Garage, error) {
 	garage.ID = id
 	return garage, nil
 }
+
+func (e *Garage) GetByEmployeeID(employeeID int) (internal.Garage, error) {
+	session := e.connection.NewSession(nil)
+
+	var garage internal.Garage
+	err := session.Select("*").
+		From(garagesTable).
+		Where(dbr.Eq("owner_id", employeeID)).
+		LoadOne(&garage)
+
+	return garage, err
+}
