@@ -12,6 +12,8 @@ import uuid from "react-native-uuid";
 import CheckBox from "react-native-check-box"
 // @ts-ignore
 import {ProgressSteps, ProgressStep} from "react-native-progress-steps";
+import axios from "axios";
+import {getJWT} from "@/utils/auth";
 
 interface Service {
     id: string;
@@ -67,8 +69,12 @@ const CreatorScreen = () => {
             return "Wszystkie pola muszą być wypełnione.";
         }
 
-        if (name.length > 50 || city.length > 50 || street.length > 50) {
-            return "Nazwa, Miasto i Ulica nie mogą przekraczać 50 znaków.";
+        if (name.length > 255 || city.length > 255 || street.length > 255) {
+            return "Nazwa, Miasto i Ulica nie mogą przekraczać 255 znaków.";
+        }
+
+        if (number.length > 15 || postalCode.length > 15 || phoneNumber.length > 15) {
+            return "Numer, kod pocztowy i numer telefonu nie mogą przekraczać 15 znaków.";
         }
 
         const postalCodeRegex = /^\d{2}-\d{3}$/;
@@ -76,7 +82,7 @@ const CreatorScreen = () => {
             return "Nieprawidłowy format kodu pocztowego.";
         }
 
-        const phoneRegex = /^\+?\d{9,15}$/;
+        const phoneRegex = /^\d{9}$/;
         if (!phoneRegex.test(phoneNumber)) {
             return "Nieprawidłowy format numeru telefonu.";
         }
@@ -103,8 +109,22 @@ const CreatorScreen = () => {
             return;
         }
 
-        if (serviceName.length > 200) {
-            return "Nazwa nie mogą przekraczać 200 znaków.";
+        if (serviceName.length > 255) {
+            setErrorMessage("Nazwa nie może przekraczać 255 znaków.");
+            return;
+        }
+
+        const timeNumber = parseFloat(serviceTime);
+        const priceNumber = parseFloat(servicePrice);
+
+        if (isNaN(timeNumber) || timeNumber <= 0) {
+            setErrorMessage("Czas musi być liczbą dodatnią.");
+            return;
+        }
+
+        if (isNaN(priceNumber) || priceNumber <= 0) {
+            setErrorMessage("Cena musi być liczbą dodatnią.");
+            return;
         }
 
         const newService = {
@@ -115,9 +135,9 @@ const CreatorScreen = () => {
         };
 
         setServices([...services, newService]);
-        setServiceName("")
-        setServiceTime("")
-        setServicePrice("")
+        setServiceName("");
+        setServiceTime("");
+        setServicePrice("");
         setErrorMessage("");
     };
 
@@ -129,6 +149,10 @@ const CreatorScreen = () => {
         if (!employeeEmail.trim()) {
             setErrorMessage("Pole email nie może być puste.");
             return;
+        }
+
+        if (employeeEmail.length > 255) {
+            return "Email nie może przekraczać 255 znaków.";
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -151,8 +175,29 @@ const CreatorScreen = () => {
         setEmployeeEmails(employeeEmails.filter((e) => e !== email));
     };
 
-    const handleSubmit = () => {
-        console.log("submit");
+    const handleSubmit = async () => {
+        const token = await getJWT();
+        const data = {
+            name,
+            city,
+            street,
+            number,
+            postalCode,
+            phoneNumber,
+            services: services.map(service => ({
+                name: service.name,
+                time: parseInt(service.time, 10),
+                price: parseFloat(service.price)
+            })),
+            employeeEmails
+        };
+        await axios.post('/api/business/creator', data, {headers: {"Authorization": `Bearer ${token}`}})
+            .then(function (response) {
+                setErrorMessage("");
+            })
+            .catch(function (error) {
+                setErrorMessage(error.response.data.message);
+            });
     };
 
     return (
@@ -208,12 +253,12 @@ const CreatorScreen = () => {
                                     onChangeText={setNumber}
                                 />
                                 <CustomTextInput
-                                    placeholder="Kod pocztowy"
+                                    placeholder="Kod pocztowy (np. 12-345)"
                                     value={postalCode}
                                     onChangeText={setPostalCode}
                                 />
                                 <CustomTextInput
-                                    placeholder="Numer telefonu"
+                                    placeholder="Numer telefonu (np. 123456789)"
                                     keyboardType="phone-pad"
                                     value={phoneNumber}
                                     onChangeText={setPhoneNumber}

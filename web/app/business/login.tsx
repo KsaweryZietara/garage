@@ -1,27 +1,10 @@
 import React, {useState} from "react";
-import {Platform, StatusBar, Text, View} from "react-native";
+import {StatusBar, Text, View} from "react-native";
 import CustomTextInput from "@/components/CustomTextInput";
 import CustomButton from "@/components/CustomButton";
 import {useRouter} from "expo-router";
 import axios from "axios";
-import * as SecureStore from 'expo-secure-store';
-import Cookies from 'js-cookie';
-
-async function save(key: string, value: string) {
-    if (Platform.OS === "android" || Platform.OS === "ios") {
-        await SecureStore.setItemAsync(key, value);
-    } else {
-        Cookies.set(key, value);
-    }
-}
-
-async function getValueFor(key: string) {
-    if (Platform.OS === "android" || Platform.OS === "ios") {
-        return await SecureStore.getItemAsync(key)
-    } else {
-        return Cookies.get(key)
-    }
-}
+import {saveJWT} from "@/utils/auth";
 
 const LoginScreen = () => {
     const router = useRouter();
@@ -56,7 +39,7 @@ const LoginScreen = () => {
         })
             .then(function (response) {
                 setErrorMessage("");
-                save("jwt", response.data.jwt)
+                saveJWT(response.data.jwt)
                 router.push("/business/creator");
             })
             .catch(function (error) {
