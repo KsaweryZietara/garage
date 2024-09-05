@@ -14,6 +14,7 @@ import CheckBox from "react-native-check-box"
 import {ProgressSteps, ProgressStep} from "react-native-progress-steps";
 import axios from "axios";
 import {getJWT} from "@/utils/auth";
+import {useRouter} from "expo-router";
 
 interface Service {
     id: string;
@@ -23,6 +24,7 @@ interface Service {
 }
 
 const CreatorScreen = () => {
+    const router = useRouter();
     const [name, setName] = useState("");
     const [city, setCity] = useState("");
     const [street, setStreet] = useState("");
@@ -194,6 +196,7 @@ const CreatorScreen = () => {
         await axios.post('/api/business/creator', data, {headers: {"Authorization": `Bearer ${token}`}})
             .then(function (response) {
                 setErrorMessage("");
+                router.push("/business/home")
             })
             .catch(function (error) {
                 setErrorMessage(error.response.data.message);

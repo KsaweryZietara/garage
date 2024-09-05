@@ -40,7 +40,15 @@ const LoginScreen = () => {
             .then(function (response) {
                 setErrorMessage("");
                 saveJWT(response.data.jwt)
-                router.push("/business/creator");
+
+                axios.get("/api/garages", {headers: {"Authorization": `Bearer ${response.data.jwt}`}})
+                    .then(function (response) {
+                        router.push("/business/home")
+                    })
+                    .catch(function (error) {
+                        router.push("/business/creator")
+                    })
+
             })
             .catch(function (error) {
                 if (error.response.status === 400) {
