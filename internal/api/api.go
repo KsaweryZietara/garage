@@ -61,6 +61,7 @@ func (a *API) attachRoutes(router *http.ServeMux) {
 	router.HandleFunc("POST /api/business/register", a.Register)
 	router.HandleFunc("POST /api/business/login", a.Login)
 	router.Handle("POST /api/business/creator", a.authMiddleware(http.HandlerFunc(a.Creator), internal.Owner))
+	router.Handle("GET /api/garages", a.authMiddleware(http.HandlerFunc(a.GetGarage), internal.Owner))
 }
 
 func (a *API) authMiddleware(next http.Handler, role internal.Role) http.Handler {

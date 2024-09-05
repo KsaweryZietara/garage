@@ -23,7 +23,8 @@ type Employees interface {
 
 type Garages interface {
 	Insert(garage internal.Garage) (internal.Garage, error)
-	GetByEmployeeID(employeeID int) (internal.Garage, error)
+	GetByOwnerID(employeeID int) (internal.Garage, error)
+	GetByID(ID int) (internal.Garage, error)
 }
 
 type Services interface {

@@ -38,3 +38,25 @@ type ServiceDTO struct {
 	Time  int    `json:"time"`
 	Price int    `json:"price"`
 }
+
+type GarageDTO struct {
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	City        string `json:"city"`
+	Street      string `json:"street"`
+	Number      string `json:"number"`
+	PostalCode  string `json:"postalCode"`
+	PhoneNumber string `json:"phoneNumber"`
+}
+
+func NewGarageDTO(garage Garage) GarageDTO {
+	return GarageDTO{
+		ID:          garage.ID,
+		Name:        garage.Name,
+		City:        garage.City,
+		Street:      garage.Street,
+		Number:      garage.Number,
+		PostalCode:  garage.PostalCode,
+		PhoneNumber: garage.PhoneNumber,
+	}
+}

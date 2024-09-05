@@ -26,6 +26,7 @@ func (a *API) Creator(writer http.ResponseWriter, request *http.Request) {
 	email, ok := a.emailFromContext(request.Context())
 	if !ok {
 		a.sendResponse(writer, nil, 401)
+		return
 	}
 
 	employee, err := a.storage.Employees().GetByEmail(email)
@@ -34,7 +35,7 @@ func (a *API) Creator(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	_, err = a.storage.Garages().GetByEmployeeID(employee.ID)
+	_, err = a.storage.Garages().GetByOwnerID(employee.ID)
 	if err == nil {
 		a.handleError(writer, errors.New("cannot create more than one garage"), 400)
 		return

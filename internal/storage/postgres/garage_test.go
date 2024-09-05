@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestInsertGarage(t *testing.T) {
+func TestGarage(t *testing.T) {
 	cleanup := NewSuite(t)
 	defer cleanup()
 
@@ -37,8 +37,11 @@ func TestInsertGarage(t *testing.T) {
 	createdGarage, err := garageRepo.Insert(newGarage)
 	assert.NoError(t, err)
 
-	garage, err := garageRepo.GetByEmployeeID(employee.ID)
+	garage, err := garageRepo.GetByOwnerID(employee.ID)
 	assert.NoError(t, err)
+	assert.Equal(t, createdGarage, garage)
 
+	garage, err = garageRepo.GetByID(createdGarage.ID)
+	assert.NoError(t, err)
 	assert.Equal(t, createdGarage, garage)
 }
