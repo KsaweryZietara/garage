@@ -43,7 +43,7 @@ func New(url string, log *slog.Logger) (Storage, error) {
 		return Storage{}, err
 	}
 
-	err = postgres.RunMigrations(connection, postgres.Up)
+	err = postgres.RunMigrations(connection, postgres.Up, "../../../../")
 	if err != nil {
 		return Storage{}, err
 	}
@@ -61,13 +61,13 @@ func NewForTests(url string, log *slog.Logger) (Storage, func() error, error) {
 		return Storage{}, nil, err
 	}
 
-	err = postgres.RunMigrations(connection, postgres.Up)
+	err = postgres.RunMigrations(connection, postgres.Up, "../../../")
 	if err != nil {
 		return Storage{}, nil, err
 	}
 
 	cleanup := func() error {
-		err = postgres.RunMigrations(connection, postgres.Down)
+		err = postgres.RunMigrations(connection, postgres.Down, "../../../")
 		if err != nil {
 			return fmt.Errorf("failed to clear DB tables: %w", err)
 		}

@@ -45,10 +45,10 @@ func TestMain(m *testing.M) {
 }
 
 func NewSuite(t *testing.T) func() {
-	err := RunMigrations(connection, Up)
+	err := RunMigrations(connection, Up, "../../../")
 	require.NoError(t, err)
 	return func() {
-		err = RunMigrations(connection, Down)
+		err = RunMigrations(connection, Down, "../../../")
 		require.NoError(t, err)
 	}
 }

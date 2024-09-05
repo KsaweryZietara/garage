@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"os"
 
@@ -8,31 +9,34 @@ import (
 	"github.com/KsaweryZietara/garage/internal/auth"
 	"github.com/KsaweryZietara/garage/internal/storage"
 	"github.com/KsaweryZietara/garage/internal/storage/postgres"
+
+	"github.com/sethvargo/go-envconfig"
 )
 
-func main() {
-	server := api.Config{
-		Port: "8080",
-	}
-	database := postgres.Config{
-		User:     "postgres",
-		Password: "password",
-		Host:     "localhost",
-		Port:     "5432",
-		Name:     "garage",
-		SSLMode:  "disable",
-	}
+type Config struct {
+	Server   api.Config      `env:", prefix=SERVER_"`
+	Postgres postgres.Config `env:", prefix=POSTGRES_"`
+	AuthKey  string          `env:"AUTH_KEY"`
+}
 
+func main() {
 	log := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-	storage, err := storage.New(database.ConnectionURL(), log)
+	ctx := context.Background()
+	var cfg Config
+	if err := envconfig.Process(ctx, &cfg); err != nil {
+		log.Error(err.Error())
+		os.Exit(1)
+	}
+
+	storage, err := storage.New(cfg.Postgres.ConnectionURL(), log)
 	if err != nil {
 		log.Error(err.Error())
 		os.Exit(1)
 	}
 
-	auth := auth.New("secret-key")
+	auth := auth.New(cfg.AuthKey)
 
-	api := api.New(server, log, storage, auth)
+	api := api.New(cfg.Server, log, storage, auth)
 	api.Start()
 }

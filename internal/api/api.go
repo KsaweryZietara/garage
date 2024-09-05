@@ -21,7 +21,7 @@ const (
 )
 
 type Config struct {
-	Port string
+	Port string `env:"PORT"`
 }
 
 type API struct {

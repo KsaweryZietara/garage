@@ -28,12 +28,12 @@ const (
 )
 
 type Config struct {
-	User     string
-	Password string
-	Host     string
-	Port     string
-	Name     string
-	SSLMode  string
+	User     string `env:"USER"`
+	Password string `env:"PASSWORD"`
+	Host     string `env:"HOST"`
+	Port     string `env:"PORT"`
+	Name     string `env:"NAME"`
+	SSLMode  string `env:"SSL_MODE"`
 }
 
 func (cfg *Config) ConnectionURL() string {
@@ -68,9 +68,9 @@ func WaitForDatabaseAccess(connString string, retryCount int, log *slog.Logger) 
 	return nil, fmt.Errorf("timeout waiting for database access")
 }
 
-func RunMigrations(connection *dbr.Connection, order migrationOrder) error {
+func RunMigrations(connection *dbr.Connection, order migrationOrder, baseDir string) error {
 	_, currentPath, _, _ := runtime.Caller(0)
-	migrationsPath := fmt.Sprintf("%s/resources/migrations/", path.Join(path.Dir(currentPath), "../../../"))
+	migrationsPath := fmt.Sprintf("%s/resources/migrations/", path.Join(path.Dir(currentPath), baseDir))
 
 	if order != Up && order != Down {
 		return fmt.Errorf("unknown migration order")

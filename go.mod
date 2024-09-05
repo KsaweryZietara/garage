@@ -7,6 +7,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/lib/pq v1.10.9
 	github.com/rs/cors v1.11.1
+	github.com/sethvargo/go-envconfig v1.1.0
 	github.com/stretchr/testify v1.9.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.33.0
 	golang.org/x/crypto v0.26.0
