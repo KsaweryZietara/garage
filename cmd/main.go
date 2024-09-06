@@ -7,6 +7,7 @@ import (
 
 	"github.com/KsaweryZietara/garage/internal/api"
 	"github.com/KsaweryZietara/garage/internal/auth"
+	"github.com/KsaweryZietara/garage/internal/mail"
 	"github.com/KsaweryZietara/garage/internal/storage"
 	"github.com/KsaweryZietara/garage/internal/storage/postgres"
 
@@ -16,6 +17,7 @@ import (
 type Config struct {
 	Server   api.Config      `env:", prefix=SERVER_"`
 	Postgres postgres.Config `env:", prefix=POSTGRES_"`
+	Mail     mail.Config     `env:", prefix=MAIL_"`
 	AuthKey  string          `env:"AUTH_KEY"`
 }
 
@@ -37,6 +39,8 @@ func main() {
 
 	auth := auth.New(cfg.AuthKey)
 
-	api := api.New(cfg.Server, log, storage, auth)
+	mail := mail.New(cfg.Mail)
+
+	api := api.New(cfg.Server, log, storage, auth, mail)
 	api.Start()
 }

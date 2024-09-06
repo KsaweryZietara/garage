@@ -24,3 +24,7 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_SSL_MODE=disable
       - AUTH_KEY=secret-key
+      - MAIL_USERNAME=example@gmail.com
+      - MAIL_PASSWORD=password
+      - MAIL_SMTP_HOST=smtp.gmail.com
+      - MAIL_SMTP_PORT=587

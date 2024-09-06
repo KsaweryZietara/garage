@@ -10,6 +10,7 @@ import (
 
 	"github.com/KsaweryZietara/garage/internal"
 	"github.com/KsaweryZietara/garage/internal/auth"
+	"github.com/KsaweryZietara/garage/internal/mail"
 	"github.com/KsaweryZietara/garage/internal/storage"
 
 	"github.com/rs/cors"
@@ -29,9 +30,10 @@ type API struct {
 	log     *slog.Logger
 	storage storage.Storage
 	auth    *auth.Auth
+	mail    *mail.Mail
 }
 
-func New(cfg Config, log *slog.Logger, storage storage.Storage, auth *auth.Auth) *API {
+func New(cfg Config, log *slog.Logger, storage storage.Storage, auth *auth.Auth, mail *mail.Mail) *API {
 	return &API{
 		server: &http.Server{
 			Addr: fmt.Sprintf(":%s", cfg.Port),
@@ -39,6 +41,7 @@ func New(cfg Config, log *slog.Logger, storage storage.Storage, auth *auth.Auth)
 		log:     log,
 		storage: storage,
 		auth:    auth,
+		mail:    mail,
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/KsaweryZietara/garage/internal"
+	"github.com/KsaweryZietara/garage/internal/mail"
 	"github.com/KsaweryZietara/garage/internal/validate"
 )
 
@@ -64,6 +65,15 @@ func (a *API) Creator(writer http.ResponseWriter, request *http.Request) {
 				GarageID: &garage.ID,
 			})
 		if err != nil {
+			a.log.Error(err.Error())
+			continue
+		}
+		if err = a.mail.Send(
+			employeeEmail,
+			"Rejestracja",
+			mail.NewEmployeeTemplate,
+			mail.NewEmployee{GarageName: garage.Name},
+		); err != nil {
 			a.log.Error(err.Error())
 		}
 	}

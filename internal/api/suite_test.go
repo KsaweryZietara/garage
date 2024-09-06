@@ -12,6 +12,7 @@ import (
 
 	"github.com/KsaweryZietara/garage/internal"
 	"github.com/KsaweryZietara/garage/internal/auth"
+	"github.com/KsaweryZietara/garage/internal/mail"
 	"github.com/KsaweryZietara/garage/internal/storage"
 
 	"github.com/stretchr/testify/require"
@@ -59,8 +60,9 @@ func NewSuite(t *testing.T) *Suite {
 	storage, cleanup, err := storage.NewForTests(connString, log)
 	require.NoError(t, err)
 	auth := auth.New("secret-key")
+	mail := mail.New(mail.Config{})
 
-	api := New(Config{}, log, storage, auth)
+	api := New(Config{}, log, storage, auth, mail)
 
 	router := http.NewServeMux()
 	api.attachRoutes(router)
