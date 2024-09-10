@@ -46,3 +46,15 @@ func (e *Employee) GetByEmail(email string) (internal.Employee, error) {
 	}
 	return employee, nil
 }
+
+func (e *Employee) Update(employee internal.Employee) error {
+	sess := e.connection.NewSession(nil)
+	_, err := sess.Update(employeesTable).
+		Where(dbr.Eq("id", employee.ID)).
+		Set("name", employee.Name).
+		Set("surname", employee.Surname).
+		Set("password", employee.Password).
+		Exec()
+
+	return err
+}

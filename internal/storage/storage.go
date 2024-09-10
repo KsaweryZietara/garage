@@ -20,6 +20,7 @@ type IStorage interface {
 type Employees interface {
 	Insert(employee internal.Employee) (internal.Employee, error)
 	GetByEmail(email string) (internal.Employee, error)
+	Update(employee internal.Employee) error
 }
 
 type Garages interface {
@@ -34,6 +35,8 @@ type Services interface {
 
 type ConfirmationCodes interface {
 	Insert(code internal.ConfirmationCode) (internal.ConfirmationCode, error)
+	GetByID(ID string) (internal.ConfirmationCode, error)
+	DeleteByID(ID string) error
 }
 
 type Storage struct {

@@ -30,3 +30,23 @@ func (c *ConfirmationCode) Insert(code internal.ConfirmationCode) (internal.Conf
 
 	return code, nil
 }
+
+func (c *ConfirmationCode) GetByID(ID string) (internal.ConfirmationCode, error) {
+	sess := c.connection.NewSession(nil)
+	var code internal.ConfirmationCode
+	err := sess.Select("*").
+		From(confirmationCodesTable).
+		Where(dbr.Eq("id", ID)).
+		LoadOne(&code)
+
+	return code, err
+}
+
+func (c *ConfirmationCode) DeleteByID(ID string) error {
+	sess := c.connection.NewSession(nil)
+	_, err := sess.DeleteFrom(confirmationCodesTable).
+		Where(dbr.Eq("id", ID)).
+		Exec()
+
+	return err
+}

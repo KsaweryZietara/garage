@@ -17,13 +17,12 @@ type Employee struct {
 	GarageID *int
 }
 
-func NewEmployee(dto RegisterDTO) Employee {
+func NewEmployee(dto RegisterDTO, role Role) Employee {
 	return Employee{
-		Name:     dto.Name,
-		Surname:  dto.Surname,
-		Email:    dto.Email,
-		Password: dto.Password,
-		Role:     dto.Role,
+		Name:    dto.Name,
+		Surname: dto.Surname,
+		Email:   dto.Email,
+		Role:    role,
 	}
 }
 

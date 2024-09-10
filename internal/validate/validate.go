@@ -8,8 +8,8 @@ import (
 	"github.com/KsaweryZietara/garage/internal"
 )
 
-func RegisterDTO(dto internal.RegisterDTO) error {
-	if dto.Name == "" || dto.Surname == "" || dto.Email == "" || dto.Password == "" || dto.ConfirmPassword == "" || dto.Role == "" {
+func RegisterDTO(dto internal.RegisterDTO, validateEmail bool) error {
+	if dto.Name == "" || dto.Surname == "" || dto.Password == "" || dto.ConfirmPassword == "" {
 		return errors.New("fields cannot be empty")
 	}
 
@@ -25,16 +25,12 @@ func RegisterDTO(dto internal.RegisterDTO) error {
 		return errors.New("name and surname cannot contain numbers")
 	}
 
-	if !isEmail(dto.Email) {
+	if !isEmail(dto.Email) && validateEmail {
 		return errors.New("invalid email format")
 	}
 
 	if !isPassword(dto.Password) {
 		return errors.New("password must have at least one number, one capital letter and be at least 8 characters long")
-	}
-
-	if dto.Role != internal.Owner && dto.Role != internal.Mechanic {
-		return errors.New("invalid role")
 	}
 
 	return nil

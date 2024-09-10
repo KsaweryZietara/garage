@@ -14,7 +14,6 @@ type RegisterDTO struct {
 	Email           string `json:"email"`
 	Password        string `json:"password"`
 	ConfirmPassword string `json:"confirmPassword"`
-	Role            Role   `json:"role"`
 }
 
 type LoginDTO struct {

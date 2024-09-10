@@ -61,13 +61,14 @@ func (a *API) Start() {
 }
 
 func (a *API) attachRoutes(router *http.ServeMux) {
-	router.HandleFunc("POST /api/business/register", a.Register)
+	router.HandleFunc("POST /api/business/register", a.RegisterOwner)
+	router.HandleFunc("POST /api/business/register/{code}", a.RegisterMechanic)
 	router.HandleFunc("POST /api/business/login", a.Login)
-	router.Handle("POST /api/business/creator", a.authMiddleware(http.HandlerFunc(a.Creator), internal.Owner))
-	router.Handle("GET /api/garages", a.authMiddleware(http.HandlerFunc(a.GetGarage), internal.Owner))
+	router.Handle("POST /api/business/creator", a.authMiddleware(http.HandlerFunc(a.Creator), []internal.Role{internal.Owner}))
+	router.Handle("GET /api/garages", a.authMiddleware(http.HandlerFunc(a.GetGarage), []internal.Role{internal.Owner, internal.Mechanic}))
 }
 
-func (a *API) authMiddleware(next http.Handler, role internal.Role) http.Handler {
+func (a *API) authMiddleware(next http.Handler, roles []internal.Role) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
@@ -86,8 +87,16 @@ func (a *API) authMiddleware(next http.Handler, role internal.Role) http.Handler
 			a.sendResponse(w, nil, 401)
 			return
 		}
-		if tokenRole != role {
-			a.sendResponse(w, nil, 401)
+
+		roleFound := false
+		for _, role := range roles {
+			if role == tokenRole {
+				roleFound = true
+				break
+			}
+		}
+		if !roleFound {
+			a.sendResponse(w, nil, 403)
 			return
 		}
 

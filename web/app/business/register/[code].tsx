@@ -7,7 +7,6 @@ import axios from "axios";
 
 const CreateMechanicAccountScreen = () => {
     const {code} = useLocalSearchParams()
-    const role = "MECHANIC"
     const router = useRouter();
     const [name, setName] = useState("");
     const [surname, setSurname] = useState("");
@@ -57,8 +56,7 @@ const CreateMechanicAccountScreen = () => {
             name,
             surname,
             password,
-            confirmPassword,
-            role,
+            confirmPassword
         })
             .then(function (response) {
                 setErrorMessage("");

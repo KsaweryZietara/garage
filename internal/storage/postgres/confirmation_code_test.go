@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestInsertConfirmationCode(t *testing.T) {
+func TestConfirmationCode(t *testing.T) {
 	cleanup := NewSuite(t)
 	defer cleanup()
 
@@ -30,8 +30,19 @@ func TestInsertConfirmationCode(t *testing.T) {
 		ID:         uuid.New().String(),
 		EmployeeID: employee.ID,
 	}
-	confirmationCode, err := confirmationCodeRepo.Insert(newConfirmationCode)
+	createdConfirmationCode, err := confirmationCodeRepo.Insert(newConfirmationCode)
+	assert.NoError(t, err)
+	assert.Equal(t, newConfirmationCode.ID, createdConfirmationCode.ID)
+	assert.Equal(t, newConfirmationCode.EmployeeID, createdConfirmationCode.EmployeeID)
+
+	confirmationCode, err := confirmationCodeRepo.GetByID(newConfirmationCode.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, newConfirmationCode.ID, confirmationCode.ID)
 	assert.Equal(t, newConfirmationCode.EmployeeID, confirmationCode.EmployeeID)
+
+	err = confirmationCodeRepo.DeleteByID(newConfirmationCode.ID)
+	assert.NoError(t, err)
+
+	_, err = confirmationCodeRepo.GetByID(newConfirmationCode.ID)
+	assert.EqualError(t, err, "dbr: not found")
 }

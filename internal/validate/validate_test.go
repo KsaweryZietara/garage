@@ -17,9 +17,8 @@ func TestRegisterDTO(t *testing.T) {
 			Email:           "john@example.com",
 			Password:        "Password1",
 			ConfirmPassword: "Password1",
-			Role:            internal.Mechanic,
 		}
-		err := RegisterDTO(dto)
+		err := RegisterDTO(dto, true)
 		assert.EqualError(t, err, "fields cannot be empty")
 	})
 
@@ -31,9 +30,8 @@ func TestRegisterDTO(t *testing.T) {
 			Email:           "john@example.com",
 			Password:        "Password1",
 			ConfirmPassword: "Password1",
-			Role:            internal.Mechanic,
 		}
-		err := RegisterDTO(dto)
+		err := RegisterDTO(dto, true)
 		assert.EqualError(t, err, "fields cannot have more than 255 characters")
 	})
 
@@ -44,9 +42,8 @@ func TestRegisterDTO(t *testing.T) {
 			Email:           "john@example.com",
 			Password:        "Password1",
 			ConfirmPassword: "Password1",
-			Role:            internal.Owner,
 		}
-		err := RegisterDTO(dto)
+		err := RegisterDTO(dto, true)
 		assert.EqualError(t, err, "name and surname cannot contain numbers")
 	})
 
@@ -57,9 +54,8 @@ func TestRegisterDTO(t *testing.T) {
 			Email:           "johnexample.com",
 			Password:        "Password1",
 			ConfirmPassword: "Password1",
-			Role:            internal.Owner,
 		}
-		err := RegisterDTO(dto)
+		err := RegisterDTO(dto, true)
 		assert.EqualError(t, err, "invalid email format")
 	})
 
@@ -70,9 +66,8 @@ func TestRegisterDTO(t *testing.T) {
 			Email:           "john@example.com",
 			Password:        "password",
 			ConfirmPassword: "password",
-			Role:            internal.Mechanic,
 		}
-		err := RegisterDTO(dto)
+		err := RegisterDTO(dto, true)
 		assert.EqualError(t, err, "password must have at least one number, one capital letter and be at least 8 characters long")
 	})
 
@@ -83,9 +78,8 @@ func TestRegisterDTO(t *testing.T) {
 			Email:           "john@example.com",
 			Password:        "password",
 			ConfirmPassword: "password2",
-			Role:            internal.Owner,
 		}
-		err := RegisterDTO(dto)
+		err := RegisterDTO(dto, true)
 		assert.EqualError(t, err, "passwords must be identical")
 	})
 
@@ -96,9 +90,19 @@ func TestRegisterDTO(t *testing.T) {
 			Email:           "john@example.com",
 			Password:        "Password1",
 			ConfirmPassword: "Password1",
-			Role:            internal.Owner,
 		}
-		err := RegisterDTO(dto)
+		err := RegisterDTO(dto, true)
+		assert.NoError(t, err)
+	})
+
+	t.Run("should pass with valid input without email", func(t *testing.T) {
+		dto := internal.RegisterDTO{
+			Name:            "John",
+			Surname:         "Smith",
+			Password:        "Password1",
+			ConfirmPassword: "Password1",
+		}
+		err := RegisterDTO(dto, false)
 		assert.NoError(t, err)
 	})
 }
