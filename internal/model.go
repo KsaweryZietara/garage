@@ -66,3 +66,8 @@ func NewService(dto ServiceDTO, garageID int) Service {
 		GarageID: garageID,
 	}
 }
+
+type ConfirmationCode struct {
+	ID         string
+	EmployeeID int
+}

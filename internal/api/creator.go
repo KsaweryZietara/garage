@@ -8,6 +8,8 @@ import (
 	"github.com/KsaweryZietara/garage/internal"
 	"github.com/KsaweryZietara/garage/internal/mail"
 	"github.com/KsaweryZietara/garage/internal/validate"
+
+	"github.com/google/uuid"
 )
 
 func (a *API) Creator(writer http.ResponseWriter, request *http.Request) {
@@ -30,19 +32,19 @@ func (a *API) Creator(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	employee, err := a.storage.Employees().GetByEmail(email)
+	owner, err := a.storage.Employees().GetByEmail(email)
 	if err != nil {
 		a.handleError(writer, err, 400)
 		return
 	}
 
-	_, err = a.storage.Garages().GetByOwnerID(employee.ID)
+	_, err = a.storage.Garages().GetByOwnerID(owner.ID)
 	if err == nil {
 		a.handleError(writer, errors.New("cannot create more than one garage"), 400)
 		return
 	}
 
-	garage := internal.NewGarage(dto, employee.ID)
+	garage := internal.NewGarage(dto, owner.ID)
 	garage, err = a.storage.Garages().Insert(garage)
 	if err != nil {
 		a.handleError(writer, err, 500)
@@ -58,7 +60,7 @@ func (a *API) Creator(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	for _, employeeEmail := range dto.EmployeeEmails {
-		_, err = a.storage.Employees().Insert(
+		employee, err := a.storage.Employees().Insert(
 			internal.Employee{
 				Email:    employeeEmail,
 				Role:     internal.Mechanic,
@@ -68,11 +70,23 @@ func (a *API) Creator(writer http.ResponseWriter, request *http.Request) {
 			a.log.Error(err.Error())
 			continue
 		}
+		code, err := a.storage.ConfirmationCodes().Insert(
+			internal.ConfirmationCode{
+				ID:         uuid.New().String(),
+				EmployeeID: employee.ID,
+			})
+		if err != nil {
+			a.log.Error(err.Error())
+			continue
+		}
 		if err = a.mail.Send(
 			employeeEmail,
 			"Rejestracja",
 			mail.NewEmployeeTemplate,
-			mail.NewEmployee{GarageName: garage.Name},
+			mail.NewEmployee{
+				GarageName: garage.Name,
+				Code:       code.ID,
+			},
 		); err != nil {
 			a.log.Error(err.Error())
 		}

@@ -16,6 +16,7 @@ const (
 
 type NewEmployee struct {
 	GarageName string
+	Code       string
 }
 
 type Config struct {

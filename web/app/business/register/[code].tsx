@@ -2,15 +2,15 @@ import React, {useState} from "react";
 import {View, Text, StatusBar} from "react-native";
 import CustomTextInput from "@/components/CustomTextInput";
 import CustomButton from "@/components/CustomButton";
-import {useRouter} from "expo-router";
+import {useLocalSearchParams, useRouter} from "expo-router";
 import axios from "axios";
 
-const CreateOwnerAccountScreen = () => {
-    const role = "OWNER"
+const CreateMechanicAccountScreen = () => {
+    const {code} = useLocalSearchParams()
+    const role = "MECHANIC"
     const router = useRouter();
     const [name, setName] = useState("");
     const [surname, setSurname] = useState("");
-    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -19,24 +19,18 @@ const CreateOwnerAccountScreen = () => {
         if (
             !name.trim() ||
             !surname.trim() ||
-            !email.trim() ||
             !password ||
             !confirmPassword
         ) {
             return "Wszystkie pola muszą być wypełnione.";
         }
 
-        if (name.length > 255 || surname.length > 255 || email.length > 255 || password.length > 255 || confirmPassword.length > 255) {
+        if (name.length > 255 || surname.length > 255 || password.length > 255 || confirmPassword.length > 255) {
             return "Imię, Nazwisko i Email nie mogą przekraczać 40 znaków.";
         }
 
         if (password.length > 60) {
             return "Hasło nie może przekraczać 60 znaków.";
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            return "Nieprawidłowy format adresu e-mail.";
         }
 
         const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,60}$/;
@@ -59,17 +53,16 @@ const CreateOwnerAccountScreen = () => {
             return;
         }
 
-        await axios.post('/api/business/register', {
+        await axios.post(`/api/business/register/${code}`, {
             name,
             surname,
-            email,
             password,
             confirmPassword,
             role,
         })
             .then(function (response) {
                 setErrorMessage("");
-                router.push("/business/confirm-email");
+                router.push("/business/login");
             })
             .catch(function (error) {
                 setErrorMessage(error.response.data.message);
@@ -97,12 +90,6 @@ const CreateOwnerAccountScreen = () => {
                         placeholder="Nazwisko"
                         value={surname}
                         onChangeText={setSurname}
-                    />
-                    <CustomTextInput
-                        placeholder="Email"
-                        keyboardType="email-address"
-                        value={email}
-                        onChangeText={setEmail}
                     />
                     <CustomTextInput
                         placeholder="Hasło"
@@ -143,4 +130,4 @@ const CreateOwnerAccountScreen = () => {
     );
 };
 
-export default CreateOwnerAccountScreen;
+export default CreateMechanicAccountScreen;

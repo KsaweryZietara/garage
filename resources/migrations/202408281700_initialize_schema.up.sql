@@ -47,3 +47,9 @@ CREATE TABLE IF NOT EXISTS services
     price int NOT NULL,
     garage_id INT REFERENCES garages(id)
 );
+
+CREATE TABLE IF NOT EXISTS confirmation_codes
+(
+    id UUID PRIMARY KEY,
+    employee_id INT REFERENCES employees(id)
+);

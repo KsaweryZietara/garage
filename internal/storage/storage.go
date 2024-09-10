@@ -14,6 +14,7 @@ type IStorage interface {
 	Employees() Employees
 	Garages() Garages
 	Services() Services
+	ConfirmationCodes() ConfirmationCodes
 }
 
 type Employees interface {
@@ -31,10 +32,15 @@ type Services interface {
 	Insert(garage internal.Service) (internal.Service, error)
 }
 
+type ConfirmationCodes interface {
+	Insert(code internal.ConfirmationCode) (internal.ConfirmationCode, error)
+}
+
 type Storage struct {
-	employees Employees
-	garages   Garages
-	services  Services
+	employees         Employees
+	garages           Garages
+	services          Services
+	confirmationCodes ConfirmationCodes
 }
 
 func New(url string, log *slog.Logger) (Storage, error) {
@@ -49,9 +55,10 @@ func New(url string, log *slog.Logger) (Storage, error) {
 	}
 
 	return Storage{
-		employees: postgres.NewEmployee(connection),
-		garages:   postgres.NewGarage(connection),
-		services:  postgres.NewService(connection),
+		employees:         postgres.NewEmployee(connection),
+		garages:           postgres.NewGarage(connection),
+		services:          postgres.NewService(connection),
+		confirmationCodes: postgres.NewConfirmationCode(connection),
 	}, nil
 }
 
@@ -75,9 +82,10 @@ func NewForTests(url string, log *slog.Logger) (Storage, func() error, error) {
 	}
 
 	return Storage{
-		employees: postgres.NewEmployee(connection),
-		garages:   postgres.NewGarage(connection),
-		services:  postgres.NewService(connection),
+		employees:         postgres.NewEmployee(connection),
+		garages:           postgres.NewGarage(connection),
+		services:          postgres.NewService(connection),
+		confirmationCodes: postgres.NewConfirmationCode(connection),
 	}, cleanup, nil
 }
 
@@ -91,4 +99,8 @@ func (s Storage) Garages() Garages {
 
 func (s Storage) Services() Services {
 	return s.services
+}
+
+func (s Storage) ConfirmationCodes() ConfirmationCodes {
+	return s.confirmationCodes
 }
