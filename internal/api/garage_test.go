@@ -40,7 +40,7 @@ func TestOwnerGetGarageEndpoint(t *testing.T) {
 	response := suite.CallAPI(http.MethodPost, "/api/business/creator", creatorJSON, token)
 	assert.Equal(t, http.StatusCreated, response.StatusCode)
 
-	response = suite.CallAPI(http.MethodGet, "/api/garages", []byte{}, token)
+	response = suite.CallAPI(http.MethodGet, "/api/employee/garage", []byte{}, token)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 }
 
@@ -81,6 +81,6 @@ func TestMechanicGetGarageEndpoint(t *testing.T) {
 			GarageID: &garage.ID,
 		})
 
-	response := suite.CallAPI(http.MethodGet, "/api/garages", []byte{}, token)
+	response := suite.CallAPI(http.MethodGet, "/api/employee/garage", []byte{}, token)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/KsaweryZietara/garage/internal"
 )
 
-func (a *API) GetGarage(writer http.ResponseWriter, request *http.Request) {
+func (a *API) GetEmployeeGarage(writer http.ResponseWriter, request *http.Request) {
 	email, ok := a.emailFromContext(request.Context())
 	if !ok {
 		a.sendResponse(writer, nil, 401)

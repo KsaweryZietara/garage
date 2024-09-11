@@ -10,7 +10,7 @@ const HomeScreen = () => {
         const fetchGarageName = async () => {
             try {
                 const token = await getJWT();
-                const response = await axios.get("/api/garages", {
+                const response = await axios.get("/api/employee/garage", {
                     headers: {"Authorization": `Bearer ${token}`}
                 });
                 if (response.data && response.data.name) {

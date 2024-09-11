@@ -41,7 +41,7 @@ const LoginScreen = () => {
                 setErrorMessage("");
                 saveJWT(response.data.jwt)
 
-                axios.get("/api/garages", {headers: {"Authorization": `Bearer ${response.data.jwt}`}})
+                axios.get("/api/employee/garage", {headers: {"Authorization": `Bearer ${response.data.jwt}`}})
                     .then(function (response) {
                         router.push("/business/home")
                     })
