@@ -20,7 +20,7 @@ const App = () => {
                 </View>
                 <View className="flex-1 justify-start items-center mt-4">
                     <CustomButton
-                        onPress={() => router.push("/login")}
+                        onPress={() => router.push("/home")}
                         title="Umów wizytę"
                         containerStyles="bg-white shadow-md w-2/3 py-3"
                         textStyles="text-red-500 font-semibold text-lg"

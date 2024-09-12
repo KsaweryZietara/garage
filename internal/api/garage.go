@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/KsaweryZietara/garage/internal"
 )
@@ -32,4 +33,22 @@ func (a *API) GetEmployeeGarage(writer http.ResponseWriter, request *http.Reques
 	}
 
 	a.sendResponse(writer, internal.NewGarageDTO(garage), 200)
+}
+
+func (a *API) ListGarages(writer http.ResponseWriter, request *http.Request) {
+	queryParams := request.URL.Query()
+	query := queryParams.Get("query")
+	pageStr := queryParams.Get("page")
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		page = 1
+	}
+
+	garages, err := a.storage.Garages().List(query, page)
+	if err != nil {
+		a.handleError(writer, err, 500)
+		return
+	}
+
+	a.sendResponse(writer, internal.NewGaragesDTOs(garages), 200)
 }

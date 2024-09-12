@@ -59,3 +59,11 @@ func NewGarageDTO(garage Garage) GarageDTO {
 		PhoneNumber: garage.PhoneNumber,
 	}
 }
+
+func NewGaragesDTOs(garages []Garage) []GarageDTO {
+	garageDTOs := make([]GarageDTO, len(garages))
+	for i, garage := range garages {
+		garageDTOs[i] = NewGarageDTO(garage)
+	}
+	return garageDTOs
+}

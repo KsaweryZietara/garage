@@ -1,12 +1,17 @@
 package postgres
 
 import (
+	"strings"
+
 	"github.com/KsaweryZietara/garage/internal"
 
 	"github.com/gocraft/dbr/v2"
 )
 
-const garagesTable = "garages"
+const (
+	garagesTable = "garages"
+	pageSize     = 20
+)
 
 type Garage struct {
 	connection *dbr.Connection
@@ -58,4 +63,31 @@ func (e *Garage) GetByID(ID int) (internal.Garage, error) {
 		LoadOne(&garage)
 
 	return garage, err
+}
+
+func (e *Garage) List(query string, page int) ([]internal.Garage, error) {
+	session := e.connection.NewSession(nil)
+	likeQuery := "%" + strings.ToLower(query) + "%"
+	var garages []internal.Garage
+
+	if page < 1 {
+		page = 1
+	}
+	offset := (page - 1) * pageSize
+
+	_, err := session.SelectBySql(`
+        SELECT g.*
+        FROM garages AS g
+        LEFT JOIN services AS s ON s.garage_id = g.id
+        WHERE LOWER(g.name) LIKE ? OR LOWER(s.name) LIKE ?
+        LIMIT ?
+        OFFSET ?
+        `, likeQuery, likeQuery, pageSize, offset).
+		Load(&garages)
+
+	if err != nil {
+		return []internal.Garage{}, err
+	}
+
+	return garages, nil
 }

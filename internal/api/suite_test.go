@@ -3,7 +3,9 @@ package api
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
@@ -100,4 +102,11 @@ func (s *Suite) CallAPI(method string, path string, body []byte, token *internal
 func (s *Suite) Teardown() {
 	err := s.cleanup()
 	require.NoError(s.t, err)
+}
+
+func (s *Suite) ParseResponse(t *testing.T, response *http.Response, result interface{}) {
+	body, err := io.ReadAll(response.Body)
+	require.NoError(t, err)
+	err = json.Unmarshal(body, result)
+	require.NoError(t, err)
 }
