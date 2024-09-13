@@ -44,7 +44,7 @@ func TestService(t *testing.T) {
 		Price:    100.0,
 		GarageID: garage.ID,
 	}
-	_, err = serviceRepo.Insert(newService1)
+	service1, err := serviceRepo.Insert(newService1)
 	assert.NoError(t, err)
 	newService2 := internal.Service{
 		Name:     "Test Service 2",
@@ -57,6 +57,12 @@ func TestService(t *testing.T) {
 
 	services, err := serviceRepo.ListByGarageID(garage.ID)
 	assert.NoError(t, err)
-
 	assert.Equal(t, 2, len(services))
+
+	service, err := serviceRepo.GetByID(service1.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, service1.ID, service.ID)
+	assert.Equal(t, service1.Name, service.Name)
+	assert.Equal(t, service1.Time, service.Time)
+	assert.Equal(t, service1.Price, service.Price)
 }

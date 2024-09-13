@@ -50,7 +50,7 @@ func (a *API) ListGarages(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	a.sendResponse(writer, internal.NewGaragesDTOs(garages), 200)
+	a.sendResponse(writer, internal.NewGarageDTOs(garages), 200)
 }
 
 func (a *API) GetGarage(writer http.ResponseWriter, request *http.Request) {

@@ -48,7 +48,7 @@ func NewServiceDTO(service Service) ServiceDTO {
 	}
 }
 
-func NewServicesDTO(services []Service) []ServiceDTO {
+func NewServiceDTOs(services []Service) []ServiceDTO {
 	serviceDTOs := make([]ServiceDTO, len(services))
 	for i, service := range services {
 		serviceDTOs[i] = NewServiceDTO(service)
@@ -78,10 +78,32 @@ func NewGarageDTO(garage Garage) GarageDTO {
 	}
 }
 
-func NewGaragesDTOs(garages []Garage) []GarageDTO {
+func NewGarageDTOs(garages []Garage) []GarageDTO {
 	garageDTOs := make([]GarageDTO, len(garages))
 	for i, garage := range garages {
 		garageDTOs[i] = NewGarageDTO(garage)
 	}
 	return garageDTOs
+}
+
+type EmployeeDTO struct {
+	ID      int    `json:"id"`
+	Name    string `json:"name"`
+	Surname string `json:"surname"`
+}
+
+func NewEmployeeDTO(employee Employee) EmployeeDTO {
+	return EmployeeDTO{
+		ID:      employee.ID,
+		Name:    employee.Name,
+		Surname: employee.Surname,
+	}
+}
+
+func NewEmployeeDTOs(employees []Employee) []EmployeeDTO {
+	employeeDTOs := make([]EmployeeDTO, len(employees))
+	for i, employee := range employees {
+		employeeDTOs[i] = NewEmployeeDTO(employee)
+	}
+	return employeeDTOs
 }

@@ -21,5 +21,22 @@ func (a *API) ListServices(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	a.sendResponse(writer, internal.NewServicesDTO(services), 200)
+	a.sendResponse(writer, internal.NewServiceDTOs(services), 200)
+}
+
+func (a *API) GetService(writer http.ResponseWriter, request *http.Request) {
+	serviceIDStr := request.PathValue("id")
+	serviceID, err := strconv.Atoi(serviceIDStr)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	service, err := a.storage.Services().GetByID(serviceID)
+	if err != nil {
+		a.handleError(writer, err, 500)
+		return
+	}
+
+	a.sendResponse(writer, internal.NewServiceDTO(service), 200)
 }

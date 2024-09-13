@@ -21,6 +21,7 @@ type Employees interface {
 	Insert(employee internal.Employee) (internal.Employee, error)
 	GetByEmail(email string) (internal.Employee, error)
 	Update(employee internal.Employee) error
+	ListByGarageID(garageID int) ([]internal.Employee, error)
 }
 
 type Garages interface {
@@ -33,6 +34,7 @@ type Garages interface {
 type Services interface {
 	Insert(service internal.Service) (internal.Service, error)
 	ListByGarageID(garageID int) ([]internal.Service, error)
+	GetByID(ID int) (internal.Service, error)
 }
 
 type ConfirmationCodes interface {

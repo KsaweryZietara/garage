@@ -51,3 +51,19 @@ func (s *Service) ListByGarageID(garageID int) ([]internal.Service, error) {
 
 	return services, nil
 }
+
+func (s *Service) GetByID(ID int) (internal.Service, error) {
+	sess := s.connection.NewSession(nil)
+
+	var service internal.Service
+	_, err := sess.Select("*").
+		From(servicesTable).
+		Where(dbr.Eq("id", ID)).
+		Load(&service)
+
+	if err != nil {
+		return internal.Service{}, err
+	}
+
+	return service, nil
+}
