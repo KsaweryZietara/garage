@@ -33,9 +33,27 @@ type CreatorDTO struct {
 }
 
 type ServiceDTO struct {
+	ID    int    `json:"id"`
 	Name  string `json:"name"`
 	Time  int    `json:"time"`
 	Price int    `json:"price"`
+}
+
+func NewServiceDTO(service Service) ServiceDTO {
+	return ServiceDTO{
+		ID:    service.ID,
+		Name:  service.Name,
+		Time:  service.Time,
+		Price: service.Price,
+	}
+}
+
+func NewServicesDTO(services []Service) []ServiceDTO {
+	serviceDTOs := make([]ServiceDTO, len(services))
+	for i, service := range services {
+		serviceDTOs[i] = NewServiceDTO(service)
+	}
+	return serviceDTOs
 }
 
 type GarageDTO struct {

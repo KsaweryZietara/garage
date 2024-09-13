@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestInsertService(t *testing.T) {
+func TestService(t *testing.T) {
 	cleanup := NewSuite(t)
 	defer cleanup()
 
@@ -38,15 +38,25 @@ func TestInsertService(t *testing.T) {
 	garage, err := garageRepo.Insert(newGarage)
 	assert.NoError(t, err)
 
-	newService := internal.Service{
+	newService1 := internal.Service{
 		Name:     "Test Service",
 		Time:     60,
 		Price:    100.0,
 		GarageID: garage.ID,
 	}
-	service, err := serviceRepo.Insert(newService)
+	_, err = serviceRepo.Insert(newService1)
 	assert.NoError(t, err)
-	newService.ID = service.ID
+	newService2 := internal.Service{
+		Name:     "Test Service 2",
+		Time:     60,
+		Price:    100.0,
+		GarageID: garage.ID,
+	}
+	_, err = serviceRepo.Insert(newService2)
+	assert.NoError(t, err)
 
-	assert.Equal(t, newService, service)
+	services, err := serviceRepo.ListByGarageID(garage.ID)
+	assert.NoError(t, err)
+
+	assert.Equal(t, 2, len(services))
 }

@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -85,7 +86,7 @@ func TestMechanicGetGarageEndpoint(t *testing.T) {
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 }
 
-func TestGetGarageEndpoint(t *testing.T) {
+func TestGetGaragesEndpoint(t *testing.T) {
 	suite := NewSuite(t)
 	defer suite.Teardown()
 
@@ -120,4 +121,40 @@ func TestGetGarageEndpoint(t *testing.T) {
 
 	assert.Equal(t, 1, len(garageDTOs))
 	assert.Equal(t, "name", garageDTOs[0].Name)
+}
+
+func TestGetGarageEndpoint(t *testing.T) {
+	suite := NewSuite(t)
+	defer suite.Teardown()
+
+	owner, err := suite.api.storage.Employees().Insert(
+		internal.Employee{
+			Name:     "name",
+			Surname:  "surname",
+			Email:    "email",
+			Password: "password",
+			Role:     internal.Owner,
+			GarageID: nil,
+		})
+	assert.NoError(t, err)
+
+	garage, err := suite.api.storage.Garages().Insert(
+		internal.Garage{
+			Name:        "name",
+			City:        "city",
+			Street:      "street",
+			Number:      "number",
+			PostalCode:  "postalCode",
+			PhoneNumber: "phoneNumber",
+			OwnerID:     owner.ID,
+		})
+	assert.NoError(t, err)
+
+	response := suite.CallAPI(http.MethodGet, fmt.Sprintf("/api/garages/%v", garage.ID), []byte{}, nil)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+
+	var garageDTO internal.GarageDTO
+	suite.ParseResponse(t, response, &garageDTO)
+
+	assert.Equal(t, "name", garageDTO.Name)
 }

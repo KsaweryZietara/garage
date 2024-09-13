@@ -31,7 +31,8 @@ type Garages interface {
 }
 
 type Services interface {
-	Insert(garage internal.Service) (internal.Service, error)
+	Insert(service internal.Service) (internal.Service, error)
+	ListByGarageID(garageID int) ([]internal.Service, error)
 }
 
 type ConfirmationCodes interface {

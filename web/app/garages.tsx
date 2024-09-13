@@ -1,6 +1,6 @@
 import {useGlobalSearchParams, useRouter} from "expo-router";
 import React, {useEffect, useState} from "react";
-import {ActivityIndicator, FlatList, StatusBar, Text, View} from "react-native";
+import {ActivityIndicator, FlatList, StatusBar, Text, TouchableOpacity, View} from "react-native";
 import {Searchbar} from "react-native-paper";
 import axios from "axios";
 
@@ -80,12 +80,14 @@ const GaragesScreen = () => {
     };
 
     const renderGarageItem = ({item}: { item: Garage }) => (
-        <View className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg border border-[#444]">
+        <TouchableOpacity
+            onPress={() => router.push(`/garage/${item.id}`)}
+            className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg border border-[#444]"
+        >
             <Text className="text-xl font-bold text-white">{item.name}</Text>
-            <Text className="text-[#ddd]">{item.street} {item.number}, {item.city}</Text>
-            <Text className="text-[#bbb]">{item.postalCode}</Text>
-            <Text className="text-[#bbb]">{item.phoneNumber}</Text>
-        </View>
+            <Text className="text-[#ddd]">{item.street} {item.number}</Text>
+            <Text className="text-[#bbb]">{item.city}, {item.postalCode}</Text>
+        </TouchableOpacity>
     );
 
     const renderEmptyMessage = () => (
@@ -128,6 +130,7 @@ const GaragesScreen = () => {
                     ListFooterComponent={loading ? <ActivityIndicator size="large" color="#0000ff"/> : null}
                     refreshing={isRefreshing}
                     onRefresh={onRefresh}
+                    showsHorizontalScrollIndicator={false}
                 />
             )}
 

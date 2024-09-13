@@ -23,11 +23,11 @@ func NewGarage(connection *dbr.Connection) *Garage {
 	}
 }
 
-func (e *Garage) Insert(garage internal.Garage) (internal.Garage, error) {
-	session := e.connection.NewSession(nil)
+func (g *Garage) Insert(garage internal.Garage) (internal.Garage, error) {
+	sess := g.connection.NewSession(nil)
 
 	var id int
-	err := session.InsertInto(garagesTable).
+	err := sess.InsertInto(garagesTable).
 		Columns("name", "city", "street", "number", "postal_code", "phone_number", "owner_id").
 		Record(garage).
 		Returning("id").
@@ -41,11 +41,11 @@ func (e *Garage) Insert(garage internal.Garage) (internal.Garage, error) {
 	return garage, nil
 }
 
-func (e *Garage) GetByOwnerID(employeeID int) (internal.Garage, error) {
-	session := e.connection.NewSession(nil)
+func (g *Garage) GetByOwnerID(employeeID int) (internal.Garage, error) {
+	sess := g.connection.NewSession(nil)
 
 	var garage internal.Garage
-	err := session.Select("*").
+	err := sess.Select("*").
 		From(garagesTable).
 		Where(dbr.Eq("owner_id", employeeID)).
 		LoadOne(&garage)
@@ -53,11 +53,11 @@ func (e *Garage) GetByOwnerID(employeeID int) (internal.Garage, error) {
 	return garage, err
 }
 
-func (e *Garage) GetByID(ID int) (internal.Garage, error) {
-	session := e.connection.NewSession(nil)
+func (g *Garage) GetByID(ID int) (internal.Garage, error) {
+	sess := g.connection.NewSession(nil)
 
 	var garage internal.Garage
-	err := session.Select("*").
+	err := sess.Select("*").
 		From(garagesTable).
 		Where(dbr.Eq("id", ID)).
 		LoadOne(&garage)
@@ -65,8 +65,8 @@ func (e *Garage) GetByID(ID int) (internal.Garage, error) {
 	return garage, err
 }
 
-func (e *Garage) List(query string, page int) ([]internal.Garage, error) {
-	session := e.connection.NewSession(nil)
+func (g *Garage) List(query string, page int) ([]internal.Garage, error) {
+	sess := g.connection.NewSession(nil)
 	likeQuery := "%" + strings.ToLower(query) + "%"
 	var garages []internal.Garage
 
@@ -75,8 +75,8 @@ func (e *Garage) List(query string, page int) ([]internal.Garage, error) {
 	}
 	offset := (page - 1) * pageSize
 
-	_, err := session.SelectBySql(`
-        SELECT g.*
+	_, err := sess.SelectBySql(`
+        SELECT DISTINCT g.*
         FROM garages AS g
         LEFT JOIN services AS s ON s.garage_id = g.id
         WHERE LOWER(g.name) LIKE ? OR LOWER(s.name) LIKE ?

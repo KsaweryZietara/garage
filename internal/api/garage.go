@@ -52,3 +52,20 @@ func (a *API) ListGarages(writer http.ResponseWriter, request *http.Request) {
 
 	a.sendResponse(writer, internal.NewGaragesDTOs(garages), 200)
 }
+
+func (a *API) GetGarage(writer http.ResponseWriter, request *http.Request) {
+	idStr := request.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	garage, err := a.storage.Garages().GetByID(id)
+	if err != nil {
+		a.handleError(writer, err, 404)
+		return
+	}
+
+	a.sendResponse(writer, internal.NewGarageDTO(garage), 200)
+}

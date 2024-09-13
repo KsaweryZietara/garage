@@ -18,11 +18,11 @@ func NewService(connection *dbr.Connection) *Service {
 	}
 }
 
-func (e *Service) Insert(service internal.Service) (internal.Service, error) {
-	session := e.connection.NewSession(nil)
+func (s *Service) Insert(service internal.Service) (internal.Service, error) {
+	sess := s.connection.NewSession(nil)
 
 	var id int
-	err := session.InsertInto(servicesTable).
+	err := sess.InsertInto(servicesTable).
 		Columns("name", "time", "price", "garage_id").
 		Record(service).
 		Returning("id").
@@ -34,4 +34,20 @@ func (e *Service) Insert(service internal.Service) (internal.Service, error) {
 
 	service.ID = id
 	return service, nil
+}
+
+func (s *Service) ListByGarageID(garageID int) ([]internal.Service, error) {
+	sess := s.connection.NewSession(nil)
+
+	var services []internal.Service
+	_, err := sess.Select("*").
+		From(servicesTable).
+		Where(dbr.Eq("garage_id", garageID)).
+		Load(&services)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return services, nil
 }
