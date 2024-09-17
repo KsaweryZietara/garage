@@ -107,3 +107,9 @@ func NewEmployeeDTOs(employees []Employee) []EmployeeDTO {
 	}
 	return employeeDTOs
 }
+
+type CreateCustomerDTO struct {
+	Email           string `json:"email"`
+	Password        string `json:"password"`
+	ConfirmPassword string `json:"confirmPassword"`
+}

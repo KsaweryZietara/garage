@@ -3,8 +3,9 @@ package internal
 type Role string
 
 const (
-	Owner    Role = "OWNER"
-	Mechanic Role = "MECHANIC"
+	OwnerRole    Role = "OWNER"
+	MechanicRole Role = "MECHANIC"
+	CustomerRole Role = "CUSTOMER"
 )
 
 type Employee struct {
@@ -69,4 +70,17 @@ func NewService(dto ServiceDTO, garageID int) Service {
 type ConfirmationCode struct {
 	ID         string
 	EmployeeID int
+}
+
+type Customer struct {
+	ID       int
+	Email    string
+	Password string
+}
+
+func NewCustomer(dto CreateCustomerDTO) Customer {
+	return Customer{
+		Email:    dto.Email,
+		Password: dto.Password,
+	}
 }

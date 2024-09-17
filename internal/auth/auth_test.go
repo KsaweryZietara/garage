@@ -12,7 +12,7 @@ import (
 
 func TestCreateToken(t *testing.T) {
 	auth := New("testKey")
-	token, err := auth.CreateToken("john@example.com", internal.Owner)
+	token, err := auth.CreateToken("john@example.com", internal.OwnerRole)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, token.JWT)
 }
@@ -21,11 +21,11 @@ func TestVerifyToken(t *testing.T) {
 	auth := New("testKey")
 
 	t.Run("should return email and role for valid token", func(t *testing.T) {
-		token, _ := auth.CreateToken("john@example.com", internal.Owner)
+		token, _ := auth.CreateToken("john@example.com", internal.OwnerRole)
 		email, role, err := auth.VerifyToken(token.JWT)
 		assert.NoError(t, err)
 		assert.Equal(t, "john@example.com", email)
-		assert.Equal(t, internal.Owner, role)
+		assert.Equal(t, internal.OwnerRole, role)
 	})
 
 	t.Run("should return error for invalid token", func(t *testing.T) {
@@ -36,7 +36,7 @@ func TestVerifyToken(t *testing.T) {
 	t.Run("should return error for token without email claim", func(t *testing.T) {
 		noEmailToken := jwt.NewWithClaims(jwt.SigningMethodHS256,
 			jwt.MapClaims{
-				"role": internal.Owner,
+				"role": internal.OwnerRole,
 				"exp":  time.Now().Add(time.Hour * 24).Unix(),
 			})
 		noEmailTokenString, _ := noEmailToken.SignedString(auth.key)

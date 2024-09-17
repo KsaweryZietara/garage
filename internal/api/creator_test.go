@@ -21,7 +21,7 @@ func TestCreatorEndpoint(t *testing.T) {
 			Surname:  "Doe",
 			Email:    "john.doe@example.com",
 			Password: "Password123",
-			Role:     internal.Owner,
+			Role:     internal.OwnerRole,
 		})
 
 	creator := internal.CreatorDTO{

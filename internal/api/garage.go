@@ -22,9 +22,9 @@ func (a *API) GetEmployeeGarage(writer http.ResponseWriter, request *http.Reques
 
 	var garage internal.Garage
 	switch employee.Role {
-	case internal.Owner:
+	case internal.OwnerRole:
 		garage, err = a.storage.Garages().GetByOwnerID(employee.ID)
-	case internal.Mechanic:
+	case internal.MechanicRole:
 		garage, err = a.storage.Garages().GetByID(*employee.GarageID)
 	}
 	if err != nil {

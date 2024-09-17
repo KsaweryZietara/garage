@@ -20,7 +20,7 @@ func TestEmployee(t *testing.T) {
 		Surname:  "Doe",
 		Email:    "test@test.com",
 		Password: "password123",
-		Role:     internal.Owner,
+		Role:     internal.OwnerRole,
 	}
 	employee, err := employeeRepo.Insert(newEmployee)
 	assert.NoError(t, err)
@@ -42,7 +42,7 @@ func TestEmployee(t *testing.T) {
 		Surname:  "Doe",
 		Email:    "test2@test.com",
 		Password: "password123",
-		Role:     internal.Mechanic,
+		Role:     internal.MechanicRole,
 		GarageID: &garage.ID,
 	}
 	_, err = employeeRepo.Insert(newEmployee2)
@@ -53,7 +53,7 @@ func TestEmployee(t *testing.T) {
 		Surname:  "Doe",
 		Email:    "test3@test.com",
 		Password: "password123",
-		Role:     internal.Mechanic,
+		Role:     internal.MechanicRole,
 		GarageID: &garage.ID,
 	}
 	_, err = employeeRepo.Insert(newEmployee3)

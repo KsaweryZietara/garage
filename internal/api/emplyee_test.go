@@ -19,7 +19,7 @@ func TestGetEmployeesEndpoint(t *testing.T) {
 			Surname:  "surname",
 			Email:    "email",
 			Password: "password",
-			Role:     internal.Owner,
+			Role:     internal.OwnerRole,
 			GarageID: nil,
 		})
 	assert.NoError(t, err)
@@ -42,7 +42,7 @@ func TestGetEmployeesEndpoint(t *testing.T) {
 			Surname:  "surname",
 			Email:    "email2",
 			Password: "password",
-			Role:     internal.Mechanic,
+			Role:     internal.MechanicRole,
 			GarageID: &garage.ID,
 		})
 	assert.NoError(t, err)

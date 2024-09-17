@@ -22,7 +22,7 @@ func TestOwnerGetGarageEndpoint(t *testing.T) {
 			Surname:  "Doe",
 			Email:    "john.doe@example.com",
 			Password: "Password123",
-			Role:     internal.Owner,
+			Role:     internal.OwnerRole,
 		})
 
 	creator := internal.CreatorDTO{
@@ -55,7 +55,7 @@ func TestMechanicGetGarageEndpoint(t *testing.T) {
 			Surname:  "surname",
 			Email:    "email",
 			Password: "password",
-			Role:     internal.Owner,
+			Role:     internal.OwnerRole,
 			GarageID: nil,
 		})
 	assert.NoError(t, err)
@@ -78,7 +78,7 @@ func TestMechanicGetGarageEndpoint(t *testing.T) {
 			Surname:  "Doe",
 			Email:    "john.doe@example.com",
 			Password: "Password123",
-			Role:     internal.Mechanic,
+			Role:     internal.MechanicRole,
 			GarageID: &garage.ID,
 		})
 
@@ -96,7 +96,7 @@ func TestGetGaragesEndpoint(t *testing.T) {
 			Surname:  "surname",
 			Email:    "email",
 			Password: "password",
-			Role:     internal.Owner,
+			Role:     internal.OwnerRole,
 			GarageID: nil,
 		})
 	assert.NoError(t, err)
@@ -133,7 +133,7 @@ func TestGetGarageEndpoint(t *testing.T) {
 			Surname:  "surname",
 			Email:    "email",
 			Password: "password",
-			Role:     internal.Owner,
+			Role:     internal.OwnerRole,
 			GarageID: nil,
 		})
 	assert.NoError(t, err)

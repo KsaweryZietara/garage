@@ -19,7 +19,7 @@ func TestGetServicesEndpoint(t *testing.T) {
 			Surname:  "surname",
 			Email:    "email",
 			Password: "password",
-			Role:     internal.Owner,
+			Role:     internal.OwnerRole,
 			GarageID: nil,
 		})
 	assert.NoError(t, err)
@@ -66,7 +66,7 @@ func TestGetServiceEndpoint(t *testing.T) {
 			Surname:  "surname",
 			Email:    "email",
 			Password: "password",
-			Role:     internal.Owner,
+			Role:     internal.OwnerRole,
 			GarageID: nil,
 		})
 	assert.NoError(t, err)

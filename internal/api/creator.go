@@ -63,7 +63,7 @@ func (a *API) Creator(writer http.ResponseWriter, request *http.Request) {
 		employee, err := a.storage.Employees().Insert(
 			internal.Employee{
 				Email:    employeeEmail,
-				Role:     internal.Mechanic,
+				Role:     internal.MechanicRole,
 				GarageID: &garage.ID,
 			})
 		if err != nil {

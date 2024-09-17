@@ -393,3 +393,66 @@ func TestIsPhoneNumber(t *testing.T) {
 		assert.False(t, result)
 	})
 }
+
+func TestCreateCustomerDTO(t *testing.T) {
+	t.Run("should return error when any field is empty", func(t *testing.T) {
+		dto := internal.CreateCustomerDTO{
+			Email:           "john@example.com",
+			Password:        "",
+			ConfirmPassword: "Password1",
+		}
+		err := CreateCustomerDTO(dto)
+		assert.EqualError(t, err, "fields cannot be empty")
+	})
+
+	t.Run("should return error when any field exceeds 255 characters", func(t *testing.T) {
+		longString := strings.Repeat("a", 256)
+		dto := internal.CreateCustomerDTO{
+			Email:           longString,
+			Password:        "Password1",
+			ConfirmPassword: "Password1",
+		}
+		err := CreateCustomerDTO(dto)
+		assert.EqualError(t, err, "fields cannot have more than 255 characters")
+	})
+
+	t.Run("should return error for invalid email format", func(t *testing.T) {
+		dto := internal.CreateCustomerDTO{
+			Email:           "johnexample.com",
+			Password:        "Password1",
+			ConfirmPassword: "Password1",
+		}
+		err := CreateCustomerDTO(dto)
+		assert.EqualError(t, err, "invalid email format")
+	})
+
+	t.Run("should return error for invalid password", func(t *testing.T) {
+		dto := internal.CreateCustomerDTO{
+			Email:           "john@example.com",
+			Password:        "password",
+			ConfirmPassword: "password",
+		}
+		err := CreateCustomerDTO(dto)
+		assert.EqualError(t, err, "password must have at least one number, one capital letter and be at least 8 characters long")
+	})
+
+	t.Run("should return error for different passwords", func(t *testing.T) {
+		dto := internal.CreateCustomerDTO{
+			Email:           "john@example.com",
+			Password:        "password",
+			ConfirmPassword: "password2",
+		}
+		err := CreateCustomerDTO(dto)
+		assert.EqualError(t, err, "passwords must be identical")
+	})
+
+	t.Run("should pass with valid input", func(t *testing.T) {
+		dto := internal.CreateCustomerDTO{
+			Email:           "john@example.com",
+			Password:        "Password1",
+			ConfirmPassword: "Password1",
+		}
+		err := CreateCustomerDTO(dto)
+		assert.NoError(t, err)
+	})
+}

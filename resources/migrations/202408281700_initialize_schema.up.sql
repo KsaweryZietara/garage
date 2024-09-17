@@ -53,3 +53,10 @@ CREATE TABLE IF NOT EXISTS confirmation_codes
     id UUID PRIMARY KEY,
     employee_id INT REFERENCES employees(id)
 );
+
+CREATE TABLE IF NOT EXISTS customers
+(
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255)
+);

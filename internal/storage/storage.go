@@ -43,11 +43,17 @@ type ConfirmationCodes interface {
 	DeleteByID(ID string) error
 }
 
+type Customers interface {
+	Insert(customer internal.Customer) (internal.Customer, error)
+	GetByEmail(email string) (internal.Customer, error)
+}
+
 type Storage struct {
 	employees         Employees
 	garages           Garages
 	services          Services
 	confirmationCodes ConfirmationCodes
+	customers         Customers
 }
 
 func New(url string, log *slog.Logger) (Storage, error) {
@@ -66,6 +72,7 @@ func New(url string, log *slog.Logger) (Storage, error) {
 		garages:           postgres.NewGarage(connection),
 		services:          postgres.NewService(connection),
 		confirmationCodes: postgres.NewConfirmationCode(connection),
+		customers:         postgres.NewCustomer(connection),
 	}, nil
 }
 
@@ -93,6 +100,7 @@ func NewForTests(url string, log *slog.Logger) (Storage, func() error, error) {
 		garages:           postgres.NewGarage(connection),
 		services:          postgres.NewService(connection),
 		confirmationCodes: postgres.NewConfirmationCode(connection),
+		customers:         postgres.NewCustomer(connection),
 	}, cleanup, nil
 }
 
@@ -110,4 +118,8 @@ func (s Storage) Services() Services {
 
 func (s Storage) ConfirmationCodes() ConfirmationCodes {
 	return s.confirmationCodes
+}
+
+func (s Storage) Customers() Customers {
+	return s.customers
 }

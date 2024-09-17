@@ -23,7 +23,7 @@ func (a *API) RegisterOwner(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	employee := internal.NewEmployee(dto, internal.Owner)
+	employee := internal.NewEmployee(dto, internal.OwnerRole)
 
 	hash, err := auth.HashPassword(dto.Password)
 	if err != nil {
@@ -55,7 +55,7 @@ func (a *API) RegisterMechanic(writer http.ResponseWriter, request *http.Request
 		return
 	}
 
-	employee := internal.NewEmployee(dto, internal.Mechanic)
+	employee := internal.NewEmployee(dto, internal.MechanicRole)
 
 	codeID := request.PathValue("code")
 	code, err := a.storage.ConfirmationCodes().GetByID(codeID)
@@ -82,6 +82,72 @@ func (a *API) RegisterMechanic(writer http.ResponseWriter, request *http.Request
 	}
 
 	a.sendResponse(writer, nil, 200)
+}
+
+func (a *API) CreateCustomer(writer http.ResponseWriter, request *http.Request) {
+	var dto internal.CreateCustomerDTO
+	err := json.NewDecoder(request.Body).Decode(&dto)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	err = validate.CreateCustomerDTO(dto)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	customer := internal.NewCustomer(dto)
+
+	hash, err := auth.HashPassword(dto.Password)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+	customer.Password = hash
+
+	_, err = a.storage.Customers().Insert(customer)
+	if err != nil {
+		a.handleError(writer, err, 500)
+		return
+	}
+
+	a.sendResponse(writer, nil, 201)
+}
+
+func (a *API) LoginCustomer(writer http.ResponseWriter, request *http.Request) {
+	var dto internal.LoginDTO
+	err := json.NewDecoder(request.Body).Decode(&dto)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	err = validate.LoginDTO(dto)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	customer, err := a.storage.Customers().GetByEmail(dto.Email)
+	if err != nil {
+		a.sendResponse(writer, nil, 401)
+		return
+	}
+
+	if !auth.VerifyPassword(dto.Password, customer.Password) {
+		a.sendResponse(writer, nil, 401)
+		return
+	}
+
+	token, err := a.auth.CreateToken(customer.Email, internal.CustomerRole)
+	if err != nil {
+		a.sendResponse(writer, nil, 401)
+		return
+	}
+
+	a.sendResponse(writer, token, 200)
 }
 
 func (a *API) Login(writer http.ResponseWriter, request *http.Request) {

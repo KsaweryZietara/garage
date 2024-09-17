@@ -70,7 +70,7 @@ func TestMechanicRegisterAndLoginEndpoints(t *testing.T) {
 			Surname:  "",
 			Email:    "john.doe@example.com",
 			Password: "",
-			Role:     internal.Mechanic,
+			Role:     internal.MechanicRole,
 			GarageID: nil,
 		})
 	assert.NoError(t, err)
@@ -105,4 +105,50 @@ func TestMechanicRegisterAndLoginEndpoints(t *testing.T) {
 
 	response = suite.CallAPI(http.MethodPost, "/api/business/login", loginJSON, nil)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
+}
+
+func TestCustomerRegisterAndLoginEndpoints(t *testing.T) {
+	suite := NewSuite(t)
+	defer suite.Teardown()
+
+	customer := internal.CreateCustomerDTO{
+		Email:           "john.doe@example.com",
+		Password:        "Password123",
+		ConfirmPassword: "Password123",
+	}
+	customerJSON, err := json.Marshal(customer)
+	require.NoError(t, err)
+
+	response := suite.CallAPI(http.MethodPost, "/api/customer/register", customerJSON, nil)
+	assert.Equal(t, http.StatusCreated, response.StatusCode)
+
+	loginDTO := internal.LoginDTO{
+		Email:    "john.doe@example.com",
+		Password: "Password123",
+	}
+	loginJSON, err := json.Marshal(loginDTO)
+	require.NoError(t, err)
+
+	response = suite.CallAPI(http.MethodPost, "/api/customer/login", loginJSON, nil)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+
+	loginDTO = internal.LoginDTO{
+		Email:    "wrong.mail@example.com",
+		Password: "Password123",
+	}
+	loginJSON, err = json.Marshal(loginDTO)
+	require.NoError(t, err)
+
+	response = suite.CallAPI(http.MethodPost, "/api/customer/login", loginJSON, nil)
+	assert.Equal(t, http.StatusUnauthorized, response.StatusCode)
+
+	loginDTO = internal.LoginDTO{
+		Email:    "john.doe@example.com",
+		Password: "WrongPassword",
+	}
+	loginJSON, err = json.Marshal(loginDTO)
+	require.NoError(t, err)
+
+	response = suite.CallAPI(http.MethodPost, "/api/customer/login", loginJSON, nil)
+	assert.Equal(t, http.StatusUnauthorized, response.StatusCode)
 }

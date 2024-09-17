@@ -99,6 +99,30 @@ func CreatorDTO(dto internal.CreatorDTO) error {
 	return nil
 }
 
+func CreateCustomerDTO(dto internal.CreateCustomerDTO) error {
+	if dto.Password == "" || dto.ConfirmPassword == "" {
+		return errors.New("fields cannot be empty")
+	}
+
+	if len(dto.Email) > 255 || len(dto.Password) > 255 || len(dto.ConfirmPassword) > 255 {
+		return errors.New("fields cannot have more than 255 characters")
+	}
+
+	if dto.Password != dto.ConfirmPassword {
+		return errors.New("passwords must be identical")
+	}
+
+	if !isEmail(dto.Email) {
+		return errors.New("invalid email format")
+	}
+
+	if !isPassword(dto.Password) {
+		return errors.New("password must have at least one number, one capital letter and be at least 8 characters long")
+	}
+
+	return nil
+}
+
 func isAlpha(s string) bool {
 	for _, r := range s {
 		if !unicode.IsLetter(r) {
