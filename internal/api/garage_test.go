@@ -12,6 +12,60 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestCreateGarageEndpoint(t *testing.T) {
+	suite := NewSuite(t)
+	defer suite.Teardown()
+
+	token := suite.CreateEmployee(t,
+		internal.Employee{
+			Name:     "John",
+			Surname:  "Doe",
+			Email:    "john.doe@example.com",
+			Password: "Password123",
+			Role:     internal.OwnerRole,
+		})
+
+	creator := internal.CreateGarageDTO{
+		Name:        "John's Garage",
+		City:        "San Francisco",
+		Street:      "Market Street",
+		Number:      "123",
+		PostalCode:  "94-103",
+		PhoneNumber: "123456789",
+		Services: []internal.ServiceDTO{
+			{
+				Name:  "Oil Change",
+				Time:  30,
+				Price: 50,
+			},
+			{
+				Name:  "Tire Rotation",
+				Time:  15,
+				Price: 25,
+			},
+		},
+		EmployeeEmails: []string{
+			"john@example.com",
+			"jane@example.com",
+		},
+	}
+	creatorJSON, err := json.Marshal(creator)
+	require.NoError(t, err)
+
+	response := suite.CallAPI(http.MethodPost, "/api/business/creator", creatorJSON, token)
+	assert.Equal(t, http.StatusCreated, response.StatusCode)
+
+	creator.PhoneNumber = "987654321"
+	creatorJSON, err = json.Marshal(creator)
+	require.NoError(t, err)
+
+	response = suite.CallAPI(http.MethodPost, "/api/business/creator", creatorJSON, token)
+	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
+
+	response = suite.CallAPI(http.MethodPost, "/api/business/creator", creatorJSON, nil)
+	assert.Equal(t, http.StatusUnauthorized, response.StatusCode)
+}
+
 func TestOwnerGetGarageEndpoint(t *testing.T) {
 	suite := NewSuite(t)
 	defer suite.Teardown()
@@ -25,7 +79,7 @@ func TestOwnerGetGarageEndpoint(t *testing.T) {
 			Role:     internal.OwnerRole,
 		})
 
-	creator := internal.CreatorDTO{
+	creator := internal.CreateGarageDTO{
 		Name:           "John's Garage",
 		City:           "San Francisco",
 		Street:         "Market Street",

@@ -9,100 +9,100 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRegisterDTO(t *testing.T) {
+func TestCreateEmployeeDTO(t *testing.T) {
 	t.Run("should return error when any field is empty", func(t *testing.T) {
-		dto := internal.RegisterDTO{
+		dto := internal.CreateEmployeeDTO{
 			Name:            "",
 			Surname:         "Smith",
 			Email:           "john@example.com",
 			Password:        "Password1",
 			ConfirmPassword: "Password1",
 		}
-		err := RegisterDTO(dto, true)
+		err := CreateEmployeeDTO(dto, true)
 		assert.EqualError(t, err, "fields cannot be empty")
 	})
 
 	t.Run("should return error when any field exceeds 255 characters", func(t *testing.T) {
 		longString := strings.Repeat("a", 256)
-		dto := internal.RegisterDTO{
+		dto := internal.CreateEmployeeDTO{
 			Name:            longString,
 			Surname:         "Smith",
 			Email:           "john@example.com",
 			Password:        "Password1",
 			ConfirmPassword: "Password1",
 		}
-		err := RegisterDTO(dto, true)
+		err := CreateEmployeeDTO(dto, true)
 		assert.EqualError(t, err, "fields cannot have more than 255 characters")
 	})
 
 	t.Run("should return error when name or surname contains numbers", func(t *testing.T) {
-		dto := internal.RegisterDTO{
+		dto := internal.CreateEmployeeDTO{
 			Name:            "John123",
 			Surname:         "Smith",
 			Email:           "john@example.com",
 			Password:        "Password1",
 			ConfirmPassword: "Password1",
 		}
-		err := RegisterDTO(dto, true)
+		err := CreateEmployeeDTO(dto, true)
 		assert.EqualError(t, err, "name and surname cannot contain numbers")
 	})
 
 	t.Run("should return error for invalid email format", func(t *testing.T) {
-		dto := internal.RegisterDTO{
+		dto := internal.CreateEmployeeDTO{
 			Name:            "John",
 			Surname:         "Smith",
 			Email:           "johnexample.com",
 			Password:        "Password1",
 			ConfirmPassword: "Password1",
 		}
-		err := RegisterDTO(dto, true)
+		err := CreateEmployeeDTO(dto, true)
 		assert.EqualError(t, err, "invalid email format")
 	})
 
 	t.Run("should return error for invalid password", func(t *testing.T) {
-		dto := internal.RegisterDTO{
+		dto := internal.CreateEmployeeDTO{
 			Name:            "John",
 			Surname:         "Smith",
 			Email:           "john@example.com",
 			Password:        "password",
 			ConfirmPassword: "password",
 		}
-		err := RegisterDTO(dto, true)
+		err := CreateEmployeeDTO(dto, true)
 		assert.EqualError(t, err, "password must have at least one number, one capital letter and be at least 8 characters long")
 	})
 
 	t.Run("should return error for different passwords", func(t *testing.T) {
-		dto := internal.RegisterDTO{
+		dto := internal.CreateEmployeeDTO{
 			Name:            "John",
 			Surname:         "Smith",
 			Email:           "john@example.com",
 			Password:        "password",
 			ConfirmPassword: "password2",
 		}
-		err := RegisterDTO(dto, true)
+		err := CreateEmployeeDTO(dto, true)
 		assert.EqualError(t, err, "passwords must be identical")
 	})
 
 	t.Run("should pass with valid input", func(t *testing.T) {
-		dto := internal.RegisterDTO{
+		dto := internal.CreateEmployeeDTO{
 			Name:            "John",
 			Surname:         "Smith",
 			Email:           "john@example.com",
 			Password:        "Password1",
 			ConfirmPassword: "Password1",
 		}
-		err := RegisterDTO(dto, true)
+		err := CreateEmployeeDTO(dto, true)
 		assert.NoError(t, err)
 	})
 
 	t.Run("should pass with valid input without email", func(t *testing.T) {
-		dto := internal.RegisterDTO{
+		dto := internal.CreateEmployeeDTO{
 			Name:            "John",
 			Surname:         "Smith",
 			Password:        "Password1",
 			ConfirmPassword: "Password1",
 		}
-		err := RegisterDTO(dto, false)
+		err := CreateEmployeeDTO(dto, false)
 		assert.NoError(t, err)
 	})
 }
@@ -158,9 +158,9 @@ func TestIsAlpha(t *testing.T) {
 	})
 }
 
-func TestCreatorDTO(t *testing.T) {
+func TestCreateGarageDTO(t *testing.T) {
 	t.Run("should return error when any field is empty", func(t *testing.T) {
-		dto := internal.CreatorDTO{
+		dto := internal.CreateGarageDTO{
 			Name:        "",
 			City:        "City",
 			Street:      "Street",
@@ -168,13 +168,13 @@ func TestCreatorDTO(t *testing.T) {
 			PostalCode:  "12-345",
 			PhoneNumber: "123456789",
 		}
-		err := CreatorDTO(dto)
+		err := CreateGarageDTO(dto)
 		assert.EqualError(t, err, "fields cannot be empty")
 	})
 
 	t.Run("should return error when any field exceeds character limit", func(t *testing.T) {
 		longString := strings.Repeat("a", 256)
-		dto := internal.CreatorDTO{
+		dto := internal.CreateGarageDTO{
 			Name:        longString,
 			City:        "City",
 			Street:      "Street",
@@ -182,12 +182,12 @@ func TestCreatorDTO(t *testing.T) {
 			PostalCode:  "12-345",
 			PhoneNumber: "123456789",
 		}
-		err := CreatorDTO(dto)
+		err := CreateGarageDTO(dto)
 		assert.EqualError(t, err, "name, city and street cannot have more than 255 characters")
 	})
 
 	t.Run("should return error for invalid postal code format", func(t *testing.T) {
-		dto := internal.CreatorDTO{
+		dto := internal.CreateGarageDTO{
 			Name:        "Name",
 			City:        "City",
 			Street:      "Street",
@@ -195,12 +195,12 @@ func TestCreatorDTO(t *testing.T) {
 			PostalCode:  "12345",
 			PhoneNumber: "123456789",
 		}
-		err := CreatorDTO(dto)
+		err := CreateGarageDTO(dto)
 		assert.EqualError(t, err, "invalid postal code format")
 	})
 
 	t.Run("should return error for invalid phone number format", func(t *testing.T) {
-		dto := internal.CreatorDTO{
+		dto := internal.CreateGarageDTO{
 			Name:        "Name",
 			City:        "City",
 			Street:      "Street",
@@ -208,12 +208,12 @@ func TestCreatorDTO(t *testing.T) {
 			PostalCode:  "12-345",
 			PhoneNumber: "12345678901",
 		}
-		err := CreatorDTO(dto)
+		err := CreateGarageDTO(dto)
 		assert.EqualError(t, err, "invalid phone number format")
 	})
 
 	t.Run("should return error when service name is empty", func(t *testing.T) {
-		dto := internal.CreatorDTO{
+		dto := internal.CreateGarageDTO{
 			Name:        "Name",
 			City:        "City",
 			Street:      "Street",
@@ -224,12 +224,12 @@ func TestCreatorDTO(t *testing.T) {
 				{Name: "", Time: 1, Price: 1},
 			},
 		}
-		err := CreatorDTO(dto)
+		err := CreateGarageDTO(dto)
 		assert.EqualError(t, err, "service name cannot be empty")
 	})
 
 	t.Run("should return error when service time is zero", func(t *testing.T) {
-		dto := internal.CreatorDTO{
+		dto := internal.CreateGarageDTO{
 			Name:        "Name",
 			City:        "City",
 			Street:      "Street",
@@ -240,12 +240,12 @@ func TestCreatorDTO(t *testing.T) {
 				{Name: "Service", Time: 0, Price: 1},
 			},
 		}
-		err := CreatorDTO(dto)
+		err := CreateGarageDTO(dto)
 		assert.EqualError(t, err, "service time must be greater than zero")
 	})
 
 	t.Run("should return error when service price is zero", func(t *testing.T) {
-		dto := internal.CreatorDTO{
+		dto := internal.CreateGarageDTO{
 			Name:        "Name",
 			City:        "City",
 			Street:      "Street",
@@ -256,12 +256,12 @@ func TestCreatorDTO(t *testing.T) {
 				{Name: "Service", Time: 1, Price: 0},
 			},
 		}
-		err := CreatorDTO(dto)
+		err := CreateGarageDTO(dto)
 		assert.EqualError(t, err, "service price must be greater than zero")
 	})
 
 	t.Run("should return error for invalid email format", func(t *testing.T) {
-		dto := internal.CreatorDTO{
+		dto := internal.CreateGarageDTO{
 			Name:        "Name",
 			City:        "City",
 			Street:      "Street",
@@ -272,12 +272,12 @@ func TestCreatorDTO(t *testing.T) {
 				"johnexample.com",
 			},
 		}
-		err := CreatorDTO(dto)
+		err := CreateGarageDTO(dto)
 		assert.EqualError(t, err, "invalid email format")
 	})
 
 	t.Run("should pass with valid input", func(t *testing.T) {
-		dto := internal.CreatorDTO{
+		dto := internal.CreateGarageDTO{
 			Name:        "Name",
 			City:        "City",
 			Street:      "Street",
@@ -291,7 +291,7 @@ func TestCreatorDTO(t *testing.T) {
 				"john@example.com",
 			},
 		}
-		err := CreatorDTO(dto)
+		err := CreateGarageDTO(dto)
 		assert.NoError(t, err)
 	})
 }

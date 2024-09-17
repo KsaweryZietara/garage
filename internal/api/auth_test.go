@@ -16,7 +16,7 @@ func TestOwnerRegisterAndLoginEndpoints(t *testing.T) {
 	suite := NewSuite(t)
 	defer suite.Teardown()
 
-	employee := internal.RegisterDTO{
+	employee := internal.CreateEmployeeDTO{
 		Name:            "John",
 		Surname:         "Doe",
 		Email:           "john.doe@example.com",
@@ -83,7 +83,7 @@ func TestMechanicRegisterAndLoginEndpoints(t *testing.T) {
 		})
 	assert.NoError(t, err)
 
-	employeeDTO := internal.RegisterDTO{
+	employeeDTO := internal.CreateEmployeeDTO{
 		Name:            "John",
 		Surname:         "Doe",
 		Email:           "john.doe@example.com",

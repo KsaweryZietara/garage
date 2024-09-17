@@ -9,15 +9,15 @@ import (
 	"github.com/KsaweryZietara/garage/internal/validate"
 )
 
-func (a *API) RegisterOwner(writer http.ResponseWriter, request *http.Request) {
-	var dto internal.RegisterDTO
+func (a *API) CreateOwner(writer http.ResponseWriter, request *http.Request) {
+	var dto internal.CreateEmployeeDTO
 	err := json.NewDecoder(request.Body).Decode(&dto)
 	if err != nil {
 		a.handleError(writer, err, 400)
 		return
 	}
 
-	err = validate.RegisterDTO(dto, true)
+	err = validate.CreateEmployeeDTO(dto, true)
 	if err != nil {
 		a.handleError(writer, err, 400)
 		return
@@ -41,15 +41,15 @@ func (a *API) RegisterOwner(writer http.ResponseWriter, request *http.Request) {
 	a.sendResponse(writer, nil, 201)
 }
 
-func (a *API) RegisterMechanic(writer http.ResponseWriter, request *http.Request) {
-	var dto internal.RegisterDTO
+func (a *API) CreateMechanic(writer http.ResponseWriter, request *http.Request) {
+	var dto internal.CreateEmployeeDTO
 	err := json.NewDecoder(request.Body).Decode(&dto)
 	if err != nil {
 		a.handleError(writer, err, 400)
 		return
 	}
 
-	err = validate.RegisterDTO(dto, false)
+	err = validate.CreateEmployeeDTO(dto, false)
 	if err != nil {
 		a.handleError(writer, err, 400)
 		return
@@ -150,7 +150,7 @@ func (a *API) LoginCustomer(writer http.ResponseWriter, request *http.Request) {
 	a.sendResponse(writer, token, 200)
 }
 
-func (a *API) Login(writer http.ResponseWriter, request *http.Request) {
+func (a *API) LoginEmployee(writer http.ResponseWriter, request *http.Request) {
 	var dto internal.LoginDTO
 	err := json.NewDecoder(request.Body).Decode(&dto)
 	if err != nil {

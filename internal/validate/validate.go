@@ -8,7 +8,7 @@ import (
 	"github.com/KsaweryZietara/garage/internal"
 )
 
-func RegisterDTO(dto internal.RegisterDTO, validateEmail bool) error {
+func CreateEmployeeDTO(dto internal.CreateEmployeeDTO, validateEmail bool) error {
 	if dto.Name == "" || dto.Surname == "" || dto.Password == "" || dto.ConfirmPassword == "" {
 		return errors.New("fields cannot be empty")
 	}
@@ -48,7 +48,7 @@ func LoginDTO(dto internal.LoginDTO) error {
 	return nil
 }
 
-func CreatorDTO(dto internal.CreatorDTO) error {
+func CreateGarageDTO(dto internal.CreateGarageDTO) error {
 	if dto.Name == "" || dto.City == "" || dto.Street == "" || dto.Number == "" || dto.PostalCode == "" || dto.PhoneNumber == "" {
 		return errors.New("fields cannot be empty")
 	}

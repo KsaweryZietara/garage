@@ -18,7 +18,7 @@ type Employee struct {
 	GarageID *int
 }
 
-func NewEmployee(dto RegisterDTO, role Role) Employee {
+func NewEmployee(dto CreateEmployeeDTO, role Role) Employee {
 	return Employee{
 		Name:    dto.Name,
 		Surname: dto.Surname,
@@ -38,7 +38,7 @@ type Garage struct {
 	OwnerID     int
 }
 
-func NewGarage(dto CreatorDTO, ownerID int) Garage {
+func NewGarage(dto CreateGarageDTO, ownerID int) Garage {
 	return Garage{
 		Name:        dto.Name,
 		City:        dto.City,

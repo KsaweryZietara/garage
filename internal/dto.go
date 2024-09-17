@@ -8,7 +8,7 @@ type Token struct {
 	JWT string `json:"jwt"`
 }
 
-type RegisterDTO struct {
+type CreateEmployeeDTO struct {
 	Name            string `json:"name"`
 	Surname         string `json:"surname"`
 	Email           string `json:"email"`
@@ -21,7 +21,7 @@ type LoginDTO struct {
 	Password string `json:"password"`
 }
 
-type CreatorDTO struct {
+type CreateGarageDTO struct {
 	Name           string       `json:"name"`
 	City           string       `json:"city"`
 	Street         string       `json:"street"`
