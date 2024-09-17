@@ -1,6 +1,6 @@
 import {useLocalSearchParams, useRouter} from "expo-router";
 import React, {useEffect, useState} from "react";
-import {ActivityIndicator, FlatList, StatusBar, Text, View} from "react-native";
+import {ActivityIndicator, FlatList, StatusBar, Text, TouchableOpacity, View} from "react-native";
 import axios from "axios";
 
 interface Garage {
@@ -14,7 +14,7 @@ interface Garage {
 }
 
 interface Service {
-    id: string;
+    id: number;
     name: string;
     time: string;
     price: string;
@@ -22,7 +22,7 @@ interface Service {
 
 const GarageScreen = () => {
     const router = useRouter();
-    const {id} = useLocalSearchParams();
+    const {garageid} = useLocalSearchParams();
     const [garage, setGarage] = useState<Garage | null>(null);
     const [services, setServices] = useState<Service[]>([]);
     const [loadingGarage, setLoadingGarage] = useState<boolean>(true);
@@ -32,7 +32,7 @@ const GarageScreen = () => {
         const fetchGarage = async () => {
             setLoadingGarage(true);
             try {
-                const response = await axios.get<Garage>(`/api/garages/${id}`);
+                const response = await axios.get<Garage>(`/api/garages/${garageid}`);
                 if (response.data) {
                     setGarage(response.data);
                 }
@@ -46,7 +46,7 @@ const GarageScreen = () => {
         const fetchServices = async () => {
             setLoadingServices(true);
             try {
-                const response = await axios.get<Service[]>(`/api/garages/${id}/services`);
+                const response = await axios.get<Service[]>(`/api/garages/${garageid}/services`);
                 if (response.data) {
                     setServices(response.data);
                 }
@@ -59,14 +59,19 @@ const GarageScreen = () => {
 
         fetchGarage();
         fetchServices();
-    }, [id]);
+    }, [garageid]);
 
     const renderServiceItem = ({item}: { item: Service }) => (
-        <View className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg">
-            <Text className="text-lg font-bold text-white">{item.name}</Text>
-            <Text className="text-[#ddd]">Czas: {item.time}</Text>
-            <Text className="text-[#bbb]">Cena: {item.price}</Text>
-        </View>
+        <TouchableOpacity
+            onPress={() => router.push(`/garage/${garageid}/service/${item.id}`)}
+            className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg border border-[#444]"
+        >
+            <View className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg">
+                <Text className="text-lg font-bold text-white">{item.name}</Text>
+                <Text className="text-[#ddd]">Czas: {item.time}</Text>
+                <Text className="text-[#bbb]">Cena: {item.price}</Text>
+            </View>
+        </TouchableOpacity>
     );
 
     return (

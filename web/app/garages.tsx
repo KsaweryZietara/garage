@@ -19,7 +19,7 @@ const GaragesScreen = () => {
     const query = useGlobalSearchParams();
     const [search, setSearch] = useState<string>("");
     const [garages, setGarages] = useState<Garage[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
     const [page, setPage] = useState<number>(1);
     const [hasMore, setHasMore] = useState<boolean>(true);
     const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
@@ -32,7 +32,6 @@ const GaragesScreen = () => {
         if (!hasMore && page !== 1) return;
 
         setLoading(true);
-        console.log("request");
 
         axios.get<Garage[]>("/api/garages", {
             params: {
@@ -127,7 +126,7 @@ const GaragesScreen = () => {
                     keyExtractor={(item) => item.id.toString()}
                     onEndReached={loadMoreGarages}
                     onEndReachedThreshold={0.5}
-                    ListFooterComponent={loading ? <ActivityIndicator size="large" color="#0000ff"/> : null}
+                    ListFooterComponent={loading ? <ActivityIndicator size="large" color="#ff5c5c"/> : null}
                     refreshing={isRefreshing}
                     onRefresh={onRefresh}
                     showsHorizontalScrollIndicator={false}
