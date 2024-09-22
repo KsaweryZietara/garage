@@ -3,6 +3,7 @@ package validate
 import (
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/KsaweryZietara/garage/internal"
 
@@ -453,6 +454,63 @@ func TestCreateCustomerDTO(t *testing.T) {
 			ConfirmPassword: "Password1",
 		}
 		err := CreateCustomerDTO(dto)
+		assert.NoError(t, err)
+	})
+}
+
+func TestCreateAppointmentDTO(t *testing.T) {
+	t.Run("should return error when start time or end time is zero", func(t *testing.T) {
+		dto := internal.CreateAppointmentDTO{
+			StartTime:  time.Time{},
+			EndTime:    time.Now(),
+			ServiceID:  1,
+			EmployeeID: 1,
+		}
+		err := CreateAppointmentDTO(dto)
+		assert.EqualError(t, err, "start time and end time cannot be empty")
+	})
+
+	t.Run("should return error when end time is before start time", func(t *testing.T) {
+		dto := internal.CreateAppointmentDTO{
+			StartTime:  time.Now(),
+			EndTime:    time.Now().Add(-time.Hour),
+			ServiceID:  1,
+			EmployeeID: 1,
+		}
+		err := CreateAppointmentDTO(dto)
+		assert.EqualError(t, err, "end time must be after start time")
+	})
+
+	t.Run("should return error when service ID is less than or equal to zero", func(t *testing.T) {
+		dto := internal.CreateAppointmentDTO{
+			StartTime:  time.Now(),
+			EndTime:    time.Now().Add(time.Hour),
+			ServiceID:  0,
+			EmployeeID: 1,
+		}
+		err := CreateAppointmentDTO(dto)
+		assert.EqualError(t, err, "service ID must be greater than zero")
+	})
+
+	t.Run("should return error when employee ID is less than or equal to zero", func(t *testing.T) {
+		dto := internal.CreateAppointmentDTO{
+			StartTime:  time.Now(),
+			EndTime:    time.Now().Add(time.Hour),
+			ServiceID:  1,
+			EmployeeID: 0,
+		}
+		err := CreateAppointmentDTO(dto)
+		assert.EqualError(t, err, "employee ID must be greater than zero")
+	})
+
+	t.Run("should pass with valid input", func(t *testing.T) {
+		dto := internal.CreateAppointmentDTO{
+			StartTime:  time.Now(),
+			EndTime:    time.Now().Add(time.Hour),
+			ServiceID:  1,
+			EmployeeID: 1,
+		}
+		err := CreateAppointmentDTO(dto)
 		assert.NoError(t, err)
 	})
 }

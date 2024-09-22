@@ -45,8 +45,16 @@ func TestEmployee(t *testing.T) {
 		Role:     internal.MechanicRole,
 		GarageID: &garage.ID,
 	}
-	_, err = employeeRepo.Insert(newEmployee2)
+	employee2, err := employeeRepo.Insert(newEmployee2)
 	assert.NoError(t, err)
+
+	retrievedEmployee2, err := employeeRepo.GetByID(employee2.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, newEmployee2.Name, retrievedEmployee2.Name)
+	assert.Equal(t, newEmployee2.Surname, retrievedEmployee2.Surname)
+	assert.Equal(t, newEmployee2.Email, retrievedEmployee2.Email)
+	assert.Equal(t, newEmployee2.Password, retrievedEmployee2.Password)
+	assert.Equal(t, newEmployee2.Role, retrievedEmployee2.Role)
 
 	newEmployee3 := internal.Employee{
 		Name:     "John",

@@ -25,7 +25,7 @@ func TestCreateGarageEndpoint(t *testing.T) {
 			Role:     internal.OwnerRole,
 		})
 
-	creator := internal.CreateGarageDTO{
+	garage := internal.CreateGarageDTO{
 		Name:        "John's Garage",
 		City:        "San Francisco",
 		Street:      "Market Street",
@@ -49,20 +49,20 @@ func TestCreateGarageEndpoint(t *testing.T) {
 			"jane@example.com",
 		},
 	}
-	creatorJSON, err := json.Marshal(creator)
+	garageJSON, err := json.Marshal(garage)
 	require.NoError(t, err)
 
-	response := suite.CallAPI(http.MethodPost, "/api/business/creator", creatorJSON, token)
+	response := suite.CallAPI(http.MethodPost, "/api/business/creator", garageJSON, token)
 	assert.Equal(t, http.StatusCreated, response.StatusCode)
 
-	creator.PhoneNumber = "987654321"
-	creatorJSON, err = json.Marshal(creator)
+	garage.PhoneNumber = "987654321"
+	garageJSON, err = json.Marshal(garage)
 	require.NoError(t, err)
 
-	response = suite.CallAPI(http.MethodPost, "/api/business/creator", creatorJSON, token)
+	response = suite.CallAPI(http.MethodPost, "/api/business/creator", garageJSON, token)
 	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
 
-	response = suite.CallAPI(http.MethodPost, "/api/business/creator", creatorJSON, nil)
+	response = suite.CallAPI(http.MethodPost, "/api/business/creator", garageJSON, nil)
 	assert.Equal(t, http.StatusUnauthorized, response.StatusCode)
 }
 
@@ -79,7 +79,7 @@ func TestOwnerGetGarageEndpoint(t *testing.T) {
 			Role:     internal.OwnerRole,
 		})
 
-	creator := internal.CreateGarageDTO{
+	garage := internal.CreateGarageDTO{
 		Name:           "John's Garage",
 		City:           "San Francisco",
 		Street:         "Market Street",
@@ -89,10 +89,10 @@ func TestOwnerGetGarageEndpoint(t *testing.T) {
 		Services:       []internal.ServiceDTO{},
 		EmployeeEmails: []string{},
 	}
-	creatorJSON, err := json.Marshal(creator)
+	garageJSON, err := json.Marshal(garage)
 	require.NoError(t, err)
 
-	response := suite.CallAPI(http.MethodPost, "/api/business/creator", creatorJSON, token)
+	response := suite.CallAPI(http.MethodPost, "/api/business/creator", garageJSON, token)
 	assert.Equal(t, http.StatusCreated, response.StatusCode)
 
 	response = suite.CallAPI(http.MethodGet, "/api/employee/garage", []byte{}, token)

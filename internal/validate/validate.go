@@ -123,6 +123,26 @@ func CreateCustomerDTO(dto internal.CreateCustomerDTO) error {
 	return nil
 }
 
+func CreateAppointmentDTO(dto internal.CreateAppointmentDTO) error {
+	if dto.StartTime.IsZero() || dto.EndTime.IsZero() {
+		return errors.New("start time and end time cannot be empty")
+	}
+
+	if dto.EndTime.Before(dto.StartTime) {
+		return errors.New("end time must be after start time")
+	}
+
+	if dto.ServiceID <= 0 {
+		return errors.New("service ID must be greater than zero")
+	}
+
+	if dto.EmployeeID <= 0 {
+		return errors.New("employee ID must be greater than zero")
+	}
+
+	return nil
+}
+
 func isAlpha(s string) bool {
 	for _, r := range s {
 		if !unicode.IsLetter(r) {

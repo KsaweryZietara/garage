@@ -60,3 +60,12 @@ CREATE TABLE IF NOT EXISTS customers
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255)
 );
+
+CREATE TABLE IF NOT EXISTS appointments (
+    id SERIAL PRIMARY KEY,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
+    service_id INTEGER NOT NULL,
+    employee_id INTEGER NOT NULL,
+    customer_id INTEGER NOT NULL
+);

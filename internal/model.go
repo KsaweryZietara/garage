@@ -1,5 +1,7 @@
 package internal
 
+import "time"
+
 type Role string
 
 const (
@@ -82,5 +84,24 @@ func NewCustomer(dto CreateCustomerDTO) Customer {
 	return Customer{
 		Email:    dto.Email,
 		Password: dto.Password,
+	}
+}
+
+type Appointment struct {
+	ID         int
+	StartTime  time.Time
+	EndTime    time.Time
+	ServiceID  int
+	EmployeeID int
+	CustomerID int
+}
+
+func NewAppointment(dto CreateAppointmentDTO, customerID int) Appointment {
+	return Appointment{
+		StartTime:  dto.StartTime,
+		EndTime:    dto.EndTime,
+		ServiceID:  dto.ServiceID,
+		EmployeeID: dto.EmployeeID,
+		CustomerID: customerID,
 	}
 }

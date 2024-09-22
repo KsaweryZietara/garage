@@ -1,3 +1,5 @@
+DROP TABLE appointments;
+
 DROP TABLE customers;
 
 DROP TABLE confirmation_codes;

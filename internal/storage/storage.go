@@ -22,6 +22,7 @@ type Employees interface {
 	GetByEmail(email string) (internal.Employee, error)
 	Update(employee internal.Employee) error
 	ListByGarageID(garageID int) ([]internal.Employee, error)
+	GetByID(ID int) (internal.Employee, error)
 }
 
 type Garages interface {
@@ -48,12 +49,17 @@ type Customers interface {
 	GetByEmail(email string) (internal.Customer, error)
 }
 
+type Appointments interface {
+	Insert(appointment internal.Appointment) (internal.Appointment, error)
+}
+
 type Storage struct {
 	employees         Employees
 	garages           Garages
 	services          Services
 	confirmationCodes ConfirmationCodes
 	customers         Customers
+	appointments      Appointments
 }
 
 func New(url string, log *slog.Logger) (Storage, error) {
@@ -73,6 +79,7 @@ func New(url string, log *slog.Logger) (Storage, error) {
 		services:          postgres.NewService(connection),
 		confirmationCodes: postgres.NewConfirmationCode(connection),
 		customers:         postgres.NewCustomer(connection),
+		appointments:      postgres.NewAppointment(connection),
 	}, nil
 }
 
@@ -101,6 +108,7 @@ func NewForTests(url string, log *slog.Logger) (Storage, func() error, error) {
 		services:          postgres.NewService(connection),
 		confirmationCodes: postgres.NewConfirmationCode(connection),
 		customers:         postgres.NewCustomer(connection),
+		appointments:      postgres.NewAppointment(connection),
 	}, cleanup, nil
 }
 
@@ -122,4 +130,8 @@ func (s Storage) ConfirmationCodes() ConfirmationCodes {
 
 func (s Storage) Customers() Customers {
 	return s.customers
+}
+
+func (s Storage) Appointments() Appointments {
+	return s.appointments
 }

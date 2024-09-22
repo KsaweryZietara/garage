@@ -88,6 +88,14 @@ func (s *Suite) CreateEmployee(t *testing.T, employee internal.Employee) *intern
 	return &token
 }
 
+func (s *Suite) CreateCustomer(t *testing.T, customer internal.Customer) *internal.Token {
+	_, err := s.api.storage.Customers().Insert(customer)
+	require.NoError(t, err)
+	token, err := s.api.auth.CreateToken(customer.Email, internal.CustomerRole)
+	require.NoError(t, err)
+	return &token
+}
+
 func (s *Suite) CallAPI(method string, path string, body []byte, token *internal.Token) *http.Response {
 	request, err := http.NewRequest(method, fmt.Sprintf("%s%s", s.server.URL, path), bytes.NewBuffer(body))
 	require.NoError(s.t, err)

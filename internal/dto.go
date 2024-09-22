@@ -1,5 +1,7 @@
 package internal
 
+import "time"
+
 type Error struct {
 	Message string `json:"message"`
 }
@@ -112,4 +114,11 @@ type CreateCustomerDTO struct {
 	Email           string `json:"email"`
 	Password        string `json:"password"`
 	ConfirmPassword string `json:"confirmPassword"`
+}
+
+type CreateAppointmentDTO struct {
+	StartTime  time.Time `json:"startTime"`
+	EndTime    time.Time `json:"endTime"`
+	ServiceID  int       `json:"serviceId"`
+	EmployeeID int       `json:"employeeId"`
 }
