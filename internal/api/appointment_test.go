@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"testing"
 	"time"
@@ -59,15 +60,15 @@ func TestCreateAppointmentEndpoint(t *testing.T) {
 	service, err := suite.api.storage.Services().Insert(
 		internal.Service{
 			Name:     "name",
-			Time:     30,
+			Time:     2,
 			Price:    10,
 			GarageID: garage.ID,
 		})
 	assert.NoError(t, err)
 
 	appointment := internal.CreateAppointmentDTO{
-		StartTime:  time.Now(),
-		EndTime:    time.Now().Add(3 * time.Hour),
+		StartTime:  time.Date(2024, 9, 24, 11, 0, 0, 0, time.UTC),
+		EndTime:    time.Date(2024, 9, 24, 13, 0, 0, 0, time.UTC),
 		ServiceID:  service.ID,
 		EmployeeID: mechanic.ID,
 	}
@@ -76,4 +77,62 @@ func TestCreateAppointmentEndpoint(t *testing.T) {
 
 	response := suite.CallAPI(http.MethodPost, "/api/appointments", appointmentJSON, token)
 	assert.Equal(t, http.StatusCreated, response.StatusCode)
+
+	response = suite.CallAPI(
+		http.MethodGet,
+		fmt.Sprintf("/api/appointments/availableSlots?serviceId=%v&employeeId=%v&date=2024-09-24", service.ID, mechanic.ID),
+		[]byte{},
+		nil,
+	)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+}
+
+func TestCreateTimeSlots(t *testing.T) {
+	t.Run("working days", func(t *testing.T) {
+		date := time.Date(2024, 9, 23, 0, 0, 0, 0, time.UTC)
+		serviceDuration := 10
+
+		timeSlots := createTimeSlots(date, serviceDuration)
+
+		require.Len(t, timeSlots, 9)
+
+		assert.Equal(t, 23, timeSlots[0].StartTime.Day())
+		assert.Equal(t, 8, timeSlots[0].StartTime.Hour())
+		assert.Equal(t, 24, timeSlots[0].EndTime.Day())
+		assert.Equal(t, 10, timeSlots[0].EndTime.Hour())
+
+		assert.Equal(t, 23, timeSlots[3].StartTime.Day())
+		assert.Equal(t, 11, timeSlots[3].StartTime.Hour())
+		assert.Equal(t, 24, timeSlots[3].EndTime.Day())
+		assert.Equal(t, 13, timeSlots[3].EndTime.Hour())
+
+		assert.Equal(t, 23, timeSlots[8].StartTime.Day())
+		assert.Equal(t, 16, timeSlots[8].StartTime.Hour())
+		assert.Equal(t, 25, timeSlots[8].EndTime.Day())
+		assert.Equal(t, 10, timeSlots[8].EndTime.Hour())
+	})
+
+	t.Run("weekend", func(t *testing.T) {
+		date := time.Date(2024, 9, 26, 0, 0, 0, 0, time.UTC)
+		serviceDuration := 15
+
+		timeSlots := createTimeSlots(date, serviceDuration)
+
+		require.Len(t, timeSlots, 9)
+
+		assert.Equal(t, 26, timeSlots[0].StartTime.Day())
+		assert.Equal(t, 8, timeSlots[0].StartTime.Hour())
+		assert.Equal(t, 27, timeSlots[0].EndTime.Day())
+		assert.Equal(t, 15, timeSlots[0].EndTime.Hour())
+
+		assert.Equal(t, 26, timeSlots[3].StartTime.Day())
+		assert.Equal(t, 11, timeSlots[3].StartTime.Hour())
+		assert.Equal(t, 30, timeSlots[3].EndTime.Day())
+		assert.Equal(t, 10, timeSlots[3].EndTime.Hour())
+
+		assert.Equal(t, 26, timeSlots[8].StartTime.Day())
+		assert.Equal(t, 16, timeSlots[8].StartTime.Hour())
+		assert.Equal(t, 30, timeSlots[8].EndTime.Day())
+		assert.Equal(t, 15, timeSlots[8].EndTime.Hour())
+	})
 }

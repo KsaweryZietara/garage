@@ -68,13 +68,56 @@ func TestAppointment(t *testing.T) {
 	customer, err := customerRepo.Insert(newCustomer)
 	assert.NoError(t, err)
 
-	newAppointment := internal.Appointment{
-		StartTime:  time.Now(),
-		EndTime:    time.Now().Add(3 * time.Hour),
-		ServiceID:  service.ID,
-		EmployeeID: employee2.ID,
-		CustomerID: customer.ID,
+	startTime := time.Now()
+
+	appointments := []internal.Appointment{
+		{
+			StartTime:  startTime.Add(1 * time.Hour),
+			EndTime:    startTime.Add(2 * time.Hour),
+			ServiceID:  service.ID,
+			EmployeeID: employee2.ID,
+			CustomerID: customer.ID,
+		},
+		{
+			StartTime:  startTime.Add(2 * time.Hour),
+			EndTime:    startTime.Add(4 * time.Hour),
+			ServiceID:  service.ID,
+			EmployeeID: employee2.ID,
+			CustomerID: customer.ID,
+		},
+		{
+			StartTime:  startTime.Add(4 * time.Hour),
+			EndTime:    startTime.Add(5 * time.Hour),
+			ServiceID:  service.ID,
+			EmployeeID: employee2.ID,
+			CustomerID: customer.ID,
+		},
 	}
-	_, err = appointmentRepo.Insert(newAppointment)
+
+	for _, appointment := range appointments {
+		_, err = appointmentRepo.Insert(appointment)
+		assert.NoError(t, err)
+	}
+
+	timeSlot := internal.TimeSlot{
+		StartTime: startTime.Add(1 * time.Hour),
+		EndTime:   startTime.Add(3 * time.Hour),
+	}
+
+	foundAppointments, err := appointmentRepo.GetByTimeSlot(timeSlot, employee2.ID)
 	assert.NoError(t, err)
+
+	assert.Len(t, foundAppointments, 2)
+
+	assert.Equal(t, appointments[0].StartTime.Hour(), foundAppointments[0].StartTime.Hour())
+	assert.Equal(t, appointments[1].StartTime.Hour(), foundAppointments[1].StartTime.Hour())
+
+	nonOverlappingTimeSlot := internal.TimeSlot{
+		StartTime: startTime.Add(6 * time.Hour),
+		EndTime:   startTime.Add(7 * time.Hour),
+	}
+
+	foundAppointments, err = appointmentRepo.GetByTimeSlot(nonOverlappingTimeSlot, employee2.ID)
+	assert.NoError(t, err)
+	assert.Len(t, foundAppointments, 0)
 }

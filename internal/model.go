@@ -105,3 +105,8 @@ func NewAppointment(dto CreateAppointmentDTO, customerID int) Appointment {
 		CustomerID: customerID,
 	}
 }
+
+type TimeSlot struct {
+	StartTime time.Time `json:"startTime"`
+	EndTime   time.Time `json:"endTime"`
+}

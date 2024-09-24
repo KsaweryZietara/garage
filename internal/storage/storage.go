@@ -51,6 +51,7 @@ type Customers interface {
 
 type Appointments interface {
 	Insert(appointment internal.Appointment) (internal.Appointment, error)
+	GetByTimeSlot(slot internal.TimeSlot, employeeID int) ([]internal.Appointment, error)
 }
 
 type Storage struct {
