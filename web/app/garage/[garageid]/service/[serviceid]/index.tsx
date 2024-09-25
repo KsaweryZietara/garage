@@ -1,6 +1,6 @@
 import {useLocalSearchParams, useRouter} from "expo-router";
 import React, {useEffect, useState} from "react";
-import {ActivityIndicator, FlatList, StatusBar, Text, View} from "react-native";
+import {ActivityIndicator, FlatList, StatusBar, Text, TouchableOpacity, View} from "react-native";
 import axios from "axios";
 
 interface Service {
@@ -58,9 +58,14 @@ const ServiceScreen = () => {
     }, [garageid, serviceid]);
 
     const renderEmployeeItem = ({item}: { item: Employee }) => (
-        <View className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg border border-[#444]">
-            <Text className="text-lg font-bold text-white">{item.name} {item.surname}</Text>
-        </View>
+        <TouchableOpacity
+            onPress={() => router.push(`/garage/${garageid}/service/${serviceid}/employee/${item.id}`)}
+            className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg border border-[#444]"
+        >
+            <View className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg">
+                <Text className="text-lg font-bold text-white">{item.name} {item.surname}</Text>
+            </View>
+        </TouchableOpacity>
     );
 
     return (
