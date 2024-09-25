@@ -116,16 +116,21 @@ const CreatorScreen = () => {
             return;
         }
 
-        const timeNumber = parseFloat(serviceTime);
-        const priceNumber = parseFloat(servicePrice);
+        const timeNumber = Number(serviceTime);
+        const priceNumber = Number(servicePrice);
 
-        if (isNaN(timeNumber) || timeNumber <= 0) {
-            setErrorMessage("Czas musi być liczbą dodatnią.");
+        if (isNaN(timeNumber) || timeNumber <= 0 || !Number.isInteger(timeNumber)) {
+            setErrorMessage("Czas musi być podany w pełnych godzinach.");
             return;
         }
 
-        if (isNaN(priceNumber) || priceNumber <= 0) {
-            setErrorMessage("Cena musi być liczbą dodatnią.");
+        if (timeNumber > 720) {
+            setErrorMessage("Czas usługi nie może być dłuższy niż miesiąc.");
+            return;
+        }
+
+        if (isNaN(priceNumber) || priceNumber <= 0 || !Number.isInteger(priceNumber)) {
+            setErrorMessage("Cena musi być podana w pełnych złotówkach.");
             return;
         }
 
@@ -189,7 +194,7 @@ const CreatorScreen = () => {
             services: services.map(service => ({
                 name: service.name,
                 time: parseInt(service.time, 10),
-                price: parseFloat(service.price)
+                price: parseInt(service.price, 10)
             })),
             employeeEmails
         };
@@ -299,7 +304,7 @@ const CreatorScreen = () => {
                                     onChangeText={setServiceName}
                                 />
                                 <CustomTextInput
-                                    placeholder="Czas wykonania (min)"
+                                    placeholder="Czas wykonania (w godzinach)"
                                     value={serviceTime}
                                     onChangeText={setServiceTime}
                                     keyboardType="numeric"
@@ -331,7 +336,7 @@ const CreatorScreen = () => {
                                                     {item.name}
                                                 </Text>
                                                 <Text className="text-sm text-gray-500">
-                                                    {item.time} min - {item.price} zł
+                                                    {item.time} godz. - {item.price} zł
                                                 </Text>
                                             </View>
                                             <Text className="text-red-600 font-bold"
