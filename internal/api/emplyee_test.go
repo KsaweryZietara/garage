@@ -58,3 +58,55 @@ func TestGetEmployeesEndpoint(t *testing.T) {
 	assert.Equal(t, employee.Name, employeeDTOs[0].Name)
 	assert.Equal(t, employee.Surname, employeeDTOs[0].Surname)
 }
+
+func TestGetEmployeeEndpoint(t *testing.T) {
+	suite := NewSuite(t)
+	defer suite.Teardown()
+
+	owner, err := suite.api.storage.Employees().Insert(
+		internal.Employee{
+			Name:     "name",
+			Surname:  "surname",
+			Email:    "email",
+			Password: "password",
+			Role:     internal.OwnerRole,
+			GarageID: nil,
+		})
+	assert.NoError(t, err)
+
+	garage, err := suite.api.storage.Garages().Insert(
+		internal.Garage{
+			Name:        "name",
+			City:        "city",
+			Street:      "street",
+			Number:      "number",
+			PostalCode:  "postalCode",
+			PhoneNumber: "phoneNumber",
+			OwnerID:     owner.ID,
+		})
+	assert.NoError(t, err)
+
+	employee, err := suite.api.storage.Employees().Insert(
+		internal.Employee{
+			Name:     "name",
+			Surname:  "surname",
+			Email:    "email2",
+			Password: "password",
+			Role:     internal.MechanicRole,
+			GarageID: &garage.ID,
+		})
+	assert.NoError(t, err)
+
+	response := suite.CallAPI(http.MethodGet, fmt.Sprintf("/api/employee/%v", owner.ID), []byte{}, nil)
+	assert.Equal(t, http.StatusNotFound, response.StatusCode)
+
+	response = suite.CallAPI(http.MethodGet, fmt.Sprintf("/api/employee/%v", employee.ID), []byte{}, nil)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+
+	var employeeDTO internal.EmployeeDTO
+	suite.ParseResponse(t, response, &employeeDTO)
+
+	assert.Equal(t, employee.ID, employeeDTO.ID)
+	assert.Equal(t, employee.Name, employeeDTO.Name)
+	assert.Equal(t, employee.Surname, employeeDTO.Surname)
+}
