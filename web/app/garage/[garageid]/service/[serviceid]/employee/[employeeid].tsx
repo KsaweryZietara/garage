@@ -27,7 +27,7 @@ interface TimeSlot {
     endTime: Date;
 }
 
-const ServiceScreen = () => {
+const AppointmentScreen = () => {
     const router = useRouter();
     const {serviceid, employeeid} = useLocalSearchParams() as { serviceid: string, employeeid: string };
     const [service, setService] = useState<Service | null>(null);
@@ -180,7 +180,7 @@ const ServiceScreen = () => {
                 style={{height: 100, paddingTop: 20, paddingBottom: 10}}
                 calendarHeaderStyle={{
                     color: 'white',
-                    marginBottom: Platform.OS === 'web' ? 30 : 10,
+                    marginBottom: Platform.OS === 'web' ? 35 : 10,
                     fontSize: 20,
                 }}
                 calendarColor={'#000'}
@@ -201,6 +201,7 @@ const ServiceScreen = () => {
                 rightSelector={<Text style={{color: 'white', fontSize: 30}}>&gt;</Text>}
                 onDateSelected={handleDateChange}
                 selectedDate={selectedDate}
+                minDate={moment()}
             />
 
             <Text className="text-white text-2xl font-bold mt-4 ml-4 mb-3">Dostępne godziny</Text>
@@ -303,4 +304,4 @@ const ServiceScreen = () => {
     );
 };
 
-export default ServiceScreen;
+export default AppointmentScreen;

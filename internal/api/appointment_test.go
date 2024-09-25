@@ -67,8 +67,8 @@ func TestCreateAppointmentEndpoint(t *testing.T) {
 	assert.NoError(t, err)
 
 	appointment := internal.CreateAppointmentDTO{
-		StartTime:  time.Date(2024, 9, 24, 11, 0, 0, 0, time.UTC),
-		EndTime:    time.Date(2024, 9, 24, 13, 0, 0, 0, time.UTC),
+		StartTime:  time.Date(2030, 9, 24, 11, 0, 0, 0, time.UTC),
+		EndTime:    time.Date(2030, 9, 24, 13, 0, 0, 0, time.UTC),
 		ServiceID:  service.ID,
 		EmployeeID: mechanic.ID,
 	}

@@ -470,10 +470,21 @@ func TestCreateAppointmentDTO(t *testing.T) {
 		assert.EqualError(t, err, "start time and end time cannot be empty")
 	})
 
+	t.Run("should return error when start time is before current date", func(t *testing.T) {
+		dto := internal.CreateAppointmentDTO{
+			StartTime:  time.Now().Add(-time.Hour),
+			EndTime:    time.Now().Add(time.Hour),
+			ServiceID:  1,
+			EmployeeID: 1,
+		}
+		err := CreateAppointmentDTO(dto)
+		assert.EqualError(t, err, "start time cannot be in the past")
+	})
+
 	t.Run("should return error when end time is before start time", func(t *testing.T) {
 		dto := internal.CreateAppointmentDTO{
-			StartTime:  time.Now(),
-			EndTime:    time.Now().Add(-time.Hour),
+			StartTime:  time.Now().Add(2 * time.Hour),
+			EndTime:    time.Now().Add(time.Hour),
 			ServiceID:  1,
 			EmployeeID: 1,
 		}
@@ -483,8 +494,8 @@ func TestCreateAppointmentDTO(t *testing.T) {
 
 	t.Run("should return error when service ID is less than or equal to zero", func(t *testing.T) {
 		dto := internal.CreateAppointmentDTO{
-			StartTime:  time.Now(),
-			EndTime:    time.Now().Add(time.Hour),
+			StartTime:  time.Now().Add(time.Hour),
+			EndTime:    time.Now().Add(2 * time.Hour),
 			ServiceID:  0,
 			EmployeeID: 1,
 		}
@@ -494,8 +505,8 @@ func TestCreateAppointmentDTO(t *testing.T) {
 
 	t.Run("should return error when employee ID is less than or equal to zero", func(t *testing.T) {
 		dto := internal.CreateAppointmentDTO{
-			StartTime:  time.Now(),
-			EndTime:    time.Now().Add(time.Hour),
+			StartTime:  time.Now().Add(time.Hour),
+			EndTime:    time.Now().Add(2 * time.Hour),
 			ServiceID:  1,
 			EmployeeID: 0,
 		}
@@ -505,8 +516,8 @@ func TestCreateAppointmentDTO(t *testing.T) {
 
 	t.Run("should pass with valid input", func(t *testing.T) {
 		dto := internal.CreateAppointmentDTO{
-			StartTime:  time.Now(),
-			EndTime:    time.Now().Add(time.Hour),
+			StartTime:  time.Now().Add(time.Hour),
+			EndTime:    time.Now().Add(2 * time.Hour),
 			ServiceID:  1,
 			EmployeeID: 1,
 		}

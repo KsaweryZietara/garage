@@ -3,6 +3,7 @@ package validate
 import (
 	"errors"
 	"regexp"
+	"time"
 	"unicode"
 
 	"github.com/KsaweryZietara/garage/internal"
@@ -126,6 +127,10 @@ func CreateCustomerDTO(dto internal.CreateCustomerDTO) error {
 func CreateAppointmentDTO(dto internal.CreateAppointmentDTO) error {
 	if dto.StartTime.IsZero() || dto.EndTime.IsZero() {
 		return errors.New("start time and end time cannot be empty")
+	}
+
+	if dto.StartTime.Before(time.Now()) {
+		return errors.New("start time cannot be in the past")
 	}
 
 	if dto.EndTime.Before(dto.StartTime) {
