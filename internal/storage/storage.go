@@ -3,6 +3,7 @@ package storage
 import (
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/KsaweryZietara/garage/internal"
 	"github.com/KsaweryZietara/garage/internal/storage/postgres"
@@ -52,6 +53,8 @@ type Customers interface {
 type Appointments interface {
 	Insert(appointment internal.Appointment) (internal.Appointment, error)
 	GetByTimeSlot(slot internal.TimeSlot, employeeID int) ([]internal.Appointment, error)
+	GetByEmployeeID(employeeID int, date time.Time) ([]internal.Appointment, error)
+	GetByGarageID(garageID int, date time.Time) ([]internal.Appointment, error)
 }
 
 type Storage struct {

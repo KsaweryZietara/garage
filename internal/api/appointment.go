@@ -131,8 +131,86 @@ func (a *API) GetAvailableSlots(writer http.ResponseWriter, request *http.Reques
 	a.sendResponse(writer, timeSlots, 200)
 }
 
+func (a *API) GetEmployeeAppointments(writer http.ResponseWriter, request *http.Request) {
+	queryParams := request.URL.Query()
+
+	email, ok := a.emailFromContext(request.Context())
+	if !ok {
+		a.sendResponse(writer, nil, 401)
+		return
+	}
+
+	employee, err := a.storage.Employees().GetByEmail(email)
+	if err != nil {
+		a.handleError(writer, err, 401)
+		return
+	}
+
+	dateStr := queryParams.Get("date")
+	layout := "2006-01-02"
+	date, err := time.Parse(layout, dateStr)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	if isWeekend(date) {
+		a.sendResponse(writer, []internal.AppointmentDTO{}, 200)
+		return
+	}
+
+	var appointments []internal.Appointment
+	switch employee.Role {
+	case internal.OwnerRole:
+		garage, err := a.storage.Garages().GetByOwnerID(employee.ID)
+		if err != nil {
+			a.handleError(writer, err, 404)
+			return
+		}
+		appointments, err = a.storage.Appointments().GetByGarageID(garage.ID, date)
+	case internal.MechanicRole:
+		appointments, err = a.storage.Appointments().GetByEmployeeID(employee.ID, date)
+	}
+	if err != nil {
+		a.handleError(writer, err, 404)
+		return
+	}
+
+	appointments = appointmentsWithWorkingHours(appointments, date)
+
+	appointmentDTOs := make([]internal.AppointmentDTO, len(appointments))
+	for i, appointment := range appointments {
+		service, err := a.storage.Services().GetByID(appointment.ServiceID)
+		if err != nil {
+			a.handleError(writer, err, 500)
+			return
+		}
+		appointmentDTOs[i] = internal.AppointmentDTO{
+			ID:        appointment.ID,
+			StartTime: appointment.StartTime,
+			EndTime:   appointment.EndTime,
+			Service:   internal.NewServiceDTO(service),
+		}
+		if employee.Role == internal.OwnerRole {
+			mechanic, err := a.storage.Employees().GetByID(appointment.EmployeeID)
+			mechanicDTO := internal.NewEmployeeDTO(mechanic)
+			appointmentDTOs[i].Employee = &mechanicDTO
+			if err != nil {
+				a.handleError(writer, err, 500)
+				return
+			}
+		}
+	}
+
+	a.sendResponse(writer, appointmentDTOs, 200)
+}
+
 func createTimeSlots(date time.Time, serviceDuration int) []internal.TimeSlot {
 	var timeSlots []internal.TimeSlot
+
+	if isWeekend(date) {
+		return timeSlots
+	}
 
 	startTime := time.Date(date.Year(), date.Month(), date.Day(), openingTime, 0, 0, 0, date.Location())
 
@@ -163,4 +241,23 @@ func createTimeSlots(date time.Time, serviceDuration int) []internal.TimeSlot {
 	}
 
 	return timeSlots
+}
+
+func appointmentsWithWorkingHours(appointments []internal.Appointment, date time.Time) []internal.Appointment {
+	for i := range appointments {
+		if !appointments[i].StartTime.Truncate(24 * time.Hour).Equal(date.Truncate(24 * time.Hour)) {
+			appointments[i].StartTime = time.Date(date.Year(), date.Month(), date.Day(), 8, 0, 0, 0, date.Location())
+		}
+		if !appointments[i].EndTime.Truncate(24 * time.Hour).Equal(date.Truncate(24 * time.Hour)) {
+			appointments[i].EndTime = time.Date(date.Year(), date.Month(), date.Day(), 16, 0, 0, 0, date.Location())
+		}
+	}
+	return appointments
+}
+
+func isWeekend(date time.Time) bool {
+	if date.Weekday() == time.Saturday || date.Weekday() == time.Sunday {
+		return true
+	}
+	return false
 }

@@ -122,3 +122,11 @@ type CreateAppointmentDTO struct {
 	ServiceID  int       `json:"serviceId"`
 	EmployeeID int       `json:"employeeId"`
 }
+
+type AppointmentDTO struct {
+	ID        int          `json:"id"`
+	StartTime time.Time    `json:"startTime"`
+	EndTime   time.Time    `json:"endTime"`
+	Service   ServiceDTO   `json:"service"`
+	Employee  *EmployeeDTO `json:"employee,omitempty"`
+}

@@ -105,7 +105,7 @@ func (a *API) GetEmployeeGarage(writer http.ResponseWriter, request *http.Reques
 
 	employee, err := a.storage.Employees().GetByEmail(email)
 	if err != nil {
-		a.handleError(writer, err, 400)
+		a.handleError(writer, err, 401)
 		return
 	}
 
