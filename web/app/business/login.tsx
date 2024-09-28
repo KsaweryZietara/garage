@@ -4,7 +4,7 @@ import CustomTextInput from "@/components/CustomTextInput";
 import CustomButton from "@/components/CustomButton";
 import {useRouter} from "expo-router";
 import axios from "axios";
-import {saveJWT} from "@/utils/auth";
+import {save} from "@/utils/auth";
 
 const LoginScreen = () => {
     const router = useRouter();
@@ -39,7 +39,7 @@ const LoginScreen = () => {
         })
             .then(function (response) {
                 setErrorMessage("");
-                saveJWT(response.data.jwt)
+                save("employee_jwt", response.data.jwt)
 
                 axios.get("/api/employee/garage", {headers: {"Authorization": `Bearer ${response.data.jwt}`}})
                     .then(function (response) {

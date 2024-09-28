@@ -3,7 +3,7 @@ import {StatusBar, Text, TextInput, View} from "react-native";
 import CustomButton from "@/components/CustomButton";
 import {useRouter} from "expo-router";
 import axios from "axios";
-import {saveJWT} from "@/utils/auth";
+import {save} from "@/utils/auth";
 
 const LoginScreen = () => {
     const router = useRouter();
@@ -39,7 +39,7 @@ const LoginScreen = () => {
             })
             .then(function (response) {
                 setErrorMessage("");
-                saveJWT(response.data.jwt);
+                save("customer_jwt", response.data.jwt);
                 router.push("/home");
             })
             .catch(function (error) {

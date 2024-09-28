@@ -13,7 +13,7 @@ import CheckBox from "react-native-check-box"
 // @ts-ignore
 import {ProgressSteps, ProgressStep} from "react-native-progress-steps";
 import axios from "axios";
-import {getJWT} from "@/utils/auth";
+import {get} from "@/utils/auth";
 import {useRouter} from "expo-router";
 
 interface Service {
@@ -183,7 +183,7 @@ const CreatorScreen = () => {
     };
 
     const handleSubmit = async () => {
-        const token = await getJWT();
+        const token = await get("employee_jwt");
         const data = {
             name,
             city,

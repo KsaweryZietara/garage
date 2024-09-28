@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {View, Text, Platform, ActivityIndicator, FlatList} from "react-native";
 import axios from "axios";
-import {getJWT} from "@/utils/auth";
+import {get} from "@/utils/auth";
 import moment, {Moment} from "moment";
 import 'moment/locale/pl';
 import CalendarStrip from "react-native-calendar-strip";
@@ -38,7 +38,7 @@ const HomeScreen = () => {
     useEffect(() => {
         const fetchGarageName = async () => {
             try {
-                const token = await getJWT();
+                const token = await get("employee_jwt");
                 const response = await axios.get("/api/employee/garage", {
                     headers: {"Authorization": `Bearer ${token}`}
                 });
@@ -57,7 +57,7 @@ const HomeScreen = () => {
         const fetchAvailableSlots = async () => {
             sideloadingAppointments(true);
             try {
-                const token = await getJWT();
+                const token = await get("employee_jwt");
                 const response = await axios.get<Appointment[]>(`/api/employee/appointments?date=${selectedDate.format("YYYY-MM-DD")}`, {
                     headers: {"Authorization": `Bearer ${token}`}
                 });

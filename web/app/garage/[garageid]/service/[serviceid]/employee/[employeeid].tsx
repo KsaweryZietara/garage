@@ -5,7 +5,7 @@ import CalendarStrip from 'react-native-calendar-strip';
 import axios from "axios";
 import moment, {Moment} from "moment";
 import 'moment/locale/pl';
-import {getJWT} from "@/utils/auth";
+import {get} from "@/utils/auth";
 
 moment.locale('pl');
 
@@ -92,7 +92,7 @@ const AppointmentScreen = () => {
     }, [selectedDate, serviceid, employeeid]);
 
     const handleSubmit = async () => {
-        const token = await getJWT();
+        const token = await get("customer_jwt");
         if (token == null) {
             router.push("/login")
             return
