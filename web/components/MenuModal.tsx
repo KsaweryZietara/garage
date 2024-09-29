@@ -1,6 +1,7 @@
 import React from 'react';
 import {Modal, TouchableOpacity, TouchableWithoutFeedback, View, Text, Platform} from 'react-native';
 import {remove} from '@/utils/auth';
+import {useRouter} from "expo-router";
 
 interface MenuModalProps {
     visible: boolean;
@@ -10,6 +11,8 @@ interface MenuModalProps {
 }
 
 const MenuModal: React.FC<MenuModalProps> = ({visible, onClose, email, setEmail}) => {
+    const router = useRouter()
+
     const handleLogout = () => {
         remove("customer_jwt");
         setEmail(null);
@@ -45,9 +48,14 @@ const MenuModal: React.FC<MenuModalProps> = ({visible, onClose, email, setEmail}
                         shadowRadius: 4,
                     }}>
                         {email && (
-                            <TouchableOpacity onPress={handleLogout}>
-                                <Text className="text-red-500 font-bold">Wyloguj</Text>
-                            </TouchableOpacity>
+                            <View>
+                                <TouchableOpacity onPress={() => router.push("/appointments")}>
+                                    <Text className="text-black font-bold">Moje wizyty</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={handleLogout}>
+                                    <Text className="text-red-500 font-bold mt-3">Wyloguj</Text>
+                                </TouchableOpacity>
+                            </View>
                         )}
                     </View>
                 </View>

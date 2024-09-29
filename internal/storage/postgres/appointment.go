@@ -130,7 +130,7 @@ func (a *Appointment) GetByCustomerID(customerID int) ([]internal.Appointment, e
 	_, err := sess.Select("*").
 		From(appointmentsTable).
 		Where(dbr.Eq("customer_id", customerID)).
-		OrderBy("start_time DESC").
+		OrderBy("start_time ASC").
 		Load(&appointments)
 
 	if err != nil {

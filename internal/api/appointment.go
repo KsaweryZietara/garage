@@ -236,7 +236,12 @@ func (a *API) GetCustomerAppointments(writer http.ResponseWriter, request *http.
 			a.handleError(writer, err, 404)
 			return
 		}
-		appointmentDTOs[i] = internal.NewAppointmentDTO(appointment, service, employee)
+		garage, err := a.storage.Garages().GetByID(*employee.GarageID)
+		if err != nil {
+			a.handleError(writer, err, 404)
+			return
+		}
+		appointmentDTOs[i] = internal.NewAppointmentDTO(appointment, service, employee, garage)
 	}
 
 	a.sendResponse(writer, internal.NewCustomerAppointmentDTOs(appointmentDTOs), 200)

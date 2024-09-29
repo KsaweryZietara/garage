@@ -46,7 +46,7 @@ const HomeScreen = () => {
     const [menuVisible, setMenuVisible] = useState(false);
     const [garageName, setGarageName] = useState("garage");
     const [appointments, setAppointments] = useState<Appointment[]>([]);
-    const [loadingAppointments, sideloadingAppointments] = useState<boolean>(true);
+    const [loadingAppointments, setLoadingAppointments] = useState<boolean>(true);
     const [selectedDate, setSelectedDate] = useState<Moment>(moment());
 
     useEffect(() => {
@@ -74,8 +74,8 @@ const HomeScreen = () => {
     }, []);
 
     useEffect(() => {
-        const fetchAvailableSlots = async () => {
-            sideloadingAppointments(true);
+        const fetchAppointments = async () => {
+            setLoadingAppointments(true);
             try {
                 const token = await get("employee_jwt");
                 const response = await axios.get<Appointment[]>(`/api/employee/appointments?date=${selectedDate.format("YYYY-MM-DD")}`, {
@@ -85,11 +85,11 @@ const HomeScreen = () => {
             } catch (error) {
                 console.error(error);
             } finally {
-                sideloadingAppointments(false);
+                setLoadingAppointments(false);
             }
         };
 
-        fetchAvailableSlots();
+        fetchAppointments();
     }, [selectedDate]);
 
     const handleLogout = () => {
@@ -116,7 +116,6 @@ const HomeScreen = () => {
 
     const renderAppointmentItem = ({item}: { item: Appointment }) => {
         const startHour = new Date(item.startTime).getUTCHours();
-        console.log(startHour)
 
         return (
             <View className="p-4 my-2 mx-4 bg-gray-700 rounded-lg">

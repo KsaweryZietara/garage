@@ -129,16 +129,19 @@ type AppointmentDTO struct {
 	EndTime   time.Time    `json:"endTime"`
 	Service   ServiceDTO   `json:"service"`
 	Employee  *EmployeeDTO `json:"employee,omitempty"`
+	Garage    *GarageDTO   `json:"garage,omitempty"`
 }
 
-func NewAppointmentDTO(appointment Appointment, service Service, employee Employee) AppointmentDTO {
+func NewAppointmentDTO(appointment Appointment, service Service, employee Employee, garage Garage) AppointmentDTO {
 	employeeDTO := NewEmployeeDTO(employee)
+	garageDTO := NewGarageDTO(garage)
 	return AppointmentDTO{
 		ID:        appointment.ID,
 		StartTime: appointment.StartTime,
 		EndTime:   appointment.EndTime,
 		Service:   NewServiceDTO(service),
 		Employee:  &employeeDTO,
+		Garage:    &garageDTO,
 	}
 }
 
