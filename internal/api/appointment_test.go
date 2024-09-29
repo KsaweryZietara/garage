@@ -87,7 +87,7 @@ func TestCreateAppointmentEndpoint(t *testing.T) {
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 }
 
-func TestGetEmployeeAppointmentsEndpoint(t *testing.T) {
+func TestGetEmployeeAndCustomerAppointmentsEndpoint(t *testing.T) {
 	suite := NewSuite(t)
 	defer suite.Teardown()
 
@@ -204,6 +204,16 @@ func TestGetEmployeeAppointmentsEndpoint(t *testing.T) {
 	assert.Equal(t, 16, appointmentDTOs[1].EndTime.Hour())
 	assert.NotNil(t, appointmentDTOs[1].Employee)
 	assert.Equal(t, appointmentDTOs[1].Employee.Name, mechanic2.Name)
+
+	var customerAppointments internal.CustomerAppointmentDTOs
+	token, err = suite.api.auth.CreateToken(customer.Email, internal.CustomerRole)
+	assert.NoError(t, err)
+	response = suite.CallAPI(http.MethodGet, "/api/customer/appointments", []byte{}, &token)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+	suite.ParseResponse(t, response, &customerAppointments)
+	assert.Len(t, customerAppointments.Upcoming, 0)
+	assert.Len(t, customerAppointments.InProgress, 0)
+	assert.Len(t, customerAppointments.Completed, 2)
 }
 
 func TestCreateTimeSlots(t *testing.T) {

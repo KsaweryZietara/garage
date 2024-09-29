@@ -122,3 +122,20 @@ func (a *Appointment) GetByGarageID(garageID int, date time.Time) ([]internal.Ap
 
 	return appointments, nil
 }
+
+func (a *Appointment) GetByCustomerID(customerID int) ([]internal.Appointment, error) {
+	sess := a.connection.NewSession(nil)
+
+	var appointments []internal.Appointment
+	_, err := sess.Select("*").
+		From(appointmentsTable).
+		Where(dbr.Eq("customer_id", customerID)).
+		OrderBy("start_time DESC").
+		Load(&appointments)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return appointments, nil
+}

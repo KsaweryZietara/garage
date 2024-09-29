@@ -130,3 +130,40 @@ type AppointmentDTO struct {
 	Service   ServiceDTO   `json:"service"`
 	Employee  *EmployeeDTO `json:"employee,omitempty"`
 }
+
+func NewAppointmentDTO(appointment Appointment, service Service, employee Employee) AppointmentDTO {
+	employeeDTO := NewEmployeeDTO(employee)
+	return AppointmentDTO{
+		ID:        appointment.ID,
+		StartTime: appointment.StartTime,
+		EndTime:   appointment.EndTime,
+		Service:   NewServiceDTO(service),
+		Employee:  &employeeDTO,
+	}
+}
+
+type CustomerAppointmentDTOs struct {
+	Upcoming   []AppointmentDTO `json:"upcoming"`
+	InProgress []AppointmentDTO `json:"inProgress"`
+	Completed  []AppointmentDTO `json:"completed"`
+}
+
+func NewCustomerAppointmentDTOs(appointments []AppointmentDTO) CustomerAppointmentDTOs {
+	var result CustomerAppointmentDTOs
+	now := time.Now()
+
+	for _, appointment := range appointments {
+		switch {
+		case appointment.StartTime.After(now):
+			result.Upcoming = append(result.Upcoming, appointment)
+
+		case appointment.StartTime.Before(now) && appointment.EndTime.After(now):
+			result.InProgress = append(result.InProgress, appointment)
+
+		case appointment.EndTime.Before(now):
+			result.Completed = append(result.Completed, appointment)
+		}
+	}
+
+	return result
+}

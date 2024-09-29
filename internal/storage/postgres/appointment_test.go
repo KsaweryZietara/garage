@@ -123,7 +123,7 @@ func TestGetAppointmentsByTimeSlot(t *testing.T) {
 	assert.Len(t, foundAppointments, 0)
 }
 
-func TestGetAppointmentsByEmployeeID(t *testing.T) {
+func TestGetAppointmentsByEmployeeIDOrCustomerID(t *testing.T) {
 	cleanup := NewSuite(t)
 	defer cleanup()
 
@@ -193,20 +193,27 @@ func TestGetAppointmentsByEmployeeID(t *testing.T) {
 	customer, err := customerRepo.Insert(newCustomer)
 	assert.NoError(t, err)
 
+	newCustomer2 := internal.Customer{
+		Email:    "test2@test.com",
+		Password: "password123",
+	}
+	customer2, err := customerRepo.Insert(newCustomer2)
+	assert.NoError(t, err)
+
 	appointments := []internal.Appointment{
 		{
-			StartTime:  time.Date(time.Now().Year(), time.Now().Month(), time.Now().Add(-50*time.Hour).Day(), 10, 0, 0, 0, time.Now().Location()),
-			EndTime:    time.Date(time.Now().Year(), time.Now().Month(), time.Now().Add(-50*time.Hour).Day(), 10, 0, 0, 0, time.Now().Location()),
+			StartTime:  time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 10, 0, 0, 0, time.Now().Location()).Add(-50 * time.Hour),
+			EndTime:    time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 10, 0, 0, 0, time.Now().Location()).Add(-50 * time.Hour),
 			ServiceID:  service.ID,
 			EmployeeID: employee2.ID,
 			CustomerID: customer.ID,
 		},
 		{
-			StartTime:  time.Date(time.Now().Year(), time.Now().Month(), time.Now().Add(-50*time.Hour).Day(), 10, 0, 0, 0, time.Now().Location()),
+			StartTime:  time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 10, 0, 0, 0, time.Now().Location()).Add(-50 * time.Hour),
 			EndTime:    time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 10, 0, 0, 0, time.Now().Location()),
 			ServiceID:  service.ID,
 			EmployeeID: employee3.ID,
-			CustomerID: customer.ID,
+			CustomerID: customer2.ID,
 		},
 		{
 			StartTime:  time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 10, 0, 0, 0, time.Now().Location()),
@@ -217,14 +224,14 @@ func TestGetAppointmentsByEmployeeID(t *testing.T) {
 		},
 		{
 			StartTime:  time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 10, 0, 0, 0, time.Now().Location()),
-			EndTime:    time.Date(time.Now().Year(), time.Now().Month(), time.Now().Add(50*time.Hour).Day(), 10, 0, 0, 0, time.Now().Location()),
+			EndTime:    time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 10, 0, 0, 0, time.Now().Location()).Add(50 * time.Hour),
 			ServiceID:  service.ID,
 			EmployeeID: employee3.ID,
-			CustomerID: customer.ID,
+			CustomerID: customer2.ID,
 		},
 		{
-			StartTime:  time.Date(time.Now().Year(), time.Now().Month(), time.Now().Add(50*time.Hour).Day(), 10, 0, 0, 0, time.Now().Location()),
-			EndTime:    time.Date(time.Now().Year(), time.Now().Month(), time.Now().Add(50*time.Hour).Day(), 10, 0, 0, 0, time.Now().Location()),
+			StartTime:  time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 10, 0, 0, 0, time.Now().Location()).Add(50 * time.Hour),
+			EndTime:    time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 10, 0, 0, 0, time.Now().Location()).Add(50 * time.Hour),
 			ServiceID:  service.ID,
 			EmployeeID: employee3.ID,
 			CustomerID: customer.ID,
@@ -243,4 +250,12 @@ func TestGetAppointmentsByEmployeeID(t *testing.T) {
 	foundAppointments, err = appointmentRepo.GetByGarageID(garage.ID, time.Now())
 	require.NoError(t, err)
 	assert.Len(t, foundAppointments, 3)
+
+	foundAppointments, err = appointmentRepo.GetByCustomerID(customer.ID)
+	require.NoError(t, err)
+	assert.Len(t, foundAppointments, 3)
+
+	foundAppointments, err = appointmentRepo.GetByCustomerID(customer2.ID)
+	require.NoError(t, err)
+	assert.Len(t, foundAppointments, 2)
 }

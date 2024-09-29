@@ -55,6 +55,7 @@ type Appointments interface {
 	GetByTimeSlot(slot internal.TimeSlot, employeeID int) ([]internal.Appointment, error)
 	GetByEmployeeID(employeeID int, date time.Time) ([]internal.Appointment, error)
 	GetByGarageID(garageID int, date time.Time) ([]internal.Appointment, error)
+	GetByCustomerID(customerID int) ([]internal.Appointment, error)
 }
 
 type Storage struct {
