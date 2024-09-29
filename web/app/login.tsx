@@ -62,7 +62,7 @@ const LoginScreen = () => {
                     <Text className="text-center text-gray-400 mt-4 mb-4">
                         Jesteś tutaj nowy?{" "}
                         <Text
-                            className="text-[#ff5c5c] font-bold"
+                            className="text-red-500 font-bold"
                             onPress={() => router.push("/register")}
                         >
                             Zarejestruj się tutaj
@@ -85,12 +85,12 @@ const LoginScreen = () => {
                         className="bg-[#2d2d2d] text-white rounded-lg pl-4 py-3 mb-4"
                     />
                     {errorMessage && (
-                        <Text className="text-[#ff5c5c] text-center mt-2">{errorMessage}</Text>
+                        <Text className="text-red-500 text-center mt-2">{errorMessage}</Text>
                     )}
                     <CustomButton
                         title="Zaloguj się"
                         onPress={handleLogin}
-                        containerStyles="bg-[#ff5c5c] mt-4 self-center w-3/5"
+                        containerStyles="bg-red-500 mt-4 self-center w-3/5"
                         textStyles="text-white font-bold"
                     />
                     <Text className="text-center text-gray-400 mt-4">

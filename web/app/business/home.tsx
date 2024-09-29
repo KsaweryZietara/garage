@@ -1,10 +1,21 @@
 import React, {useState, useEffect} from "react";
-import {View, Text, Platform, ActivityIndicator, FlatList} from "react-native";
+import {
+    View,
+    Text,
+    Platform,
+    ActivityIndicator,
+    FlatList,
+    Modal,
+    TouchableWithoutFeedback,
+    TouchableOpacity
+} from "react-native";
 import axios from "axios";
-import {get} from "@/utils/auth";
+import {get, remove} from "@/utils/auth";
 import moment, {Moment} from "moment";
 import 'moment/locale/pl';
 import CalendarStrip from "react-native-calendar-strip";
+import {getEmail} from "@/utils/jwt";
+import {useRouter} from "expo-router";
 
 moment.locale('pl');
 
@@ -30,6 +41,9 @@ interface Service {
 }
 
 const HomeScreen = () => {
+    const router = useRouter();
+    const [email, setEmail] = useState<string | null>(null);
+    const [menuVisible, setMenuVisible] = useState(false);
     const [garageName, setGarageName] = useState("garage");
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [loadingAppointments, sideloadingAppointments] = useState<boolean>(true);
@@ -50,7 +64,13 @@ const HomeScreen = () => {
             }
         };
 
+        const fetchEmail = async () => {
+            const email = await getEmail("employee_jwt");
+            setEmail(email);
+        };
+
         fetchGarageName();
+        fetchEmail();
     }, []);
 
     useEffect(() => {
@@ -71,6 +91,17 @@ const HomeScreen = () => {
 
         fetchAvailableSlots();
     }, [selectedDate]);
+
+    const handleLogout = () => {
+        remove("employee_jwt");
+        setEmail(null);
+        setMenuVisible(false)
+        router.push("/business/login")
+    };
+
+    const handleMenuClose = () => {
+        setMenuVisible(false)
+    }
 
     const handleDateChange = (date: Moment) => {
         setSelectedDate(date);
@@ -108,9 +139,20 @@ const HomeScreen = () => {
 
     return (
         <View className="flex-1">
-            <View className="flex-row justify-start p-4 bg-gray-700">
+            <View className="flex-row justify-between p-4 bg-gray-700">
                 <Text className="text-lg lg:text-4xl font-bold text-white">
                     {garageName.toUpperCase()}
+                </Text>
+                <Text
+                    className="text-white font-bold"
+                    onPress={() => setMenuVisible(true)}
+                    style={{
+                        borderRadius: 5,
+                        padding: Platform.OS === 'web' ? 12 : 6,
+                        marginRight: 5,
+                    }}
+                >
+                    {email}
                 </Text>
             </View>
             <CalendarStrip
@@ -159,6 +201,43 @@ const HomeScreen = () => {
                     showsHorizontalScrollIndicator={false}
                 />
             )}
+
+            <Modal
+                transparent={true}
+                animationType="fade"
+                visible={menuVisible}
+                onRequestClose={handleMenuClose}
+            >
+                <TouchableWithoutFeedback onPress={handleMenuClose}>
+                    <View style={{
+                        flex: 1,
+                        justifyContent: 'flex-start',
+                        alignItems: 'flex-end',
+                    }}>
+                        <View style={{
+                            marginRight: Platform.OS === 'web' ? 32 : 27,
+                            marginTop: Platform.OS === 'web' ? 52 : 50,
+                            backgroundColor: 'white',
+                            borderRadius: 5,
+                            padding: Platform.OS === 'web' ? 12 : 6,
+                            elevation: 5,
+                            shadowColor: '#000',
+                            shadowOffset: {
+                                width: 0,
+                                height: 2,
+                            },
+                            shadowOpacity: 0.25,
+                            shadowRadius: 4,
+                        }}>
+                            {email && (
+                                <TouchableOpacity onPress={handleLogout}>
+                                    <Text className="text-red-500 font-bold">Wyloguj</Text>
+                                </TouchableOpacity>
+                            )}
+                        </View>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
         </View>
     );
 };

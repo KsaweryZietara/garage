@@ -100,18 +100,18 @@ const RegisterScreen = () => {
                         className="bg-[#2d2d2d] text-white rounded-lg pl-4 py-3 mb-4"
                     />
                     {errorMessage && (
-                        <Text className="text-[#ff5c5c] text-center mt-2">{errorMessage}</Text>
+                        <Text className="text-red-500 text-center mt-2">{errorMessage}</Text>
                     )}
                     <CustomButton
                         title="Utwórz konto"
                         onPress={handleRegister}
-                        containerStyles="bg-[#ff5c5c] mt-4 self-center w-3/5"
+                        containerStyles="bg-red-500 mt-4 self-center w-3/5"
                         textStyles="text-white font-bold"
                     />
                     <Text className="text-center text-gray-400 mt-4">
                         Masz już konto?{" "}
                         <Text
-                            className="text-[#ff5c5c] font-bold"
+                            className="text-red-500 font-bold"
                             onPress={() => router.push("/login")}
                         >
                             Zaloguj się tutaj

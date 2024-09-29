@@ -3,6 +3,9 @@ import React, {useEffect, useState} from "react";
 import {ActivityIndicator, FlatList, StatusBar, Text, TouchableOpacity, View} from "react-native";
 import {Searchbar} from "react-native-paper";
 import axios from "axios";
+import {getEmail} from "@/utils/jwt";
+import EmailDisplay from "@/components/EmailDisplay";
+import MenuModal from "@/components/MenuModal";
 
 interface Garage {
     id: number;
@@ -16,6 +19,8 @@ interface Garage {
 
 const GaragesScreen = () => {
     const router = useRouter();
+    const [email, setEmail] = useState<string | null>(null);
+    const [menuVisible, setMenuVisible] = useState(false);
     const query = useGlobalSearchParams();
     const [search, setSearch] = useState<string>("");
     const [garages, setGarages] = useState<Garage[]>([]);
@@ -23,6 +28,15 @@ const GaragesScreen = () => {
     const [page, setPage] = useState<number>(1);
     const [hasMore, setHasMore] = useState<boolean>(true);
     const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+
+    useEffect(() => {
+        const fetchEmail = async () => {
+            const email = await getEmail("customer_jwt");
+            setEmail(email);
+        };
+
+        fetchEmail();
+    }, []);
 
     const handleSearch = () => {
         router.push({pathname: "/garages", params: {search: search}});
@@ -99,9 +113,7 @@ const GaragesScreen = () => {
         <View className="flex-1 bg-black">
             <View className="flex-row justify-between p-4 bg-black">
                 <Text className="text-white text-2xl font-bold">GARAGE</Text>
-                <Text className="mt-2 text-[#ff5c5c] font-bold" onPress={() => router.push("/login")}>
-                    ZALOGUJ SIĘ
-                </Text>
+                <EmailDisplay email={email} setMenuVisible={setMenuVisible}/>
             </View>
 
             <View className="items-center mb-4">
@@ -132,6 +144,13 @@ const GaragesScreen = () => {
                     showsHorizontalScrollIndicator={false}
                 />
             )}
+
+            <MenuModal
+                visible={menuVisible}
+                onClose={() => setMenuVisible(false)}
+                email={email}
+                setEmail={setEmail}
+            />
 
             <StatusBar backgroundColor="#000000"/>
         </View>

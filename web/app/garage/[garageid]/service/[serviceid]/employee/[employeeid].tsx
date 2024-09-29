@@ -6,6 +6,9 @@ import axios from "axios";
 import moment, {Moment} from "moment";
 import 'moment/locale/pl';
 import {get} from "@/utils/auth";
+import {getEmail} from "@/utils/jwt";
+import EmailDisplay from "@/components/EmailDisplay";
+import MenuModal from "@/components/MenuModal";
 
 moment.locale('pl');
 
@@ -29,6 +32,8 @@ interface TimeSlot {
 
 const AppointmentScreen = () => {
     const router = useRouter();
+    const [email, setEmail] = useState<string | null>(null);
+    const [menuVisible, setMenuVisible] = useState(false);
     const {serviceid, employeeid} = useLocalSearchParams() as { serviceid: string, employeeid: string };
     const [service, setService] = useState<Service | null>(null);
     const [employee, setEmployee] = useState<Employee | null>(null);
@@ -41,6 +46,15 @@ const AppointmentScreen = () => {
     const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | null>(null);
     const [feedbackModalVisible, setFeedbackModalVisible] = useState<boolean>(false);
     const [feedbackMessage, setFeedbackMessage] = useState<string>("");
+
+    useEffect(() => {
+        const fetchEmail = async () => {
+            const email = await getEmail("customer_jwt");
+            setEmail(email);
+        };
+
+        fetchEmail();
+    }, []);
 
     useEffect(() => {
         const fetchService = async () => {
@@ -155,9 +169,7 @@ const AppointmentScreen = () => {
         <View className="flex-1 bg-black">
             <View className="flex-row justify-between p-4 bg-black">
                 <Text className="text-white text-2xl font-bold">GARAGE</Text>
-                <Text className="mt-2 text-[#ff5c5c] font-bold" onPress={() => router.push("/login")}>
-                    ZALOGUJ SIĘ
-                </Text>
+                <EmailDisplay email={email} setMenuVisible={setMenuVisible}/>
             </View>
 
             {loadingService || loadingEmployee ? (
@@ -257,7 +269,7 @@ const AppointmentScreen = () => {
                                     </Text>
                                 </View>
                                 <TouchableOpacity
-                                    className="bg-[#ff5c5c] p-3 rounded-lg mt-5 mb-4"
+                                    className="bg-red-500 p-3 rounded-lg mt-5 mb-4"
                                     onPress={() => {
                                         handleSubmit()
                                         setModalVisible(false);
@@ -287,7 +299,7 @@ const AppointmentScreen = () => {
                     <View className="w-10/12 lg:w-1/4 p-6 bg-[#1a1a1a] rounded-lg">
                         <Text className="text-white text-xl text-center mb-4">{feedbackMessage}</Text>
                         <TouchableOpacity
-                            className="bg-[#ff5c5c] p-3 rounded-lg"
+                            className="bg-red-500 p-3 rounded-lg"
                             onPress={() => {
                                 setFeedbackModalVisible(false);
                                 router.push("/home");
@@ -298,6 +310,13 @@ const AppointmentScreen = () => {
                     </View>
                 </View>
             </Modal>
+
+            <MenuModal
+                visible={menuVisible}
+                onClose={() => setMenuVisible(false)}
+                email={email}
+                setEmail={setEmail}
+            />
 
             <StatusBar backgroundColor="#000000"/>
         </View>

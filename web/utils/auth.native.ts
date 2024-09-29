@@ -7,3 +7,7 @@ export async function save(key: string, value: string) {
 export async function get(key: string) {
     return await SecureStore.getItemAsync(key)
 }
+
+export async function remove(key: string) {
+    return await SecureStore.deleteItemAsync(key)
+}

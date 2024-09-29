@@ -2,6 +2,9 @@ import {useLocalSearchParams, useRouter} from "expo-router";
 import React, {useEffect, useState} from "react";
 import {ActivityIndicator, FlatList, StatusBar, Text, TouchableOpacity, View} from "react-native";
 import axios from "axios";
+import {getEmail} from "@/utils/jwt";
+import EmailDisplay from "@/components/EmailDisplay";
+import MenuModal from "@/components/MenuModal";
 
 interface Garage {
     id: number;
@@ -22,11 +25,22 @@ interface Service {
 
 const GarageScreen = () => {
     const router = useRouter();
+    const [email, setEmail] = useState<string | null>(null);
+    const [menuVisible, setMenuVisible] = useState(false);
     const {garageid} = useLocalSearchParams();
     const [garage, setGarage] = useState<Garage | null>(null);
     const [services, setServices] = useState<Service[]>([]);
     const [loadingGarage, setLoadingGarage] = useState<boolean>(true);
     const [loadingServices, setLoadingServices] = useState<boolean>(true);
+
+    useEffect(() => {
+        const fetchEmail = async () => {
+            const email = await getEmail("customer_jwt");
+            setEmail(email);
+        };
+
+        fetchEmail();
+    }, []);
 
     useEffect(() => {
         const fetchGarage = async () => {
@@ -78,9 +92,7 @@ const GarageScreen = () => {
         <View className="flex-1 bg-black">
             <View className="flex-row justify-between p-4 bg-black">
                 <Text className="text-white text-2xl font-bold">GARAGE</Text>
-                <Text className="mt-2 text-[#ff5c5c] font-bold" onPress={() => router.push("/login")}>
-                    ZALOGUJ SIĘ
-                </Text>
+                <EmailDisplay email={email} setMenuVisible={setMenuVisible}/>
             </View>
 
             {loadingGarage ? (
@@ -113,6 +125,13 @@ const GarageScreen = () => {
                     showsHorizontalScrollIndicator={false}
                 />
             )}
+
+            <MenuModal
+                visible={menuVisible}
+                onClose={() => setMenuVisible(false)}
+                email={email}
+                setEmail={setEmail}
+            />
 
             <StatusBar backgroundColor="#000000"/>
         </View>

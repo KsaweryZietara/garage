@@ -1,22 +1,35 @@
+import React, {useEffect, useState} from "react";
 import {StatusBar, Text, View} from "react-native";
-import React from "react";
-import {useRouter} from "expo-router";
 import {Searchbar} from "react-native-paper";
+import {useRouter} from "expo-router";
+import {getEmail} from "@/utils/jwt";
+import MenuModal from "@/components/MenuModal";
+import EmailDisplay from "@/components/EmailDisplay";
 
 const HomeScreen = () => {
     const router = useRouter();
-    const [search, setSearch] = React.useState('');
+    const [email, setEmail] = useState<string | null>(null);
+    const [menuVisible, setMenuVisible] = useState(false);
+    const [search, setSearch] = useState('');
+
+    useEffect(() => {
+        const fetchEmail = async () => {
+            const email = await getEmail("customer_jwt");
+            setEmail(email);
+        };
+
+        fetchEmail();
+    }, []);
 
     const handleSearch = () => {
-        router.push({pathname: "/garages", params: {search: search}})
-    }
+        router.push({pathname: "/garages", params: {search: search}});
+    };
 
     return (
         <View className="flex-1 bg-black">
             <View className="flex-row justify-between p-4 bg-black">
                 <Text className="text-white text-2xl lg:text-4xl font-bold">GARAGE</Text>
-                <Text className="mt-1 text-red-500 font-bold" onPress={() => router.push("/login")}>ZALOGUJ
-                    SIĘ</Text>
+                <EmailDisplay email={email} setMenuVisible={setMenuVisible}/>
             </View>
 
             <View className="flex-1 justify-center items-center mb-40">
@@ -33,8 +46,15 @@ const HomeScreen = () => {
                     onSubmitEditing={handleSearch}
                     value={search}
                 />
-
             </View>
+
+            <MenuModal
+                visible={menuVisible}
+                onClose={() => setMenuVisible(false)}
+                email={email}
+                setEmail={setEmail}
+            />
+
             <StatusBar backgroundColor="#000000"/>
         </View>
     );
