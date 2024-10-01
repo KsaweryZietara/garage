@@ -5,23 +5,8 @@ import axios from "axios";
 import {getEmail} from "@/utils/jwt";
 import EmailDisplay from "@/components/EmailDisplay";
 import MenuModal from "@/components/MenuModal";
-
-interface Garage {
-    id: number;
-    name: string;
-    city: string;
-    street: string;
-    number: string;
-    postalCode: string;
-    phoneNumber: string;
-}
-
-interface Service {
-    id: number;
-    name: string;
-    time: string;
-    price: string;
-}
+import {Garage, Service} from "@/types";
+import {CUSTOMER_JWT} from "@/constants/constants";
 
 const GarageScreen = () => {
     const router = useRouter();
@@ -35,7 +20,7 @@ const GarageScreen = () => {
 
     useEffect(() => {
         const fetchEmail = async () => {
-            const email = await getEmail("customer_jwt");
+            const email = await getEmail(CUSTOMER_JWT);
             setEmail(email);
         };
 
@@ -45,30 +30,33 @@ const GarageScreen = () => {
     useEffect(() => {
         const fetchGarage = async () => {
             setLoadingGarage(true);
-            try {
-                const response = await axios.get<Garage>(`/api/garages/${garageid}`);
-                if (response.data) {
-                    setGarage(response.data);
-                }
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoadingGarage(false);
-            }
+            await axios.get<Garage>(`/api/garages/${garageid}`)
+                .then((response) => {
+                    if (response.data) {
+                        setGarage(response.data);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                })
+                .finally(() => {
+                    setLoadingGarage(false);
+                });
         };
 
         const fetchServices = async () => {
             setLoadingServices(true);
-            try {
-                const response = await axios.get<Service[]>(`/api/garages/${garageid}/services`);
-                if (response.data) {
-                    setServices(response.data);
-                }
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoadingServices(false);
-            }
+            await axios.get<Service[]>(`/api/garages/${garageid}/services`)
+                .then((response) => {
+                    if (response.data) {
+                        setServices(response.data);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                }).finally(() => {
+                    setLoadingServices(false);
+                });
         };
 
         fetchGarage();

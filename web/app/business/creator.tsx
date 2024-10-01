@@ -15,6 +15,7 @@ import {ProgressSteps, ProgressStep} from "react-native-progress-steps";
 import axios from "axios";
 import {get} from "@/utils/auth";
 import {useRouter} from "expo-router";
+import {EMPLOYEE_JWT} from "@/constants/constants";
 
 interface Service {
     id: string;
@@ -183,7 +184,7 @@ const CreatorScreen = () => {
     };
 
     const handleSubmit = async () => {
-        const token = await get("employee_jwt");
+        const token = await get(EMPLOYEE_JWT);
         const data = {
             name,
             city,
@@ -198,12 +199,13 @@ const CreatorScreen = () => {
             })),
             employeeEmails
         };
-        await axios.post('/api/business/creator', data, {headers: {"Authorization": `Bearer ${token}`}})
-            .then(function (response) {
+        await axios.post("/api/business/creator", data, {headers: {"Authorization": `Bearer ${token}`}})
+            .then(() => {
                 setErrorMessage("");
                 router.push("/business/home")
             })
-            .catch(function (error) {
+            .catch((error) => {
+                console.error(error)
                 setErrorMessage(error.response.data.message);
             });
     };

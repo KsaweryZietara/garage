@@ -5,6 +5,7 @@ import CustomButton from "@/components/CustomButton";
 import {useRouter} from "expo-router";
 import axios from "axios";
 import {save} from "@/utils/auth";
+import {EMPLOYEE_JWT} from "@/constants/constants";
 
 const LoginScreen = () => {
     const router = useRouter();
@@ -33,24 +34,26 @@ const LoginScreen = () => {
             return;
         }
 
-        await axios.post('/api/business/login', {
+        await axios.post("/api/business/login", {
             email,
             password,
         })
-            .then(function (response) {
+            .then((response) => {
                 setErrorMessage("");
-                save("employee_jwt", response.data.jwt)
+                save(EMPLOYEE_JWT, response.data.jwt)
 
                 axios.get("/api/employee/garage", {headers: {"Authorization": `Bearer ${response.data.jwt}`}})
-                    .then(function (response) {
+                    .then(() => {
                         router.push("/business/home")
                     })
-                    .catch(function (error) {
+                    .catch((error) => {
+                        console.error(error)
                         router.push("/business/creator")
                     })
 
             })
-            .catch(function (error) {
+            .catch((error) => {
+                console.error(error)
                 if (error.response.status === 400) {
                     setErrorMessage(error.response.data.message);
                 } else {

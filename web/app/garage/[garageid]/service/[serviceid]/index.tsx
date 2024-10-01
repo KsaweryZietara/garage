@@ -5,19 +5,8 @@ import axios from "axios";
 import {getEmail} from "@/utils/jwt";
 import EmailDisplay from "@/components/EmailDisplay";
 import MenuModal from "@/components/MenuModal";
-
-interface Service {
-    id: number;
-    name: string;
-    time: string;
-    price: string;
-}
-
-interface Employee {
-    id: number;
-    name: string;
-    surname: string;
-}
+import {Employee, Service} from "@/types";
+import {CUSTOMER_JWT} from "@/constants/constants";
 
 const ServiceScreen = () => {
     const router = useRouter();
@@ -31,7 +20,7 @@ const ServiceScreen = () => {
 
     useEffect(() => {
         const fetchEmail = async () => {
-            const email = await getEmail("customer_jwt");
+            const email = await getEmail(CUSTOMER_JWT);
             setEmail(email);
         };
 
@@ -41,30 +30,34 @@ const ServiceScreen = () => {
     useEffect(() => {
         const fetchService = async () => {
             setLoadingService(true);
-            try {
-                const response = await axios.get<Service>(`/api/services/${serviceid}`);
-                if (response.data) {
-                    setService(response.data);
-                }
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoadingService(false);
-            }
+            await axios.get<Service>(`/api/services/${serviceid}`)
+                .then((response) => {
+                    if (response.data) {
+                        setService(response.data);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                })
+                .finally(() => {
+                    setLoadingService(false);
+                });
         };
 
         const fetchEmployees = async () => {
             setLoadingEmployees(true);
-            try {
-                const response = await axios.get<Employee[]>(`/api/garages/${garageid}/employees`);
-                if (response.data) {
-                    setEmployees(response.data);
-                }
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoadingEmployees(false);
-            }
+            await axios.get<Employee[]>(`/api/garages/${garageid}/employees`)
+                .then((response) => {
+                    if (response.data) {
+                        setEmployees(response.data);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                })
+                .finally(() => {
+                    setLoadingEmployees(false);
+                });
         };
 
         fetchService();

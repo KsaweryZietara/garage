@@ -58,18 +58,19 @@ const CreateOwnerAccountScreen = () => {
             return;
         }
 
-        await axios.post('/api/business/register', {
+        await axios.post("/api/business/register", {
             name,
             surname,
             email,
             password,
             confirmPassword
         })
-            .then(function (response) {
+            .then(() => {
                 setErrorMessage("");
                 router.push("/business/confirm-email");
             })
-            .catch(function (error) {
+            .catch((error) => {
+                console.error(error)
                 setErrorMessage(error.response.data.message);
             });
     };

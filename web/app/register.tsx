@@ -53,16 +53,17 @@ const RegisterScreen = () => {
             return;
         }
 
-        await axios.post('/api/customer/register', {
+        await axios.post("/api/customer/register", {
             email,
             password,
             confirmPassword
         })
-            .then(function (response) {
+            .then(() => {
                 setErrorMessage("");
                 router.push("/login");
             })
-            .catch(function (error) {
+            .catch((error) => {
+                console.error(error)
                 setErrorMessage(error.response.data.message);
             });
     };

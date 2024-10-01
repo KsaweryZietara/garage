@@ -5,16 +5,17 @@ import {useRouter} from "expo-router";
 import {getEmail} from "@/utils/jwt";
 import MenuModal from "@/components/MenuModal";
 import EmailDisplay from "@/components/EmailDisplay";
+import {CUSTOMER_JWT} from "@/constants/constants";
 
 const HomeScreen = () => {
     const router = useRouter();
     const [email, setEmail] = useState<string | null>(null);
     const [menuVisible, setMenuVisible] = useState(false);
-    const [search, setSearch] = useState('');
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
         const fetchEmail = async () => {
-            const email = await getEmail("customer_jwt");
+            const email = await getEmail(CUSTOMER_JWT);
             setEmail(email);
         };
 

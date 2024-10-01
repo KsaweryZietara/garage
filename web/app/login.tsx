@@ -4,6 +4,7 @@ import CustomButton from "@/components/CustomButton";
 import {useRouter} from "expo-router";
 import axios from "axios";
 import {save} from "@/utils/auth";
+import {CUSTOMER_JWT} from "@/constants/constants";
 
 const LoginScreen = () => {
     const router = useRouter();
@@ -32,17 +33,17 @@ const LoginScreen = () => {
             return;
         }
 
-        await axios
-            .post("/api/customer/login", {
-                email,
-                password,
-            })
-            .then(function (response) {
+        await axios.post("/api/customer/login", {
+            email,
+            password,
+        })
+            .then((response) => {
                 setErrorMessage("");
-                save("customer_jwt", response.data.jwt);
+                save(CUSTOMER_JWT, response.data.jwt);
                 router.push("/home");
             })
-            .catch(function (error) {
+            .catch((error) => {
+                console.error(error)
                 if (error.response.status === 400) {
                     setErrorMessage(error.response.data.message);
                 } else {

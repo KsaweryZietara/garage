@@ -12,60 +12,43 @@ import {
 import axios from "axios";
 import {get, remove} from "@/utils/auth";
 import moment, {Moment} from "moment";
-import 'moment/locale/pl';
+import "moment/locale/pl";
 import CalendarStrip from "react-native-calendar-strip";
 import {getEmail} from "@/utils/jwt";
 import {useRouter} from "expo-router";
+import {EmployeeAppointment} from "@/types";
+import {EMPLOYEE_JWT} from "@/constants/constants";
+import {formatTime} from "@/utils/time";
 
-moment.locale('pl');
-
-interface Appointment {
-    id: number;
-    startTime: Date;
-    endTime: Date;
-    service: Service;
-    employee?: Employee;
-}
-
-interface Employee {
-    id: number;
-    name: string;
-    surname: string;
-}
-
-interface Service {
-    id: number;
-    name: string;
-    time: string;
-    price: string;
-}
+moment.locale("pl");
 
 const HomeScreen = () => {
     const router = useRouter();
     const [email, setEmail] = useState<string | null>(null);
     const [menuVisible, setMenuVisible] = useState(false);
     const [garageName, setGarageName] = useState("garage");
-    const [appointments, setAppointments] = useState<Appointment[]>([]);
+    const [appointments, setAppointments] = useState<EmployeeAppointment[]>([]);
     const [loadingAppointments, setLoadingAppointments] = useState<boolean>(true);
     const [selectedDate, setSelectedDate] = useState<Moment>(moment());
 
     useEffect(() => {
         const fetchGarageName = async () => {
-            try {
-                const token = await get("employee_jwt");
-                const response = await axios.get("/api/employee/garage", {
-                    headers: {"Authorization": `Bearer ${token}`}
+            const token = await get(EMPLOYEE_JWT);
+            await axios.get("/api/employee/garage", {
+                headers: {"Authorization": `Bearer ${token}`}
+            })
+                .then((response) => {
+                    if (response.data && response.data.name) {
+                        setGarageName(response.data.name);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error)
                 });
-                if (response.data && response.data.name) {
-                    setGarageName(response.data.name);
-                }
-            } catch (error) {
-                console.log(error);
-            }
         };
 
         const fetchEmail = async () => {
-            const email = await getEmail("employee_jwt");
+            const email = await getEmail(EMPLOYEE_JWT);
             setEmail(email);
         };
 
@@ -76,24 +59,26 @@ const HomeScreen = () => {
     useEffect(() => {
         const fetchAppointments = async () => {
             setLoadingAppointments(true);
-            try {
-                const token = await get("employee_jwt");
-                const response = await axios.get<Appointment[]>(`/api/employee/appointments?date=${selectedDate.format("YYYY-MM-DD")}`, {
-                    headers: {"Authorization": `Bearer ${token}`}
+            const token = await get(EMPLOYEE_JWT);
+            await axios.get<EmployeeAppointment[]>(`/api/employee/appointments?date=${selectedDate.format("YYYY-MM-DD")}`, {
+                headers: {"Authorization": `Bearer ${token}`}
+            })
+                .then((response) => {
+                    setAppointments(response.data);
+                })
+                .catch((error) => {
+                    console.error(error);
+                })
+                .finally(() => {
+                    setLoadingAppointments(false);
                 });
-                setAppointments(response.data);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoadingAppointments(false);
-            }
         };
 
         fetchAppointments();
     }, [selectedDate]);
 
     const handleLogout = () => {
-        remove("employee_jwt");
+        remove(EMPLOYEE_JWT);
         setEmail(null);
         setMenuVisible(false)
         router.push("/business/login")
@@ -107,14 +92,7 @@ const HomeScreen = () => {
         setSelectedDate(date);
     };
 
-    const formatTime = (date: Date): string => {
-        const d = new Date(date);
-        const hours = d.getUTCHours().toString().padStart(2, '0');
-        const minutes = d.getUTCMinutes().toString().padStart(2, '0');
-        return `${hours}:${minutes}`;
-    };
-
-    const renderAppointmentItem = ({item}: { item: Appointment }) => {
+    const renderAppointmentItem = ({item}: { item: EmployeeAppointment }) => {
         const startHour = new Date(item.startTime).getUTCHours();
 
         return (
@@ -147,7 +125,7 @@ const HomeScreen = () => {
                     onPress={() => setMenuVisible(true)}
                     style={{
                         borderRadius: 5,
-                        padding: Platform.OS === 'web' ? 12 : 6,
+                        padding: Platform.OS === "web" ? 12 : 6,
                         marginRight: 5,
                     }}
                 >
@@ -156,30 +134,30 @@ const HomeScreen = () => {
             </View>
             <CalendarStrip
                 scrollable
-                locale={{name: 'pl', config: {}}}
-                calendarAnimation={{type: 'sequence', duration: 30}}
-                style={{height: 100, paddingBottom: Platform.OS === 'web' ? 100 : 10}}
+                locale={{name: "pl", config: {}}}
+                calendarAnimation={{type: "sequence", duration: 30}}
+                style={{height: 100, paddingBottom: Platform.OS === "web" ? 100 : 10}}
                 calendarHeaderStyle={{
-                    color: 'white',
-                    marginBottom: Platform.OS === 'web' ? 40 : 10,
+                    color: "white",
+                    marginBottom: Platform.OS === "web" ? 40 : 10,
                     fontSize: 20,
                 }}
-                calendarColor={'#374151'}
-                dateNumberStyle={{color: 'white'}}
-                dateNameStyle={{color: 'white'}}
-                highlightDateNumberStyle={{color: '#111827'}}
-                highlightDateNameStyle={{color: '#111827'}}
-                disabledDateNameStyle={{color: 'gray'}}
-                disabledDateNumberStyle={{color: 'gray'}}
+                calendarColor={"#374151"}
+                dateNumberStyle={{color: "white"}}
+                dateNameStyle={{color: "white"}}
+                highlightDateNumberStyle={{color: "#111827"}}
+                highlightDateNameStyle={{color: "#111827"}}
+                disabledDateNameStyle={{color: "gray"}}
+                disabledDateNumberStyle={{color: "gray"}}
                 iconContainer={{flex: 0.1}}
                 markedDates={[
                     {
-                        date: moment().format('YYYY-MM-DD'),
-                        dots: [{color: '#111827', selectedColor: '#111827'}],
+                        date: moment().format("YYYY-MM-DD"),
+                        dots: [{color: "#111827", selectedColor: "#111827"}],
                     },
                 ]}
-                leftSelector={<Text style={{color: 'white', fontSize: 30}}>&lt;</Text>}
-                rightSelector={<Text style={{color: 'white', fontSize: 30}}>&gt;</Text>}
+                leftSelector={<Text style={{color: "white", fontSize: 30}}>&lt;</Text>}
+                rightSelector={<Text style={{color: "white", fontSize: 30}}>&gt;</Text>}
                 onDateSelected={handleDateChange}
                 selectedDate={selectedDate}
             />
@@ -210,17 +188,17 @@ const HomeScreen = () => {
                 <TouchableWithoutFeedback onPress={handleMenuClose}>
                     <View style={{
                         flex: 1,
-                        justifyContent: 'flex-start',
-                        alignItems: 'flex-end',
+                        justifyContent: "flex-start",
+                        alignItems: "flex-end",
                     }}>
                         <View style={{
-                            marginRight: Platform.OS === 'web' ? 32 : 27,
-                            marginTop: Platform.OS === 'web' ? 52 : 50,
-                            backgroundColor: 'white',
+                            marginRight: Platform.OS === "web" ? 32 : 27,
+                            marginTop: Platform.OS === "web" ? 52 : 50,
+                            backgroundColor: "white",
                             borderRadius: 5,
-                            padding: Platform.OS === 'web' ? 12 : 6,
+                            padding: Platform.OS === "web" ? 12 : 6,
                             elevation: 5,
-                            shadowColor: '#000',
+                            shadowColor: "#000",
                             shadowOffset: {
                                 width: 0,
                                 height: 2,

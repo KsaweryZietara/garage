@@ -58,11 +58,12 @@ const CreateMechanicAccountScreen = () => {
             password,
             confirmPassword
         })
-            .then(function (response) {
+            .then(() => {
                 setErrorMessage("");
                 router.push("/business/login");
             })
-            .catch(function (error) {
+            .catch((error) => {
+                console.error(error)
                 setErrorMessage(error.response.data.message);
             });
     };

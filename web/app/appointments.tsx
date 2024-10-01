@@ -6,44 +6,9 @@ import EmailDisplay from "@/components/EmailDisplay";
 import MenuModal from "@/components/MenuModal";
 import {getEmail} from "@/utils/jwt";
 import TabSwitcher from "@/components/TabSwitcher";
-
-interface Appointments {
-    upcoming: Appointment[];
-    inProgress: Appointment[];
-    completed: Appointment[];
-}
-
-interface Appointment {
-    id: number;
-    startTime: Date;
-    endTime: Date;
-    service: Service;
-    employee: Employee;
-    garage: Garage;
-}
-
-interface Garage {
-    id: number;
-    name: string;
-    city: string;
-    street: string;
-    number: string;
-    postalCode: string;
-    phoneNumber: string;
-}
-
-interface Employee {
-    id: number;
-    name: string;
-    surname: string;
-}
-
-interface Service {
-    id: number;
-    name: string;
-    time: string;
-    price: string;
-}
+import {CustomerAppointment, Appointments} from "@/types";
+import {CUSTOMER_JWT} from "@/constants/constants";
+import {formatDateTime} from "@/utils/time";
 
 const AppointmentsScreen = () => {
     const [email, setEmail] = useState<string | null>(null);
@@ -54,39 +19,32 @@ const AppointmentsScreen = () => {
 
     useEffect(() => {
         const fetchEmail = async () => {
-            const email = await getEmail("customer_jwt");
+            const email = await getEmail(CUSTOMER_JWT);
             setEmail(email);
         };
 
         const fetchAppointments = async () => {
             setLoadingAppointments(true);
-            try {
-                const token = await get("customer_jwt");
-                const response = await axios.get<Appointments>("/api/customer/appointments", {
-                    headers: {"Authorization": `Bearer ${token}`}
+            const token = await get(CUSTOMER_JWT);
+            await axios.get<Appointments>("/api/customer/appointments", {
+                headers: {"Authorization": `Bearer ${token}`}
+            })
+                .then((response) => {
+                    setAppointments(response.data);
+                })
+                .catch((error) => {
+                    console.error(error);
+                })
+                .finally(() => {
+                    setLoadingAppointments(false);
                 });
-                setAppointments(response.data);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoadingAppointments(false);
-            }
         };
 
         fetchAppointments();
         fetchEmail();
     }, []);
 
-    const formatDateTime = (date: Date): string => {
-        const d = new Date(date);
-        const formattedDate = `${d.getUTCDate().toString().padStart(2, '0')}/${(d.getUTCMonth() + 1).toString().padStart(2, '0')}/${d.getUTCFullYear()}`;
-        const hours = d.getUTCHours().toString().padStart(2, '0');
-        const minutes = d.getUTCMinutes().toString().padStart(2, '0');
-        const formattedTime = `${hours}:${minutes}`;
-        return `${formattedTime} ${formattedDate}`;
-    };
-
-    const renderAppointmentItem = ({item}: { item: Appointment }) => {
+    const renderAppointmentItem = ({item}: { item: CustomerAppointment }) => {
         return (
             <View className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg">
                 <Text className="text-lg text-white font-bold">

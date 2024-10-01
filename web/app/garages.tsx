@@ -6,16 +6,8 @@ import axios from "axios";
 import {getEmail} from "@/utils/jwt";
 import EmailDisplay from "@/components/EmailDisplay";
 import MenuModal from "@/components/MenuModal";
-
-interface Garage {
-    id: number;
-    name: string;
-    city: string;
-    street: string;
-    number: string;
-    postalCode: string;
-    phoneNumber: string;
-}
+import {Garage} from "@/types";
+import {CUSTOMER_JWT} from "@/constants/constants";
 
 const GaragesScreen = () => {
     const router = useRouter();
@@ -31,7 +23,7 @@ const GaragesScreen = () => {
 
     useEffect(() => {
         const fetchEmail = async () => {
-            const email = await getEmail("customer_jwt");
+            const email = await getEmail(CUSTOMER_JWT);
             setEmail(email);
         };
 

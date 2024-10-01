@@ -1,34 +1,19 @@
 import {useLocalSearchParams, useRouter} from "expo-router";
 import React, {useEffect, useState} from "react";
 import {ActivityIndicator, FlatList, Modal, Platform, StatusBar, Text, TouchableOpacity, View} from "react-native";
-import CalendarStrip from 'react-native-calendar-strip';
+import CalendarStrip from "react-native-calendar-strip";
 import axios from "axios";
 import moment, {Moment} from "moment";
-import 'moment/locale/pl';
+import "moment/locale/pl";
 import {get} from "@/utils/auth";
 import {getEmail} from "@/utils/jwt";
 import EmailDisplay from "@/components/EmailDisplay";
 import MenuModal from "@/components/MenuModal";
+import {Employee, Service, TimeSlot} from "@/types";
+import {CUSTOMER_JWT} from "@/constants/constants";
+import {formatDateTime, formatTime} from "@/utils/time";
 
-moment.locale('pl');
-
-interface Service {
-    id: number;
-    name: string;
-    time: string;
-    price: string;
-}
-
-interface Employee {
-    id: number;
-    name: string;
-    surname: string;
-}
-
-interface TimeSlot {
-    startTime: Date;
-    endTime: Date;
-}
+moment.locale("pl");
 
 const AppointmentScreen = () => {
     const router = useRouter();
@@ -49,7 +34,7 @@ const AppointmentScreen = () => {
 
     useEffect(() => {
         const fetchEmail = async () => {
-            const email = await getEmail("customer_jwt");
+            const email = await getEmail(CUSTOMER_JWT);
             setEmail(email);
         };
 
@@ -59,30 +44,34 @@ const AppointmentScreen = () => {
     useEffect(() => {
         const fetchService = async () => {
             setLoadingService(true);
-            try {
-                const response = await axios.get<Service>(`/api/services/${serviceid}`);
-                if (response.data) {
-                    setService(response.data);
-                }
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoadingService(false);
-            }
+            await axios.get<Service>(`/api/services/${serviceid}`)
+                .then((response) => {
+                    if (response.data) {
+                        setService(response.data);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                })
+                .finally(() => {
+                    setLoadingService(false);
+                });
         };
 
         const fetchEmployee = async () => {
             setLoadingEmployee(true);
-            try {
-                const response = await axios.get<Employee>(`/api/employee/${employeeid}`);
-                if (response.data) {
-                    setEmployee(response.data);
-                }
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoadingEmployee(false);
-            }
+            await axios.get<Employee>(`/api/employee/${employeeid}`)
+                .then((response) => {
+                    if (response.data) {
+                        setEmployee(response.data);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                })
+                .finally(() => {
+                    setLoadingEmployee(false);
+                });
         };
 
         fetchService();
@@ -92,21 +81,25 @@ const AppointmentScreen = () => {
     useEffect(() => {
         const fetchAvailableSlots = async () => {
             setLoadingSlots(true);
-            try {
-                const response = await axios.get<TimeSlot[]>(`/api/appointments/availableSlots?serviceId=${serviceid}&employeeId=${employeeid}&date=${selectedDate.format("YYYY-MM-DD")}`);
-                setTimeSlots(response.data);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoadingSlots(false);
-            }
+            await axios.get<TimeSlot[]>(
+                `/api/appointments/availableSlots?serviceId=${serviceid}&employeeId=${employeeid}&date=${selectedDate.format("YYYY-MM-DD")}`
+            )
+                .then((response) => {
+                    setTimeSlots(response.data);
+                })
+                .catch((error) => {
+                    console.error(error);
+                })
+                .finally(() => {
+                    setLoadingSlots(false);
+                });
         };
 
         fetchAvailableSlots();
     }, [selectedDate, serviceid, employeeid]);
 
     const handleSubmit = async () => {
-        const token = await get("customer_jwt");
+        const token = await get(CUSTOMER_JWT);
         if (token == null) {
             router.push("/login")
             return
@@ -117,35 +110,21 @@ const AppointmentScreen = () => {
             startTime: selectedTimeSlot?.startTime,
             endTime: selectedTimeSlot?.endTime
         };
-        await axios.post('/api/appointments', data, {headers: {"Authorization": `Bearer ${token}`}})
-            .then(function (response) {
+        await axios.post("/api/appointments", data, {headers: {"Authorization": `Bearer ${token}`}})
+            .then(() => {
                 setFeedbackMessage("Rezerwacja zakończona sukcesem!");
             })
-            .catch(function (error) {
+            .catch((error) => {
+                console.error(error)
                 setFeedbackMessage("Wystąpił błąd: " + (error.response?.data?.message || error.message));
-            }).finally(() => {
+            })
+            .finally(() => {
                 setFeedbackModalVisible(true);
             });
     };
 
     const handleDateChange = (date: Moment) => {
         setSelectedDate(date);
-    };
-
-    const formatTime = (date: Date): string => {
-        const d = new Date(date);
-        const hours = d.getUTCHours().toString().padStart(2, '0');
-        const minutes = d.getUTCMinutes().toString().padStart(2, '0');
-        return `${hours}:${minutes}`;
-    };
-
-    const formatDateTime = (date: Date): string => {
-        const d = new Date(date);
-        const formattedDate = `${d.getUTCDate().toString().padStart(2, '0')}/${(d.getUTCMonth() + 1).toString().padStart(2, '0')}/${d.getUTCFullYear()}`;
-        const hours = d.getUTCHours().toString().padStart(2, '0');
-        const minutes = d.getUTCMinutes().toString().padStart(2, '0');
-        const formattedTime = `${hours}:${minutes}`;
-        return `${formattedTime} ${formattedDate}`;
     };
 
     const renderTimeSlotItem = ({item}: { item: TimeSlot }) => (
@@ -187,30 +166,30 @@ const AppointmentScreen = () => {
 
             <CalendarStrip
                 scrollable
-                locale={{name: 'pl', config: {}}}
-                calendarAnimation={{type: 'sequence', duration: 30}}
+                locale={{name: "pl", config: {}}}
+                calendarAnimation={{type: "sequence", duration: 30}}
                 style={{height: 100, paddingTop: 20, paddingBottom: 10}}
                 calendarHeaderStyle={{
-                    color: 'white',
-                    marginBottom: Platform.OS === 'web' ? 35 : 10,
+                    color: "white",
+                    marginBottom: Platform.OS === "web" ? 35 : 10,
                     fontSize: 20,
                 }}
-                calendarColor={'#000'}
-                dateNumberStyle={{color: 'white'}}
-                dateNameStyle={{color: 'white'}}
-                highlightDateNumberStyle={{color: '#ff5c5c'}}
-                highlightDateNameStyle={{color: '#ff5c5c'}}
-                disabledDateNameStyle={{color: 'gray'}}
-                disabledDateNumberStyle={{color: 'gray'}}
+                calendarColor={"#000"}
+                dateNumberStyle={{color: "white"}}
+                dateNameStyle={{color: "white"}}
+                highlightDateNumberStyle={{color: "#ff5c5c"}}
+                highlightDateNameStyle={{color: "#ff5c5c"}}
+                disabledDateNameStyle={{color: "gray"}}
+                disabledDateNumberStyle={{color: "gray"}}
                 iconContainer={{flex: 0.1}}
                 markedDates={[
                     {
-                        date: moment().format('YYYY-MM-DD'),
-                        dots: [{color: '#ff5c5c', selectedColor: '#ff5c5c'}],
+                        date: moment().format("YYYY-MM-DD"),
+                        dots: [{color: "#ff5c5c", selectedColor: "#ff5c5c"}],
                     },
                 ]}
-                leftSelector={<Text style={{color: 'white', fontSize: 30}}>&lt;</Text>}
-                rightSelector={<Text style={{color: 'white', fontSize: 30}}>&gt;</Text>}
+                leftSelector={<Text style={{color: "white", fontSize: 30}}>&lt;</Text>}
+                rightSelector={<Text style={{color: "white", fontSize: 30}}>&gt;</Text>}
                 onDateSelected={handleDateChange}
                 selectedDate={selectedDate}
                 minDate={moment()}
