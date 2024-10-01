@@ -26,7 +26,7 @@ const AppointmentsScreen = () => {
         const fetchAppointments = async () => {
             setLoadingAppointments(true);
             const token = await get(CUSTOMER_JWT);
-            await axios.get<Appointments>("/api/customer/appointments", {
+            await axios.get<Appointments>("/api/customers/appointments", {
                 headers: {"Authorization": `Bearer ${token}`}
             })
                 .then((response) => {

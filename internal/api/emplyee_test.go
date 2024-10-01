@@ -97,10 +97,10 @@ func TestGetEmployeeEndpoint(t *testing.T) {
 		})
 	assert.NoError(t, err)
 
-	response := suite.CallAPI(http.MethodGet, fmt.Sprintf("/api/employee/%v", owner.ID), []byte{}, nil)
+	response := suite.CallAPI(http.MethodGet, fmt.Sprintf("/api/employees/%v", owner.ID), []byte{}, nil)
 	assert.Equal(t, http.StatusNotFound, response.StatusCode)
 
-	response = suite.CallAPI(http.MethodGet, fmt.Sprintf("/api/employee/%v", employee.ID), []byte{}, nil)
+	response = suite.CallAPI(http.MethodGet, fmt.Sprintf("/api/employees/%v", employee.ID), []byte{}, nil)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 
 	var employeeDTO internal.EmployeeDTO

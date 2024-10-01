@@ -199,7 +199,7 @@ const CreatorScreen = () => {
             })),
             employeeEmails
         };
-        await axios.post("/api/business/creator", data, {headers: {"Authorization": `Bearer ${token}`}})
+        await axios.post("/api/garages", data, {headers: {"Authorization": `Bearer ${token}`}})
             .then(() => {
                 setErrorMessage("");
                 router.push("/business/home")

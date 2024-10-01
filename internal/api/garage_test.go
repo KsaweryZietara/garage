@@ -52,17 +52,17 @@ func TestCreateGarageEndpoint(t *testing.T) {
 	garageJSON, err := json.Marshal(garage)
 	require.NoError(t, err)
 
-	response := suite.CallAPI(http.MethodPost, "/api/business/creator", garageJSON, token)
+	response := suite.CallAPI(http.MethodPost, "/api/garages", garageJSON, token)
 	assert.Equal(t, http.StatusCreated, response.StatusCode)
 
 	garage.PhoneNumber = "987654321"
 	garageJSON, err = json.Marshal(garage)
 	require.NoError(t, err)
 
-	response = suite.CallAPI(http.MethodPost, "/api/business/creator", garageJSON, token)
+	response = suite.CallAPI(http.MethodPost, "/api/garages", garageJSON, token)
 	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
 
-	response = suite.CallAPI(http.MethodPost, "/api/business/creator", garageJSON, nil)
+	response = suite.CallAPI(http.MethodPost, "/api/garages", garageJSON, nil)
 	assert.Equal(t, http.StatusUnauthorized, response.StatusCode)
 }
 
@@ -92,10 +92,10 @@ func TestOwnerGetGarageEndpoint(t *testing.T) {
 	garageJSON, err := json.Marshal(garage)
 	require.NoError(t, err)
 
-	response := suite.CallAPI(http.MethodPost, "/api/business/creator", garageJSON, token)
+	response := suite.CallAPI(http.MethodPost, "/api/garages", garageJSON, token)
 	assert.Equal(t, http.StatusCreated, response.StatusCode)
 
-	response = suite.CallAPI(http.MethodGet, "/api/employee/garage", []byte{}, token)
+	response = suite.CallAPI(http.MethodGet, "/api/employees/garages", []byte{}, token)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 }
 
@@ -136,7 +136,7 @@ func TestMechanicGetGarageEndpoint(t *testing.T) {
 			GarageID: &garage.ID,
 		})
 
-	response := suite.CallAPI(http.MethodGet, "/api/employee/garage", []byte{}, token)
+	response := suite.CallAPI(http.MethodGet, "/api/employees/garages", []byte{}, token)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 }
 

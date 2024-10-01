@@ -61,23 +61,27 @@ func (a *API) Start() {
 }
 
 func (a *API) attachRoutes(router *http.ServeMux) {
-	router.HandleFunc("POST /api/business/register", a.CreateOwner)
-	router.HandleFunc("POST /api/business/register/{code}", a.CreateMechanic)
-	router.HandleFunc("POST /api/business/login", a.LoginEmployee)
-	router.HandleFunc("GET /api/employee/{id}", a.GetEmployee)
-	router.Handle("POST /api/business/creator", a.authMiddleware(http.HandlerFunc(a.CreateGarage), []internal.Role{internal.OwnerRole}))
-	router.Handle("GET /api/employee/garage", a.authMiddleware(http.HandlerFunc(a.GetEmployeeGarage), []internal.Role{internal.OwnerRole, internal.MechanicRole}))
-	router.Handle("GET /api/employee/appointments", a.authMiddleware(http.HandlerFunc(a.GetEmployeeAppointments), []internal.Role{internal.OwnerRole, internal.MechanicRole}))
+	router.HandleFunc("POST /api/employees/register", a.CreateOwner)
+	router.HandleFunc("POST /api/employees/register/{code}", a.CreateMechanic)
+	router.HandleFunc("POST /api/employees/login", a.LoginEmployee)
+	router.HandleFunc("GET /api/employees/{id}", a.GetEmployee)
+	router.Handle("GET /api/employees/garages", a.authMiddleware(http.HandlerFunc(a.GetEmployeeGarage), []internal.Role{internal.OwnerRole, internal.MechanicRole}))
+	router.Handle("GET /api/employees/appointments", a.authMiddleware(http.HandlerFunc(a.GetEmployeeAppointments), []internal.Role{internal.OwnerRole, internal.MechanicRole}))
+
+	router.HandleFunc("POST /api/customers/register", a.CreateCustomer)
+	router.HandleFunc("POST /api/customers/login", a.LoginCustomer)
+	router.Handle("GET /api/customers/appointments", a.authMiddleware(http.HandlerFunc(a.GetCustomerAppointments), []internal.Role{internal.CustomerRole}))
+
+	router.Handle("POST /api/garages", a.authMiddleware(http.HandlerFunc(a.CreateGarage), []internal.Role{internal.OwnerRole}))
 	router.HandleFunc("GET /api/garages", a.ListGarages)
 	router.HandleFunc("GET /api/garages/{id}", a.GetGarage)
 	router.HandleFunc("GET /api/garages/{id}/services", a.ListServices)
 	router.HandleFunc("GET /api/garages/{id}/employees", a.ListEmployees)
+
 	router.HandleFunc("GET /api/services/{id}", a.GetService)
-	router.HandleFunc("POST /api/customer/register", a.CreateCustomer)
-	router.HandleFunc("POST /api/customer/login", a.LoginCustomer)
+
 	router.Handle("POST /api/appointments", a.authMiddleware(http.HandlerFunc(a.CreateAppointment), []internal.Role{internal.CustomerRole}))
 	router.HandleFunc("GET /api/appointments/availableSlots", a.GetAvailableSlots)
-	router.Handle("GET /api/customer/appointments", a.authMiddleware(http.HandlerFunc(a.GetCustomerAppointments), []internal.Role{internal.CustomerRole}))
 }
 
 func (a *API) authMiddleware(next http.Handler, roles []internal.Role) http.Handler {

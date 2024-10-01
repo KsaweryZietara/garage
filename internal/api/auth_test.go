@@ -26,7 +26,7 @@ func TestOwnerRegisterAndLoginEndpoints(t *testing.T) {
 	employeeJSON, err := json.Marshal(employee)
 	require.NoError(t, err)
 
-	response := suite.CallAPI(http.MethodPost, "/api/business/register", employeeJSON, nil)
+	response := suite.CallAPI(http.MethodPost, "/api/employees/register", employeeJSON, nil)
 	assert.Equal(t, http.StatusCreated, response.StatusCode)
 
 	loginDTO := internal.LoginDTO{
@@ -36,7 +36,7 @@ func TestOwnerRegisterAndLoginEndpoints(t *testing.T) {
 	loginJSON, err := json.Marshal(loginDTO)
 	require.NoError(t, err)
 
-	response = suite.CallAPI(http.MethodPost, "/api/business/login", loginJSON, nil)
+	response = suite.CallAPI(http.MethodPost, "/api/employees/login", loginJSON, nil)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 
 	loginDTO = internal.LoginDTO{
@@ -46,7 +46,7 @@ func TestOwnerRegisterAndLoginEndpoints(t *testing.T) {
 	loginJSON, err = json.Marshal(loginDTO)
 	require.NoError(t, err)
 
-	response = suite.CallAPI(http.MethodPost, "/api/business/login", loginJSON, nil)
+	response = suite.CallAPI(http.MethodPost, "/api/employees/login", loginJSON, nil)
 	assert.Equal(t, http.StatusUnauthorized, response.StatusCode)
 
 	loginDTO = internal.LoginDTO{
@@ -56,7 +56,7 @@ func TestOwnerRegisterAndLoginEndpoints(t *testing.T) {
 	loginJSON, err = json.Marshal(loginDTO)
 	require.NoError(t, err)
 
-	response = suite.CallAPI(http.MethodPost, "/api/business/login", loginJSON, nil)
+	response = suite.CallAPI(http.MethodPost, "/api/employees/login", loginJSON, nil)
 	assert.Equal(t, http.StatusUnauthorized, response.StatusCode)
 }
 
@@ -93,7 +93,7 @@ func TestMechanicRegisterAndLoginEndpoints(t *testing.T) {
 	employeeJSON, err := json.Marshal(employeeDTO)
 	require.NoError(t, err)
 
-	response := suite.CallAPI(http.MethodPost, "/api/business/register/"+codeID, employeeJSON, nil)
+	response := suite.CallAPI(http.MethodPost, "/api/employees/register/"+codeID, employeeJSON, nil)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 
 	loginDTO := internal.LoginDTO{
@@ -103,7 +103,7 @@ func TestMechanicRegisterAndLoginEndpoints(t *testing.T) {
 	loginJSON, err := json.Marshal(loginDTO)
 	require.NoError(t, err)
 
-	response = suite.CallAPI(http.MethodPost, "/api/business/login", loginJSON, nil)
+	response = suite.CallAPI(http.MethodPost, "/api/employees/login", loginJSON, nil)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 }
 
@@ -119,7 +119,7 @@ func TestCustomerRegisterAndLoginEndpoints(t *testing.T) {
 	customerJSON, err := json.Marshal(customer)
 	require.NoError(t, err)
 
-	response := suite.CallAPI(http.MethodPost, "/api/customer/register", customerJSON, nil)
+	response := suite.CallAPI(http.MethodPost, "/api/customers/register", customerJSON, nil)
 	assert.Equal(t, http.StatusCreated, response.StatusCode)
 
 	loginDTO := internal.LoginDTO{
@@ -129,7 +129,7 @@ func TestCustomerRegisterAndLoginEndpoints(t *testing.T) {
 	loginJSON, err := json.Marshal(loginDTO)
 	require.NoError(t, err)
 
-	response = suite.CallAPI(http.MethodPost, "/api/customer/login", loginJSON, nil)
+	response = suite.CallAPI(http.MethodPost, "/api/customers/login", loginJSON, nil)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 
 	loginDTO = internal.LoginDTO{
@@ -139,7 +139,7 @@ func TestCustomerRegisterAndLoginEndpoints(t *testing.T) {
 	loginJSON, err = json.Marshal(loginDTO)
 	require.NoError(t, err)
 
-	response = suite.CallAPI(http.MethodPost, "/api/customer/login", loginJSON, nil)
+	response = suite.CallAPI(http.MethodPost, "/api/customers/login", loginJSON, nil)
 	assert.Equal(t, http.StatusUnauthorized, response.StatusCode)
 
 	loginDTO = internal.LoginDTO{
@@ -149,6 +149,6 @@ func TestCustomerRegisterAndLoginEndpoints(t *testing.T) {
 	loginJSON, err = json.Marshal(loginDTO)
 	require.NoError(t, err)
 
-	response = suite.CallAPI(http.MethodPost, "/api/customer/login", loginJSON, nil)
+	response = suite.CallAPI(http.MethodPost, "/api/customers/login", loginJSON, nil)
 	assert.Equal(t, http.StatusUnauthorized, response.StatusCode)
 }

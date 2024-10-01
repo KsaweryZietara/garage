@@ -52,7 +52,7 @@ const CreateMechanicAccountScreen = () => {
             return;
         }
 
-        await axios.post(`/api/business/register/${code}`, {
+        await axios.post(`/api/employees/register/${code}`, {
             name,
             surname,
             password,

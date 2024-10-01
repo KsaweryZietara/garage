@@ -58,7 +58,7 @@ const CreateOwnerAccountScreen = () => {
             return;
         }
 
-        await axios.post("/api/business/register", {
+        await axios.post("/api/employees/register", {
             name,
             surname,
             email,

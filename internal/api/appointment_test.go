@@ -176,7 +176,7 @@ func TestGetEmployeeAndCustomerAppointmentsEndpoint(t *testing.T) {
 
 	token, err := suite.api.auth.CreateToken(mechanic1.Email, internal.MechanicRole)
 	assert.NoError(t, err)
-	response := suite.CallAPI(http.MethodGet, "/api/employee/appointments?date=2024-09-23", []byte{}, &token)
+	response := suite.CallAPI(http.MethodGet, "/api/employees/appointments?date=2024-09-23", []byte{}, &token)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 	suite.ParseResponse(t, response, &appointmentDTOs)
 	assert.Len(t, appointmentDTOs, 1)
@@ -188,7 +188,7 @@ func TestGetEmployeeAndCustomerAppointmentsEndpoint(t *testing.T) {
 
 	token, err = suite.api.auth.CreateToken(owner.Email, internal.OwnerRole)
 	assert.NoError(t, err)
-	response = suite.CallAPI(http.MethodGet, "/api/employee/appointments?date=2024-09-23", []byte{}, &token)
+	response = suite.CallAPI(http.MethodGet, "/api/employees/appointments?date=2024-09-23", []byte{}, &token)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 	suite.ParseResponse(t, response, &appointmentDTOs)
 	assert.Len(t, appointmentDTOs, 2)
@@ -208,7 +208,7 @@ func TestGetEmployeeAndCustomerAppointmentsEndpoint(t *testing.T) {
 	var customerAppointments internal.CustomerAppointmentDTOs
 	token, err = suite.api.auth.CreateToken(customer.Email, internal.CustomerRole)
 	assert.NoError(t, err)
-	response = suite.CallAPI(http.MethodGet, "/api/customer/appointments", []byte{}, &token)
+	response = suite.CallAPI(http.MethodGet, "/api/customers/appointments", []byte{}, &token)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 	suite.ParseResponse(t, response, &customerAppointments)
 	assert.Len(t, customerAppointments.Upcoming, 0)

@@ -33,7 +33,7 @@ const LoginScreen = () => {
             return;
         }
 
-        await axios.post("/api/customer/login", {
+        await axios.post("/api/customers/login", {
             email,
             password,
         })

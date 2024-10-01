@@ -53,7 +53,7 @@ const RegisterScreen = () => {
             return;
         }
 
-        await axios.post("/api/customer/register", {
+        await axios.post("/api/customers/register", {
             email,
             password,
             confirmPassword

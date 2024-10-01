@@ -34,7 +34,7 @@ const LoginScreen = () => {
             return;
         }
 
-        await axios.post("/api/business/login", {
+        await axios.post("/api/employees/login", {
             email,
             password,
         })
@@ -42,7 +42,7 @@ const LoginScreen = () => {
                 setErrorMessage("");
                 save(EMPLOYEE_JWT, response.data.jwt)
 
-                axios.get("/api/employee/garage", {headers: {"Authorization": `Bearer ${response.data.jwt}`}})
+                axios.get("/api/employees/garages", {headers: {"Authorization": `Bearer ${response.data.jwt}`}})
                     .then(() => {
                         router.push("/business/home")
                     })

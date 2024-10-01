@@ -34,7 +34,7 @@ const HomeScreen = () => {
     useEffect(() => {
         const fetchGarageName = async () => {
             const token = await get(EMPLOYEE_JWT);
-            await axios.get("/api/employee/garage", {
+            await axios.get("/api/employees/garages", {
                 headers: {"Authorization": `Bearer ${token}`}
             })
                 .then((response) => {
@@ -60,7 +60,7 @@ const HomeScreen = () => {
         const fetchAppointments = async () => {
             setLoadingAppointments(true);
             const token = await get(EMPLOYEE_JWT);
-            await axios.get<EmployeeAppointment[]>(`/api/employee/appointments?date=${selectedDate.format("YYYY-MM-DD")}`, {
+            await axios.get<EmployeeAppointment[]>(`/api/employees/appointments?date=${selectedDate.format("YYYY-MM-DD")}`, {
                 headers: {"Authorization": `Bearer ${token}`}
             })
                 .then((response) => {

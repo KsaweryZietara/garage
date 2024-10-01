@@ -60,7 +60,7 @@ const AppointmentScreen = () => {
 
         const fetchEmployee = async () => {
             setLoadingEmployee(true);
-            await axios.get<Employee>(`/api/employee/${employeeid}`)
+            await axios.get<Employee>(`/api/employees/${employeeid}`)
                 .then((response) => {
                     if (response.data) {
                         setEmployee(response.data);
