@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {View, Text, StatusBar} from "react-native";
+import {View, Text, StatusBar, ActivityIndicator} from "react-native";
 import CustomTextInput from "@/components/CustomTextInput";
 import CustomButton from "@/components/CustomButton";
 import {useLocalSearchParams, useRouter} from "expo-router";
@@ -13,6 +13,7 @@ const CreateMechanicAccountScreen = () => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const validateFields = () => {
         if (
@@ -52,6 +53,8 @@ const CreateMechanicAccountScreen = () => {
             return;
         }
 
+        setLoading(true)
+
         await axios.post(`/api/employees/register/${code}`, {
             name,
             surname,
@@ -65,6 +68,8 @@ const CreateMechanicAccountScreen = () => {
             .catch((error) => {
                 console.error(error)
                 setErrorMessage(error.response.data.message);
+            }).finally(() => {
+                setLoading(false)
             });
     };
 
@@ -107,12 +112,16 @@ const CreateMechanicAccountScreen = () => {
                             {errorMessage}
                         </Text>
                     )}
-                    <CustomButton
-                        title="Utwórz konto"
-                        onPress={handleCreateAccount}
-                        containerStyles="bg-gray-700 mt-4 self-center w-3/5"
-                        textStyles="text-white font-bold"
-                    />
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#374151"/>
+                    ) : (
+                        <CustomButton
+                            title="Utwórz konto"
+                            onPress={handleCreateAccount}
+                            containerStyles="bg-gray-700 mt-4 self-center w-3/5"
+                            textStyles="text-white font-bold"
+                        />
+                    )}
                     <Text className="text-center text-gray-500 mt-4">
                         Masz już konto?{" "}
                         <Text
