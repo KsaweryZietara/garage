@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {StatusBar, Text, View} from "react-native";
+import {ActivityIndicator, StatusBar, Text, View} from "react-native";
 import CustomTextInput from "@/components/CustomTextInput";
 import CustomButton from "@/components/CustomButton";
 import {useRouter} from "expo-router";
@@ -12,6 +12,7 @@ const LoginScreen = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const validateFields = () => {
         if (!email.trim() || !password) {
@@ -33,6 +34,8 @@ const LoginScreen = () => {
             setErrorMessage(validationError);
             return;
         }
+
+        setLoading(true)
 
         await axios.post("/api/employees/login", {
             email,
@@ -59,6 +62,8 @@ const LoginScreen = () => {
                 } else {
                     setErrorMessage("Nieprawidłowy email lub hasło.")
                 }
+            }).finally(() => {
+                setLoading(false)
             });
     };
 
@@ -100,16 +105,16 @@ const LoginScreen = () => {
                             {errorMessage}
                         </Text>
                     )}
-                    <CustomButton
-                        title="Zaloguj się"
-                        onPress={handleLogin}
-                        containerStyles="bg-gray-700 mt-4 self-center w-3/5"
-                        textStyles="text-white font-bold"
-                    />
-                    <Text className="text-center text-gray-700 mt-4"
-                          onPress={() => router.push("/business/recover-password")}>
-                        Zapomniałeś hasła?
-                    </Text>
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#374151"/>
+                    ) : (
+                        <CustomButton
+                            title="Zaloguj się"
+                            onPress={handleLogin}
+                            containerStyles="bg-gray-700 mt-4 self-center w-3/5"
+                            textStyles="text-white font-bold"
+                        />
+                    )}
                 </View>
             </View>
             <StatusBar backgroundColor="#374151"/>

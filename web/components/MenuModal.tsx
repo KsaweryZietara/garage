@@ -17,6 +17,7 @@ const MenuModal: React.FC<MenuModalProps> = ({visible, onClose, email, setEmail}
         remove("customer_jwt");
         setEmail(null);
         onClose();
+        router.push("/home")
     };
 
     return (

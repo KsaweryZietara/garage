@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {StatusBar, Text, TextInput, View} from "react-native";
+import {ActivityIndicator, StatusBar, Text, TextInput, View} from "react-native";
 import CustomButton from "@/components/CustomButton";
 import {useRouter} from "expo-router";
 import axios from "axios";
@@ -11,6 +11,7 @@ const LoginScreen = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const validateFields = () => {
         if (!email.trim() || !password) {
@@ -33,6 +34,8 @@ const LoginScreen = () => {
             return;
         }
 
+        setLoading(true)
+
         await axios.post("/api/customers/login", {
             email,
             password,
@@ -49,6 +52,8 @@ const LoginScreen = () => {
                 } else {
                     setErrorMessage("Nieprawidłowy email lub hasło.");
                 }
+            }).finally(() => {
+                setLoading(false)
             });
     };
 
@@ -88,15 +93,16 @@ const LoginScreen = () => {
                     {errorMessage && (
                         <Text className="text-red-500 text-center mt-2">{errorMessage}</Text>
                     )}
-                    <CustomButton
-                        title="Zaloguj się"
-                        onPress={handleLogin}
-                        containerStyles="bg-red-500 mt-4 self-center w-3/5"
-                        textStyles="text-white font-bold"
-                    />
-                    <Text className="text-center text-gray-400 mt-4">
-                        Zapomniałeś hasła?
-                    </Text>
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#ef4444"/>
+                    ) : (
+                        <CustomButton
+                            title="Zaloguj się"
+                            onPress={handleLogin}
+                            containerStyles="bg-red-500 mt-4 self-center w-3/5"
+                            textStyles="text-white font-bold"
+                        />
+                    )}
                 </View>
             </View>
             <StatusBar backgroundColor="#000000"/>
