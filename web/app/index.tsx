@@ -2,10 +2,29 @@ import React from "react";
 import {Platform, StatusBar, Text, View} from "react-native";
 import CustomButton from "@/components/CustomButton";
 import {useRouter} from "expo-router";
+import axios from "axios";
+import {get} from "@/utils/auth";
+import {EMPLOYEE_JWT} from "@/constants/constants";
 
 const App = () => {
     const router = useRouter();
     const isMobile = Platform.OS === "android" || Platform.OS === "ios";
+
+    const handleBusiness = async () => {
+        const token = await get(EMPLOYEE_JWT);
+        if (token == null) {
+            router.push("/business/register")
+            return
+        }
+        axios.get("/api/employees/garages", {headers: {"Authorization": `Bearer ${token}`}})
+            .then(() => {
+                router.push("/business/home")
+            })
+            .catch((error) => {
+                console.error(error)
+                router.push("/business/login")
+            })
+    }
 
     return (
         <View style={{flex: 1, flexDirection: isMobile ? "column" : "row"}}>
@@ -38,7 +57,7 @@ const App = () => {
                 </View>
                 <View className="flex-1 justify-start items-center mt-4">
                     <CustomButton
-                        onPress={() => router.push("/business/register")}
+                        onPress={handleBusiness}
                         title="Zarejestruj się"
                         containerStyles="bg-white shadow-md w-2/3 py-3"
                         textStyles="text-gray-700 font-semibold text-lg"
