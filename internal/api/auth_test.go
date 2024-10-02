@@ -66,12 +66,13 @@ func TestMechanicRegisterAndLoginEndpoints(t *testing.T) {
 
 	employee, err := suite.api.storage.Employees().Insert(
 		internal.Employee{
-			Name:     "",
-			Surname:  "",
-			Email:    "john.doe@example.com",
-			Password: "",
-			Role:     internal.MechanicRole,
-			GarageID: nil,
+			Name:      "",
+			Surname:   "",
+			Email:     "john.doe@example.com",
+			Password:  "",
+			Role:      internal.MechanicRole,
+			GarageID:  nil,
+			Confirmed: false,
 		})
 	assert.NoError(t, err)
 

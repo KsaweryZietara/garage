@@ -21,7 +21,7 @@ func (e *Employee) Insert(employee internal.Employee) (internal.Employee, error)
 	sess := e.connection.NewSession(nil)
 	var id int
 	err := sess.InsertInto(employeesTable).
-		Columns("name", "surname", "email", "password", "role", "garage_id").
+		Columns("name", "surname", "email", "password", "role", "garage_id", "confirmed").
 		Record(employee).
 		Returning("id").
 		Load(&id)
@@ -39,7 +39,10 @@ func (e *Employee) GetByEmail(email string) (internal.Employee, error) {
 	sess := e.connection.NewSession(nil)
 	err := sess.Select("*").
 		From(employeesTable).
-		Where(dbr.Eq("email", email)).
+		Where(dbr.And(
+			dbr.Eq("email", email),
+			dbr.Eq("confirmed", true),
+		)).
 		LoadOne(&employee)
 	if err != nil {
 		return internal.Employee{}, err
@@ -54,6 +57,7 @@ func (e *Employee) Update(employee internal.Employee) error {
 		Set("name", employee.Name).
 		Set("surname", employee.Surname).
 		Set("password", employee.Password).
+		Set("confirmed", employee.Confirmed).
 		Exec()
 
 	return err
@@ -65,7 +69,10 @@ func (e *Employee) ListByGarageID(garageID int) ([]internal.Employee, error) {
 	var employees []internal.Employee
 	_, err := sess.Select("*").
 		From(employeesTable).
-		Where(dbr.Eq("garage_id", garageID)).
+		Where(dbr.And(
+			dbr.Eq("garage_id", garageID),
+			dbr.Eq("confirmed", true),
+		)).
 		Load(&employees)
 
 	if err != nil {
@@ -81,7 +88,10 @@ func (e *Employee) GetByID(ID int) (internal.Employee, error) {
 	var employee internal.Employee
 	err := sess.Select("*").
 		From(employeesTable).
-		Where(dbr.Eq("id", ID)).
+		Where(dbr.And(
+			dbr.Eq("id", ID),
+			dbr.Eq("confirmed", true),
+		)).
 		LoadOne(&employee)
 
 	if err != nil {

@@ -31,6 +31,7 @@ func (a *API) CreateOwner(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	employee.Password = hash
+	employee.Confirmed = true
 
 	_, err = a.storage.Employees().Insert(employee)
 	if err != nil {
@@ -71,6 +72,7 @@ func (a *API) CreateMechanic(writer http.ResponseWriter, request *http.Request) 
 		return
 	}
 	employee.Password = hash
+	employee.Confirmed = true
 
 	if err = a.storage.Employees().Update(employee); err != nil {
 		a.handleError(writer, err, 500)

@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS employees
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255),
     role roles NOT NULL,
-    garage_id INT
+    garage_id INT,
+    confirmed BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS garages

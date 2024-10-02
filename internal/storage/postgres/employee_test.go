@@ -16,11 +16,12 @@ func TestEmployee(t *testing.T) {
 	garageRepo := NewGarage(connection)
 
 	newEmployee := internal.Employee{
-		Name:     "John",
-		Surname:  "Doe",
-		Email:    "test@test.com",
-		Password: "password123",
-		Role:     internal.OwnerRole,
+		Name:      "John",
+		Surname:   "Doe",
+		Email:     "test@test.com",
+		Password:  "password123",
+		Role:      internal.OwnerRole,
+		Confirmed: true,
 	}
 	employee, err := employeeRepo.Insert(newEmployee)
 	assert.NoError(t, err)
@@ -38,12 +39,13 @@ func TestEmployee(t *testing.T) {
 	assert.NoError(t, err)
 
 	newEmployee2 := internal.Employee{
-		Name:     "John",
-		Surname:  "Doe",
-		Email:    "test2@test.com",
-		Password: "password123",
-		Role:     internal.MechanicRole,
-		GarageID: &garage.ID,
+		Name:      "John",
+		Surname:   "Doe",
+		Email:     "test2@test.com",
+		Password:  "password123",
+		Role:      internal.MechanicRole,
+		GarageID:  &garage.ID,
+		Confirmed: true,
 	}
 	employee2, err := employeeRepo.Insert(newEmployee2)
 	assert.NoError(t, err)
@@ -57,12 +59,13 @@ func TestEmployee(t *testing.T) {
 	assert.Equal(t, newEmployee2.Role, retrievedEmployee2.Role)
 
 	newEmployee3 := internal.Employee{
-		Name:     "John",
-		Surname:  "Doe",
-		Email:    "test3@test.com",
-		Password: "password123",
-		Role:     internal.MechanicRole,
-		GarageID: &garage.ID,
+		Name:      "John",
+		Surname:   "Doe",
+		Email:     "test3@test.com",
+		Password:  "password123",
+		Role:      internal.MechanicRole,
+		GarageID:  &garage.ID,
+		Confirmed: true,
 	}
 	_, err = employeeRepo.Insert(newEmployee3)
 	assert.NoError(t, err)
@@ -90,4 +93,34 @@ func TestEmployee(t *testing.T) {
 	employees, err := employeeRepo.ListByGarageID(garage.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(employees))
+
+	newEmployee4 := internal.Employee{
+		Name:      "John",
+		Surname:   "Doe",
+		Email:     "test4@test.com",
+		Password:  "password123",
+		Role:      internal.MechanicRole,
+		GarageID:  &garage.ID,
+		Confirmed: false,
+	}
+	employee4, err := employeeRepo.Insert(newEmployee4)
+	assert.NoError(t, err)
+
+	_, err = employeeRepo.GetByID(employee4.ID)
+	assert.EqualError(t, err, "dbr: not found")
+
+	_, err = employeeRepo.GetByEmail(employee4.Email)
+	assert.EqualError(t, err, "dbr: not found")
+
+	employees, err = employeeRepo.ListByGarageID(garage.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(employees))
+
+	employee4.Confirmed = true
+	err = employeeRepo.Update(employee4)
+	assert.NoError(t, err)
+
+	employees, err = employeeRepo.ListByGarageID(garage.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, 3, len(employees))
 }

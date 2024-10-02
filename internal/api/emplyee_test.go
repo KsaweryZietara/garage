@@ -15,12 +15,13 @@ func TestGetEmployeesEndpoint(t *testing.T) {
 
 	owner, err := suite.api.storage.Employees().Insert(
 		internal.Employee{
-			Name:     "name",
-			Surname:  "surname",
-			Email:    "email",
-			Password: "password",
-			Role:     internal.OwnerRole,
-			GarageID: nil,
+			Name:      "name",
+			Surname:   "surname",
+			Email:     "email",
+			Password:  "password",
+			Role:      internal.OwnerRole,
+			GarageID:  nil,
+			Confirmed: true,
 		})
 	assert.NoError(t, err)
 
@@ -38,12 +39,13 @@ func TestGetEmployeesEndpoint(t *testing.T) {
 
 	employee, err := suite.api.storage.Employees().Insert(
 		internal.Employee{
-			Name:     "name",
-			Surname:  "surname",
-			Email:    "email2",
-			Password: "password",
-			Role:     internal.MechanicRole,
-			GarageID: &garage.ID,
+			Name:      "name",
+			Surname:   "surname",
+			Email:     "email2",
+			Password:  "password",
+			Role:      internal.MechanicRole,
+			GarageID:  &garage.ID,
+			Confirmed: true,
 		})
 	assert.NoError(t, err)
 
@@ -65,12 +67,13 @@ func TestGetEmployeeEndpoint(t *testing.T) {
 
 	owner, err := suite.api.storage.Employees().Insert(
 		internal.Employee{
-			Name:     "name",
-			Surname:  "surname",
-			Email:    "email",
-			Password: "password",
-			Role:     internal.OwnerRole,
-			GarageID: nil,
+			Name:      "name",
+			Surname:   "surname",
+			Email:     "email",
+			Password:  "password",
+			Role:      internal.OwnerRole,
+			GarageID:  nil,
+			Confirmed: true,
 		})
 	assert.NoError(t, err)
 
@@ -88,12 +91,13 @@ func TestGetEmployeeEndpoint(t *testing.T) {
 
 	employee, err := suite.api.storage.Employees().Insert(
 		internal.Employee{
-			Name:     "name",
-			Surname:  "surname",
-			Email:    "email2",
-			Password: "password",
-			Role:     internal.MechanicRole,
-			GarageID: &garage.ID,
+			Name:      "name",
+			Surname:   "surname",
+			Email:     "email2",
+			Password:  "password",
+			Role:      internal.MechanicRole,
+			GarageID:  &garage.ID,
+			Confirmed: true,
 		})
 	assert.NoError(t, err)
 

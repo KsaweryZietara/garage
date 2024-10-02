@@ -18,11 +18,12 @@ func TestCreateGarageEndpoint(t *testing.T) {
 
 	token := suite.CreateEmployee(t,
 		internal.Employee{
-			Name:     "John",
-			Surname:  "Doe",
-			Email:    "john.doe@example.com",
-			Password: "Password123",
-			Role:     internal.OwnerRole,
+			Name:      "John",
+			Surname:   "Doe",
+			Email:     "john.doe@example.com",
+			Password:  "Password123",
+			Role:      internal.OwnerRole,
+			Confirmed: true,
 		})
 
 	garage := internal.CreateGarageDTO{
@@ -72,11 +73,12 @@ func TestOwnerGetGarageEndpoint(t *testing.T) {
 
 	token := suite.CreateEmployee(t,
 		internal.Employee{
-			Name:     "John",
-			Surname:  "Doe",
-			Email:    "john.doe@example.com",
-			Password: "Password123",
-			Role:     internal.OwnerRole,
+			Name:      "John",
+			Surname:   "Doe",
+			Email:     "john.doe@example.com",
+			Password:  "Password123",
+			Role:      internal.OwnerRole,
+			Confirmed: true,
 		})
 
 	garage := internal.CreateGarageDTO{
@@ -105,12 +107,13 @@ func TestMechanicGetGarageEndpoint(t *testing.T) {
 
 	owner, err := suite.api.storage.Employees().Insert(
 		internal.Employee{
-			Name:     "name",
-			Surname:  "surname",
-			Email:    "email",
-			Password: "password",
-			Role:     internal.OwnerRole,
-			GarageID: nil,
+			Name:      "name",
+			Surname:   "surname",
+			Email:     "email",
+			Password:  "password",
+			Role:      internal.OwnerRole,
+			GarageID:  nil,
+			Confirmed: true,
 		})
 	assert.NoError(t, err)
 
@@ -128,12 +131,13 @@ func TestMechanicGetGarageEndpoint(t *testing.T) {
 
 	token := suite.CreateEmployee(t,
 		internal.Employee{
-			Name:     "John",
-			Surname:  "Doe",
-			Email:    "john.doe@example.com",
-			Password: "Password123",
-			Role:     internal.MechanicRole,
-			GarageID: &garage.ID,
+			Name:      "John",
+			Surname:   "Doe",
+			Email:     "john.doe@example.com",
+			Password:  "Password123",
+			Role:      internal.MechanicRole,
+			GarageID:  &garage.ID,
+			Confirmed: true,
 		})
 
 	response := suite.CallAPI(http.MethodGet, "/api/employees/garages", []byte{}, token)
@@ -146,12 +150,13 @@ func TestGetGaragesEndpoint(t *testing.T) {
 
 	owner, err := suite.api.storage.Employees().Insert(
 		internal.Employee{
-			Name:     "name",
-			Surname:  "surname",
-			Email:    "email",
-			Password: "password",
-			Role:     internal.OwnerRole,
-			GarageID: nil,
+			Name:      "name",
+			Surname:   "surname",
+			Email:     "email",
+			Password:  "password",
+			Role:      internal.OwnerRole,
+			GarageID:  nil,
+			Confirmed: true,
 		})
 	assert.NoError(t, err)
 
@@ -183,12 +188,13 @@ func TestGetGarageEndpoint(t *testing.T) {
 
 	owner, err := suite.api.storage.Employees().Insert(
 		internal.Employee{
-			Name:     "name",
-			Surname:  "surname",
-			Email:    "email",
-			Password: "password",
-			Role:     internal.OwnerRole,
-			GarageID: nil,
+			Name:      "name",
+			Surname:   "surname",
+			Email:     "email",
+			Password:  "password",
+			Role:      internal.OwnerRole,
+			GarageID:  nil,
+			Confirmed: true,
 		})
 	assert.NoError(t, err)
 

@@ -16,11 +16,12 @@ func TestGarage(t *testing.T) {
 	garageRepo := NewGarage(connection)
 
 	newEmployee := internal.Employee{
-		Name:     "John",
-		Surname:  "Doe",
-		Email:    "john.doe@example.com",
-		Password: "password123",
-		Role:     "OWNER",
+		Name:      "John",
+		Surname:   "Doe",
+		Email:     "john.doe@example.com",
+		Password:  "password123",
+		Role:      "OWNER",
+		Confirmed: true,
 	}
 	employee, err := employeeRepo.Insert(newEmployee)
 	assert.NoError(t, err)
@@ -55,11 +56,12 @@ func TestListGarage(t *testing.T) {
 	serviceRepo := NewService(connection)
 
 	newEmployee := internal.Employee{
-		Name:     "John",
-		Surname:  "Doe",
-		Email:    "john.doe@example.com",
-		Password: "password123",
-		Role:     "OWNER",
+		Name:      "John",
+		Surname:   "Doe",
+		Email:     "john.doe@example.com",
+		Password:  "password123",
+		Role:      "OWNER",
+		Confirmed: true,
 	}
 	employee, err := employeeRepo.Insert(newEmployee)
 	assert.NoError(t, err)

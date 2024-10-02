@@ -15,12 +15,13 @@ func TestGetServicesEndpoint(t *testing.T) {
 
 	owner, err := suite.api.storage.Employees().Insert(
 		internal.Employee{
-			Name:     "name",
-			Surname:  "surname",
-			Email:    "email",
-			Password: "password",
-			Role:     internal.OwnerRole,
-			GarageID: nil,
+			Name:      "name",
+			Surname:   "surname",
+			Email:     "email",
+			Password:  "password",
+			Role:      internal.OwnerRole,
+			GarageID:  nil,
+			Confirmed: true,
 		})
 	assert.NoError(t, err)
 
@@ -62,12 +63,13 @@ func TestGetServiceEndpoint(t *testing.T) {
 
 	owner, err := suite.api.storage.Employees().Insert(
 		internal.Employee{
-			Name:     "name",
-			Surname:  "surname",
-			Email:    "email",
-			Password: "password",
-			Role:     internal.OwnerRole,
-			GarageID: nil,
+			Name:      "name",
+			Surname:   "surname",
+			Email:     "email",
+			Password:  "password",
+			Role:      internal.OwnerRole,
+			GarageID:  nil,
+			Confirmed: true,
 		})
 	assert.NoError(t, err)
 

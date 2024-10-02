@@ -63,9 +63,10 @@ func (a *API) CreateGarage(writer http.ResponseWriter, request *http.Request) {
 	for _, employeeEmail := range dto.EmployeeEmails {
 		employee, err := a.storage.Employees().Insert(
 			internal.Employee{
-				Email:    employeeEmail,
-				Role:     internal.MechanicRole,
-				GarageID: &garage.ID,
+				Email:     employeeEmail,
+				Role:      internal.MechanicRole,
+				GarageID:  &garage.ID,
+				Confirmed: false,
 			})
 		if err != nil {
 			a.log.Error(err.Error())
