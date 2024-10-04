@@ -92,6 +92,8 @@ type Appointment struct {
 	ID         int
 	StartTime  time.Time
 	EndTime    time.Time
+	Rating     *int
+	Comment    *string
 	ServiceID  int
 	EmployeeID int
 	CustomerID int

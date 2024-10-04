@@ -139,3 +139,31 @@ func (a *Appointment) GetByCustomerID(customerID int) ([]internal.Appointment, e
 
 	return appointments, nil
 }
+
+func (a *Appointment) GetByID(ID int) (internal.Appointment, error) {
+	sess := a.connection.NewSession(nil)
+
+	var appointment internal.Appointment
+	err := sess.Select("*").
+		From(appointmentsTable).
+		Where(dbr.Eq("id", ID)).
+		LoadOne(&appointment)
+
+	if err != nil {
+		return internal.Appointment{}, err
+	}
+
+	return appointment, nil
+}
+
+func (a *Appointment) Update(appointment internal.Appointment) error {
+	sess := a.connection.NewSession(nil)
+
+	_, err := sess.Update(appointmentsTable).
+		Where(dbr.Eq("id", appointment.ID)).
+		Set("rating", appointment.Rating).
+		Set("comment", appointment.Comment).
+		Exec()
+
+	return err
+}

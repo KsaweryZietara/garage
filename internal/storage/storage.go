@@ -16,6 +16,8 @@ type IStorage interface {
 	Garages() Garages
 	Services() Services
 	ConfirmationCodes() ConfirmationCodes
+	Customers() Customers
+	Appointments() Appointments
 }
 
 type Employees interface {
@@ -56,6 +58,8 @@ type Appointments interface {
 	GetByEmployeeID(employeeID int, date time.Time) ([]internal.Appointment, error)
 	GetByGarageID(garageID int, date time.Time) ([]internal.Appointment, error)
 	GetByCustomerID(customerID int) ([]internal.Appointment, error)
+	GetByID(ID int) (internal.Appointment, error)
+	Update(appointment internal.Appointment) error
 }
 
 type Storage struct {

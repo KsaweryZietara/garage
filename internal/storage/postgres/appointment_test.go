@@ -244,8 +244,35 @@ func TestGetAppointmentsByEmployeeIDOrCustomerID(t *testing.T) {
 	}
 
 	for _, appointment := range appointments {
-		_, err = appointmentRepo.Insert(appointment)
+		insertedAppointment, err := appointmentRepo.Insert(appointment)
 		assert.NoError(t, err)
+
+		retrievedAppointment, err := appointmentRepo.GetByID(insertedAppointment.ID)
+		assert.NoError(t, err)
+		assert.Nil(t, retrievedAppointment.Rating)
+		assert.Nil(t, retrievedAppointment.Comment)
+
+		rating := 4
+		comment := "comment"
+		retrievedAppointment.Rating = &rating
+		retrievedAppointment.Comment = &comment
+		err = appointmentRepo.Update(retrievedAppointment)
+		assert.NoError(t, err)
+
+		updatedAppointment, err := appointmentRepo.GetByID(insertedAppointment.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, retrievedAppointment.Rating, updatedAppointment.Rating)
+		assert.Equal(t, retrievedAppointment.Comment, updatedAppointment.Comment)
+
+		updatedAppointment.Rating = nil
+		updatedAppointment.Comment = nil
+		err = appointmentRepo.Update(updatedAppointment)
+		assert.NoError(t, err)
+
+		retrievedAppointment, err = appointmentRepo.GetByID(insertedAppointment.ID)
+		assert.NoError(t, err)
+		assert.Nil(t, retrievedAppointment.Rating)
+		assert.Nil(t, retrievedAppointment.Comment)
 	}
 
 	foundAppointments, err := appointmentRepo.GetByEmployeeID(employee3.ID, time.Now())

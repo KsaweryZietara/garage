@@ -130,6 +130,8 @@ type AppointmentDTO struct {
 	Service   ServiceDTO   `json:"service"`
 	Employee  *EmployeeDTO `json:"employee,omitempty"`
 	Garage    *GarageDTO   `json:"garage,omitempty"`
+	Rating    *int         `json:"rating,omitempty"`
+	Comment   *string      `json:"comment,omitempty"`
 }
 
 func NewAppointmentDTO(appointment Appointment, service Service, employee Employee, garage Garage) AppointmentDTO {
@@ -142,6 +144,8 @@ func NewAppointmentDTO(appointment Appointment, service Service, employee Employ
 		Service:   NewServiceDTO(service),
 		Employee:  &employeeDTO,
 		Garage:    &garageDTO,
+		Rating:    appointment.Rating,
+		Comment:   appointment.Comment,
 	}
 }
 
@@ -169,4 +173,9 @@ func NewCustomerAppointmentDTOs(appointments []AppointmentDTO) CustomerAppointme
 	}
 
 	return result
+}
+
+type CreateReviewDTO struct {
+	Rating  int    `json:"rating"`
+	Comment string `json:"comment"`
 }

@@ -66,6 +66,8 @@ CREATE TABLE IF NOT EXISTS appointments (
     id SERIAL PRIMARY KEY,
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
+    rating INT CHECK (rating BETWEEN 1 AND 5),
+    comment TEXT,
     service_id INTEGER NOT NULL,
     employee_id INTEGER NOT NULL,
     customer_id INTEGER NOT NULL

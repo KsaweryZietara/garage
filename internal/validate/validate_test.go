@@ -525,3 +525,42 @@ func TestCreateAppointmentDTO(t *testing.T) {
 		assert.NoError(t, err)
 	})
 }
+
+func TestCreateReviewDTO(t *testing.T) {
+	t.Run("should return error when rating is less than 1", func(t *testing.T) {
+		dto := internal.CreateReviewDTO{
+			Rating:  0,
+			Comment: "Good service",
+		}
+		err := CreateReviewDTO(dto)
+		assert.EqualError(t, err, "rating must be between 1 and 5")
+	})
+
+	t.Run("should return error when rating is greater than 5", func(t *testing.T) {
+		dto := internal.CreateReviewDTO{
+			Rating:  6,
+			Comment: "Excellent service",
+		}
+		err := CreateReviewDTO(dto)
+		assert.EqualError(t, err, "rating must be between 1 and 5")
+	})
+
+	t.Run("should return error when comment exceeds 2048 characters", func(t *testing.T) {
+		longComment := make([]byte, 2049)
+		dto := internal.CreateReviewDTO{
+			Rating:  5,
+			Comment: string(longComment),
+		}
+		err := CreateReviewDTO(dto)
+		assert.EqualError(t, err, "comment must not exceed 2048 characters")
+	})
+
+	t.Run("should pass with valid input", func(t *testing.T) {
+		dto := internal.CreateReviewDTO{
+			Rating:  5,
+			Comment: "Excellent service",
+		}
+		err := CreateReviewDTO(dto)
+		assert.NoError(t, err)
+	})
+}

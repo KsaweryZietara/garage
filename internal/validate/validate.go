@@ -148,6 +148,18 @@ func CreateAppointmentDTO(dto internal.CreateAppointmentDTO) error {
 	return nil
 }
 
+func CreateReviewDTO(dto internal.CreateReviewDTO) error {
+	if dto.Rating < 1 || dto.Rating > 5 {
+		return errors.New("rating must be between 1 and 5")
+	}
+
+	if len(dto.Comment) > 2048 {
+		return errors.New("comment must not exceed 2048 characters")
+	}
+
+	return nil
+}
+
 func isAlpha(s string) bool {
 	for _, r := range s {
 		if !unicode.IsLetter(r) {
