@@ -1,4 +1,13 @@
-import {ActivityIndicator, FlatList, StatusBar, Text, View} from "react-native";
+import {
+    ActivityIndicator,
+    FlatList,
+    StatusBar,
+    Text,
+    View,
+    Modal,
+    TextInput,
+    TouchableWithoutFeedback,
+} from "react-native";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {get} from "@/utils/auth";
@@ -9,6 +18,8 @@ import TabSwitcher from "@/components/TabSwitcher";
 import {CustomerAppointment, Appointments} from "@/types";
 import {CUSTOMER_JWT} from "@/constants/constants";
 import {formatDateTime} from "@/utils/time";
+import CustomButton from "@/components/CustomButton";
+import {AirbnbRating} from "react-native-ratings";
 
 const AppointmentsScreen = () => {
     const [email, setEmail] = useState<string | null>(null);
@@ -17,60 +28,123 @@ const AppointmentsScreen = () => {
     const [loadingAppointments, setLoadingAppointments] = useState<boolean>(true);
     const [activeTab, setActiveTab] = useState<"upcoming" | "inProgress" | "completed">("upcoming");
 
+    const [reviewVisible, setReviewVisible] = useState<boolean>(false);
+    const [comment, setComment] = useState<string>("");
+    const [rating, setRating] = useState<number>(3);
+    const [selectedAppointmentId, setSelectedAppointmentId] = useState<number | null>(null);
+    const [reviewSubmitted, setReviewSubmitted] = useState<boolean>(false);
+
     useEffect(() => {
-        const fetchEmail = async () => {
-            const email = await getEmail(CUSTOMER_JWT);
-            setEmail(email);
-        };
-
-        const fetchAppointments = async () => {
-            setLoadingAppointments(true);
-            const token = await get(CUSTOMER_JWT);
-            await axios.get<Appointments>("/api/customers/appointments", {
-                headers: {"Authorization": `Bearer ${token}`}
-            })
-                .then((response) => {
-                    setAppointments(response.data);
-                })
-                .catch((error) => {
-                    console.error(error);
-                })
-                .finally(() => {
-                    setLoadingAppointments(false);
-                });
-        };
-
         fetchAppointments();
         fetchEmail();
     }, []);
 
+    const fetchEmail = async () => {
+        const email = await getEmail(CUSTOMER_JWT);
+        setEmail(email);
+    };
+
+    const fetchAppointments = async () => {
+        setLoadingAppointments(true);
+        const token = await get(CUSTOMER_JWT);
+        await axios.get<Appointments>("/api/customers/appointments", {
+            headers: {"Authorization": `Bearer ${token}`}
+        })
+            .then((response) => {
+                setAppointments(response.data);
+            })
+            .catch((error) => {
+                console.error(error);
+            })
+            .finally(() => {
+                setLoadingAppointments(false);
+            });
+    };
+
+    const handleSubmit = async () => {
+        if (!selectedAppointmentId) return;
+
+        const token = await get(CUSTOMER_JWT);
+        await axios.put(`/api/appointments/${selectedAppointmentId}/reviews`, {rating, comment}, {
+            headers: {"Authorization": `Bearer ${token}`}
+        })
+            .then(() => {
+                setReviewSubmitted(true);
+                fetchAppointments();
+            })
+            .catch((error) => {
+                console.error(error);
+            }).finally(() => {
+                setRating(3)
+                setComment("")
+            });
+    };
+
+    const handleDelete = async () => {
+        if (!selectedAppointmentId) return;
+
+        const token = await get(CUSTOMER_JWT);
+        await axios.delete(`/api/appointments/${selectedAppointmentId}/reviews`, {
+            headers: {"Authorization": `Bearer ${token}`}
+        })
+            .then(() => {
+                setReviewVisible(false);
+                fetchAppointments();
+            })
+            .catch((error) => {
+                console.error(error);
+            }).finally(() => {
+                setRating(3)
+                setComment("")
+            });
+    };
+
     const renderAppointmentItem = ({item}: { item: CustomerAppointment }) => {
         return (
             <View className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg">
-                <Text className="text-lg text-white font-bold">
-                    {item.service.name}
-                </Text>
-                <Text className="text-sm text-[#ddd]">
-                    {formatDateTime(item.startTime)} - {formatDateTime(item.endTime)}
-                </Text>
-                <Text className="text-sm text-[#ddd]">
-                    Cena: {item.service.price}
-                </Text>
-                <Text className="text-sm text-[#ddd]">
-                    {item.garage.name}
-                </Text>
-                <Text className="text-sm text-[#ddd]">
-                    ul. {item.garage.street} {item.garage.number}
-                </Text>
-                <Text className="text-sm text-[#ddd]">
-                    {item.garage.postalCode} {item.garage.city}
-                </Text>
-                <Text className="text-sm text-[#ddd]">
-                    {item.garage.phoneNumber}
-                </Text>
-                <Text className="text-sm text-[#ddd]">
-                    Mechanik: {item.employee.name} {item.employee.surname}
-                </Text>
+                <View className="flex-col lg:flex-row justify-between lg:items-center">
+                    <View className="flex-1">
+                        <Text className="text-lg text-white font-bold">
+                            {item.service.name}
+                        </Text>
+                        <Text className="text-sm text-[#ddd]">
+                            {formatDateTime(item.startTime)} - {formatDateTime(item.endTime)}
+                        </Text>
+                        <Text className="text-sm text-[#ddd]">
+                            Cena: {item.service.price}
+                        </Text>
+                        <Text className="text-sm text-[#ddd]">
+                            {item.garage.name}
+                        </Text>
+                        <Text className="text-sm text-[#ddd]">
+                            ul. {item.garage.street} {item.garage.number}
+                        </Text>
+                        <Text className="text-sm text-[#ddd]">
+                            {item.garage.postalCode} {item.garage.city}
+                        </Text>
+                        <Text className="text-sm text-[#ddd]">
+                            {item.garage.phoneNumber}
+                        </Text>
+                        <Text className="text-sm text-[#ddd]">
+                            Mechanik: {item.employee.name} {item.employee.surname}
+                        </Text>
+                    </View>
+
+                    {activeTab === "completed" && (
+                        <CustomButton
+                            title={item.rating ? "Edytuj opinie" : "Dodaj opinie"}
+                            onPress={() => {
+                                setRating(item.rating ?? 3);
+                                setComment(item.comment ?? "");
+                                setSelectedAppointmentId(item.id);
+                                setReviewSubmitted(false);
+                                setReviewVisible(true);
+                            }}
+                            containerStyles="bg-red-500 self-center mt-3 lg:mt-0 w-2/5 lg:w-1/5"
+                            textStyles="text-white font-bold"
+                        />
+                    )}
+                </View>
             </View>
         );
     };
@@ -119,6 +193,58 @@ const AppointmentsScreen = () => {
                 email={email}
                 setEmail={setEmail}
             />
+
+            <Modal
+                visible={reviewVisible}
+                animationType="fade"
+                transparent={true}
+                onRequestClose={() => setReviewVisible(false)}
+            >
+                <TouchableWithoutFeedback onPress={() => setReviewVisible(false)}>
+                    <View className="flex-1 justify-center items-center"
+                          style={{backgroundColor: 'rgba(0, 0, 0, 0.75)'}}>
+                        <TouchableWithoutFeedback onPress={() => {
+                        }}>
+                            <View className="bg-[#2d2d2d] p-5 rounded-lg w-4/5 lg:w-2/5">
+                                {reviewSubmitted ? (
+                                    <Text className="text-white self-center text-lg font-bold my-5">
+                                        Dziękujemy za twoją opinie!
+                                    </Text>) : (
+                                    <View>
+                                        <Text className="text-white text-lg font-bold mb-5">Dodaj swoją opinię</Text>
+                                        <AirbnbRating
+                                            count={5}
+                                            defaultRating={rating}
+                                            size={40}
+                                            showRating={false}
+                                            selectedColor="#ef4444"
+                                            onFinishRating={setRating}
+                                        />
+                                        <TextInput
+                                            value={comment}
+                                            onChangeText={setComment}
+                                            placeholder="Wpisz swoją opinię"
+                                            multiline
+                                            numberOfLines={4}
+                                            className="border p-2 mt-5 rounded text-#2d2d2d bg-white align-text-top max-h-20"
+                                            placeholderTextColor="#2d2d2d"
+                                        />
+                                        <CustomButton
+                                            title="Wyślij"
+                                            onPress={handleSubmit}
+                                            containerStyles="bg-red-500 self-center mt-5 px-10 lg:px-20"
+                                            textStyles="text-white font-bold"
+                                        />
+                                        <Text className="text-red-500 mt-3 self-center" onPress={handleDelete}>
+                                            Usuń opinie
+                                        </Text>
+                                    </View>
+                                )}
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
 
             <StatusBar backgroundColor="#000000"/>
         </View>

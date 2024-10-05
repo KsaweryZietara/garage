@@ -34,6 +34,8 @@ export interface CustomerAppointment {
     service: Service;
     employee: Employee;
     garage: Garage;
+    rating?: number;
+    comment?: string;
 }
 
 export interface EmployeeAppointment {
