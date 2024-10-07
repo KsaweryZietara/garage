@@ -119,3 +119,35 @@ func (a *API) DeleteReview(writer http.ResponseWriter, request *http.Request) {
 
 	a.sendResponse(writer, nil, 200)
 }
+
+func (a *API) ListReviews(writer http.ResponseWriter, request *http.Request) {
+	garageIDStr := request.PathValue("id")
+	garageID, err := strconv.Atoi(garageIDStr)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	appointments, err := a.storage.Appointments().ListByGarageID(garageID)
+	if err != nil {
+		a.handleError(writer, err, 500)
+		return
+	}
+
+	reviewDTOs := make([]internal.ReviewDTO, len(appointments))
+	for i, appointment := range appointments {
+		service, err := a.storage.Services().GetByID(appointment.ServiceID)
+		if err != nil {
+			a.handleError(writer, err, 404)
+			return
+		}
+		employee, err := a.storage.Employees().GetByID(appointment.EmployeeID)
+		if err != nil {
+			a.handleError(writer, err, 404)
+			return
+		}
+		reviewDTOs[i] = internal.NewReviewDTO(appointment, service, employee)
+	}
+
+	a.sendResponse(writer, reviewDTOs, 200)
+}

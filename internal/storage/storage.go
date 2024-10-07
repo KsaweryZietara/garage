@@ -60,6 +60,7 @@ type Appointments interface {
 	GetByCustomerID(customerID int) ([]internal.Appointment, error)
 	GetByID(ID int) (internal.Appointment, error)
 	Update(appointment internal.Appointment) error
+	ListByGarageID(garageID int) ([]internal.Appointment, error)
 }
 
 type Storage struct {

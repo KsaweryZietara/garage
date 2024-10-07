@@ -167,3 +167,24 @@ func (a *Appointment) Update(appointment internal.Appointment) error {
 
 	return err
 }
+
+func (a *Appointment) ListByGarageID(garageID int) ([]internal.Appointment, error) {
+	sess := a.connection.NewSession(nil)
+
+	var appointments []internal.Appointment
+	_, err := sess.Select("a.*").
+		From(dbr.I(appointmentsTable).As("a")).
+		Join(dbr.I("employees").As("e"), "a.employee_id = e.id").
+		Where(dbr.And(
+			dbr.Eq("e.garage_id", garageID),
+			dbr.Neq("a.rating", nil),
+		)).
+		OrderBy("a.end_time DESC").
+		Load(&appointments)
+
+	if err != nil {
+		return []internal.Appointment{}, err
+	}
+
+	return appointments, nil
+}

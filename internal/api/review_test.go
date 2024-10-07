@@ -116,6 +116,18 @@ func TestCreateAndDeleteReviewEndpoint(t *testing.T) {
 	assert.Equal(t, newReview.Rating, *customerAppointments2.Completed[0].Rating)
 	assert.Equal(t, newReview.Comment, *customerAppointments2.Completed[0].Comment)
 
+	response = suite.CallAPI(http.MethodGet, fmt.Sprintf("/api/garages/%v/reviews", garage.ID), []byte{}, nil)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+	var reviewDTOs []internal.ReviewDTO
+	suite.ParseResponse(t, response, &reviewDTOs)
+	assert.Len(t, reviewDTOs, 1)
+	assert.Equal(t, reviewDTOs[0].ID, appointment.ID)
+	assert.Equal(t, reviewDTOs[0].Service, service.Name)
+	assert.Equal(t, reviewDTOs[0].Employee.Name, mechanic.Name)
+	assert.Equal(t, reviewDTOs[0].Employee.Surname, mechanic.Surname)
+	assert.Equal(t, reviewDTOs[0].Rating, 2)
+	assert.Equal(t, *reviewDTOs[0].Comment, "newComment")
+
 	response = suite.CallAPI(http.MethodDelete, fmt.Sprintf("/api/appointments/%v/reviews", appointment.ID), []byte{}, &token)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 

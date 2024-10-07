@@ -1,22 +1,36 @@
 import {useLocalSearchParams, useRouter} from "expo-router";
 import React, {useEffect, useState} from "react";
-import {ActivityIndicator, FlatList, StatusBar, Text, TouchableOpacity, View} from "react-native";
+import {
+    ActivityIndicator,
+    FlatList,
+    Modal,
+    StatusBar,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
+} from "react-native";
 import axios from "axios";
 import {getEmail} from "@/utils/jwt";
 import EmailDisplay from "@/components/EmailDisplay";
 import MenuModal from "@/components/MenuModal";
-import {Garage, Service} from "@/types";
+import {Garage, Review, Service} from "@/types";
 import {CUSTOMER_JWT} from "@/constants/constants";
+import {formatDate} from "@/utils/time";
+import {AirbnbRating} from "react-native-ratings";
 
 const GarageScreen = () => {
     const router = useRouter();
     const [email, setEmail] = useState<string | null>(null);
     const [menuVisible, setMenuVisible] = useState(false);
+    const [reviewsVisible, setReviewsVisible] = useState<boolean>(false);
     const {garageid} = useLocalSearchParams();
     const [garage, setGarage] = useState<Garage | null>(null);
     const [services, setServices] = useState<Service[]>([]);
+    const [reviews, setReviews] = useState<Review[]>([])
     const [loadingGarage, setLoadingGarage] = useState<boolean>(true);
     const [loadingServices, setLoadingServices] = useState<boolean>(true);
+    const [loadingReviews, setLoadingReviews] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchEmail = async () => {
@@ -63,6 +77,26 @@ const GarageScreen = () => {
         fetchServices();
     }, [garageid]);
 
+    const handleReviews = () => {
+        setReviewsVisible(true)
+        fetchReviews()
+    };
+
+    const fetchReviews = async () => {
+        setLoadingReviews(true);
+        await axios.get<Review[]>(`/api/garages/${garageid}/reviews`)
+            .then((response) => {
+                if (response.data) {
+                    setReviews(response.data);
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            }).finally(() => {
+                setLoadingReviews(false);
+            });
+    };
+
     const renderServiceItem = ({item}: { item: Service }) => (
         <TouchableOpacity
             onPress={() => router.push(`/garage/${garageid}/service/${item.id}`)}
@@ -74,6 +108,31 @@ const GarageScreen = () => {
                 <Text className="text-[#bbb]">Cena: {item.price}</Text>
             </View>
         </TouchableOpacity>
+    );
+
+    const renderReviewItem = ({item}: { item: Review }) => (
+        <View>
+            <View className="p-2 my-2 mx-4 bg-[#2d2d2d] rounded-lg">
+                <Text className="text-lg font-bold text-white">{item.service}</Text>
+                <Text className="text-[#aaa]">Mechanik: {item.employee.name} {item.employee.surname}</Text>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Text className="text-[#ddd]">{item.rating}</Text>
+                    <AirbnbRating
+                        count={5}
+                        defaultRating={item.rating}
+                        size={12}
+                        showRating={false}
+                        selectedColor="#ef4444"
+                        starContainerStyle={{marginLeft: 3}}
+                    />
+                    <Text className="text-[#aaa]"> {formatDate(item.time)}</Text>
+                </View>
+                {item.comment && (
+                    <Text className="text-white mt-3">{item.comment}</Text>
+                )}
+            </View>
+            <View style={{height: 1, backgroundColor: '#444', marginHorizontal: 16}}/>
+        </View>
     );
 
     return (
@@ -92,6 +151,9 @@ const GarageScreen = () => {
                         <Text className="text-xl text-[#ddd] mb-1">{garage.street} {garage.number}</Text>
                         <Text className="text-lg text-[#aaa] mb-1">{garage.city}, {garage.postalCode}</Text>
                         <Text className="text-lg text-[#aaa]">Telefon: {garage.phoneNumber}</Text>
+                        <Text onPress={handleReviews} className="text-xl text-white mt-4 underline">
+                            Opinie
+                        </Text>
                     </View>
                 )
             )}
@@ -120,6 +182,39 @@ const GarageScreen = () => {
                 email={email}
                 setEmail={setEmail}
             />
+
+            <Modal
+                visible={reviewsVisible}
+                animationType="fade"
+                transparent={true}
+                onRequestClose={() => setReviewsVisible(false)}
+            >
+                <TouchableWithoutFeedback onPress={() => setReviewsVisible(false)}>
+                    <View className="flex-1 justify-center items-center"
+                          style={{backgroundColor: 'rgba(0, 0, 0, 0.75)'}}>
+                        <TouchableWithoutFeedback onPress={() => {
+                        }}>
+                            <View className="bg-[#2d2d2d] p-5 rounded-lg w-4/5 h-4/5 lg:w-2/5">
+                                {loadingReviews ? (
+                                    <ActivityIndicator size="large" color="#ff5c5c"/>
+                                ) : (
+                                    <FlatList
+                                        data={reviews}
+                                        renderItem={renderReviewItem}
+                                        keyExtractor={(item, index) => item?.id?.toString() || index.toString()}
+                                        ListEmptyComponent={
+                                            <View className="flex-1 justify-center items-center mb-40">
+                                                <Text className="text-white text-xl">Brak opinii.</Text>
+                                            </View>
+                                        }
+                                        showsHorizontalScrollIndicator={false}
+                                    />
+                                )}
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
 
             <StatusBar backgroundColor="#000000"/>
         </View>

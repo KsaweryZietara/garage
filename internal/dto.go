@@ -184,3 +184,23 @@ type CreateReviewDTO struct {
 	Rating  int    `json:"rating"`
 	Comment string `json:"comment"`
 }
+
+type ReviewDTO struct {
+	ID       int         `json:"id"`
+	Time     time.Time   `json:"time"`
+	Service  string      `json:"service"`
+	Employee EmployeeDTO `json:"employee"`
+	Rating   int         `json:"rating"`
+	Comment  *string     `json:"comment,omitempty"`
+}
+
+func NewReviewDTO(appointment Appointment, service Service, employee Employee) ReviewDTO {
+	return ReviewDTO{
+		ID:       appointment.ID,
+		Time:     appointment.EndTime,
+		Service:  service.Name,
+		Employee: NewEmployeeDTO(employee),
+		Rating:   *appointment.Rating,
+		Comment:  appointment.Comment,
+	}
+}

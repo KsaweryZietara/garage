@@ -51,3 +51,12 @@ export interface TimeSlot {
     startTime: Date;
     endTime: Date;
 }
+
+export interface Review {
+    id: number;
+    time: Date;
+    service: string;
+    employee: Employee;
+    rating: number;
+    comment?: string;
+}

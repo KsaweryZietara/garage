@@ -97,9 +97,15 @@ func TestGetAppointmentsByTimeSlot(t *testing.T) {
 		},
 	}
 
-	for _, appointment := range appointments {
-		_, err = appointmentRepo.Insert(appointment)
+	for i, appointment := range appointments {
+		insertedAppointment, err := appointmentRepo.Insert(appointment)
 		assert.NoError(t, err)
+		if i == 1 {
+			rating := 4
+			insertedAppointment.Rating = &rating
+			err = appointmentRepo.Update(insertedAppointment)
+			assert.NoError(t, err)
+		}
 	}
 
 	timeSlot := internal.TimeSlot{
@@ -123,6 +129,10 @@ func TestGetAppointmentsByTimeSlot(t *testing.T) {
 	foundAppointments, err = appointmentRepo.GetByTimeSlot(nonOverlappingTimeSlot, employee2.ID)
 	assert.NoError(t, err)
 	assert.Len(t, foundAppointments, 0)
+
+	foundAppointments, err = appointmentRepo.ListByGarageID(garage.ID)
+	require.NoError(t, err)
+	assert.Len(t, foundAppointments, 1)
 }
 
 func TestGetAppointmentsByEmployeeIDOrCustomerID(t *testing.T) {

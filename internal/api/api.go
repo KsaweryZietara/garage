@@ -77,6 +77,7 @@ func (a *API) attachRoutes(router *http.ServeMux) {
 	router.HandleFunc("GET /api/garages/{id}", a.GetGarage)
 	router.HandleFunc("GET /api/garages/{id}/services", a.ListServices)
 	router.HandleFunc("GET /api/garages/{id}/employees", a.ListEmployees)
+	router.HandleFunc("GET /api/garages/{id}/reviews", a.ListReviews)
 
 	router.HandleFunc("GET /api/services/{id}", a.GetService)
 
