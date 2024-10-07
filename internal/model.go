@@ -39,6 +39,7 @@ type Garage struct {
 	PostalCode  string
 	PhoneNumber string
 	OwnerID     int
+	Rating      float64
 }
 
 func NewGarage(dto CreateGarageDTO, ownerID int) Garage {

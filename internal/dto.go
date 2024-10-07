@@ -1,6 +1,9 @@
 package internal
 
-import "time"
+import (
+	"math"
+	"time"
+)
 
 type Error struct {
 	Message string `json:"message"`
@@ -59,13 +62,14 @@ func NewServiceDTOs(services []Service) []ServiceDTO {
 }
 
 type GarageDTO struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	City        string `json:"city"`
-	Street      string `json:"street"`
-	Number      string `json:"number"`
-	PostalCode  string `json:"postalCode"`
-	PhoneNumber string `json:"phoneNumber"`
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	City        string  `json:"city"`
+	Street      string  `json:"street"`
+	Number      string  `json:"number"`
+	PostalCode  string  `json:"postalCode"`
+	PhoneNumber string  `json:"phoneNumber"`
+	Rating      float64 `json:"rating"`
 }
 
 func NewGarageDTO(garage Garage) GarageDTO {
@@ -77,6 +81,7 @@ func NewGarageDTO(garage Garage) GarageDTO {
 		Number:      garage.Number,
 		PostalCode:  garage.PostalCode,
 		PhoneNumber: garage.PhoneNumber,
+		Rating:      math.Round(garage.Rating*10) / 10,
 	}
 }
 

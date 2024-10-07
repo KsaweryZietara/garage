@@ -76,10 +76,14 @@ func (g *Garage) List(query string, page int) ([]internal.Garage, error) {
 	offset := (page - 1) * pageSize
 
 	_, err := sess.SelectBySql(`
-        SELECT DISTINCT g.*
+        SELECT DISTINCT g.*, COALESCE(AVG(a.rating), 0) AS rating
         FROM garages AS g
         LEFT JOIN services AS s ON s.garage_id = g.id
+        LEFT JOIN employees AS e ON e.garage_id = g.id
+        LEFT JOIN appointments AS a ON a.employee_id = e.id
         WHERE LOWER(g.name) LIKE ? OR LOWER(s.name) LIKE ?
+        GROUP BY g.id, g.name, city, street, number, postal_code, phone_number, owner_id
+		ORDER BY rating DESC
         LIMIT ?
         OFFSET ?
         `, likeQuery, likeQuery, pageSize, offset).

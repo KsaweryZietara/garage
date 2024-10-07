@@ -8,6 +8,7 @@ import EmailDisplay from "@/components/EmailDisplay";
 import MenuModal from "@/components/MenuModal";
 import {Garage} from "@/types";
 import {CUSTOMER_JWT} from "@/constants/constants";
+import {AirbnbRating} from "react-native-ratings";
 
 const GaragesScreen = () => {
     const router = useRouter();
@@ -90,6 +91,19 @@ const GaragesScreen = () => {
             className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg border border-[#444]"
         >
             <Text className="text-xl font-bold text-white">{item.name}</Text>
+            {item.rating !== 0 && (
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Text className="text-[#ddd] text-lg">{item.rating}</Text>
+                    <AirbnbRating
+                        count={5}
+                        defaultRating={item.rating}
+                        size={15}
+                        showRating={false}
+                        selectedColor="#ef4444"
+                        starContainerStyle={{marginLeft: 3}}
+                    />
+                </View>
+            )}
             <Text className="text-[#ddd]">{item.street} {item.number}</Text>
             <Text className="text-[#bbb]">{item.city}, {item.postalCode}</Text>
         </TouchableOpacity>
