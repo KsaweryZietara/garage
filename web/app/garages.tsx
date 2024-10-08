@@ -9,6 +9,8 @@ import MenuModal from "@/components/MenuModal";
 import {Garage} from "@/types";
 import {CUSTOMER_JWT} from "@/constants/constants";
 import {AirbnbRating} from "react-native-ratings";
+import * as Location from 'expo-location';
+import {LocationObject} from "expo-location";
 
 const GaragesScreen = () => {
     const router = useRouter();
@@ -21,6 +23,7 @@ const GaragesScreen = () => {
     const [page, setPage] = useState<number>(1);
     const [hasMore, setHasMore] = useState<boolean>(true);
     const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+    const [location, setLocation] = useState<LocationObject | null>(null);
 
     useEffect(() => {
         const fetchEmail = async () => {
@@ -29,6 +32,25 @@ const GaragesScreen = () => {
         };
 
         fetchEmail();
+    }, []);
+
+    useEffect(() => {
+        const getLocation = async () => {
+            try {
+                const {status} = await Location.requestForegroundPermissionsAsync();
+                if (status !== 'granted') {
+                    console.warn('Permission to access location was denied');
+                    return;
+                }
+
+                const currentLocation = await Location.getCurrentPositionAsync({});
+                setLocation(currentLocation);
+            } catch (error) {
+                console.error("Error getting location:", error);
+            }
+        };
+
+        getLocation();
     }, []);
 
     const handleSearch = () => {
@@ -40,12 +62,17 @@ const GaragesScreen = () => {
 
         setLoading(true);
 
-        axios.get<Garage[]>("/api/garages", {
-            params: {
-                query,
-                page,
-            },
-        })
+        const params: any = {
+            query,
+            page,
+        };
+
+        if (location) {
+            params.latitude = location.coords.latitude;
+            params.longitude = location.coords.longitude;
+        }
+
+        axios.get<Garage[]>("/api/garages", {params})
             .then((response) => {
                 const fetchedGarages = response.data;
 
@@ -70,7 +97,7 @@ const GaragesScreen = () => {
 
     useEffect(() => {
         fetchGarages(query.search, page);
-    }, [page]);
+    }, [page, location]);
 
     const loadMoreGarages = () => {
         if (!loading && hasMore) {
@@ -95,6 +122,7 @@ const GaragesScreen = () => {
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                     <Text className="text-[#ddd] text-lg">{item.rating}</Text>
                     <AirbnbRating
+                        isDisabled={true}
                         count={5}
                         defaultRating={item.rating}
                         size={15}
@@ -105,7 +133,10 @@ const GaragesScreen = () => {
                 </View>
             )}
             <Text className="text-[#ddd]">{item.street} {item.number}</Text>
-            <Text className="text-[#bbb]">{item.city}, {item.postalCode}</Text>
+            <Text className="text-[#ddd]">{item.city}, {item.postalCode}</Text>
+            {item.distance !== 0 && (
+                <Text className="text-[#ddd] mt-1">{item.distance} km</Text>
+            )}
         </TouchableOpacity>
     );
 

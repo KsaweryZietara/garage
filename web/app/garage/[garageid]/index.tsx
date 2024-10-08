@@ -118,6 +118,7 @@ const GarageScreen = () => {
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                     <Text className="text-[#ddd]">{item.rating}</Text>
                     <AirbnbRating
+                        isDisabled={true}
                         count={5}
                         defaultRating={item.rating}
                         size={12}

@@ -70,6 +70,7 @@ type GarageDTO struct {
 	PostalCode  string  `json:"postalCode"`
 	PhoneNumber string  `json:"phoneNumber"`
 	Rating      float64 `json:"rating"`
+	Distance    float64 `json:"distance"`
 }
 
 func NewGarageDTO(garage Garage) GarageDTO {
@@ -82,6 +83,7 @@ func NewGarageDTO(garage Garage) GarageDTO {
 		PostalCode:  garage.PostalCode,
 		PhoneNumber: garage.PhoneNumber,
 		Rating:      math.Round(garage.Rating*10) / 10,
+		Distance:    math.Round(garage.Distance*10) / 10,
 	}
 }
 

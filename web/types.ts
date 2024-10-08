@@ -6,7 +6,8 @@ export interface Garage {
     number: string;
     postalCode: string;
     phoneNumber: string;
-    rating: number
+    rating: number;
+    distance: number;
 }
 
 export interface Employee {

@@ -32,7 +32,7 @@ type Garages interface {
 	Insert(garage internal.Garage) (internal.Garage, error)
 	GetByOwnerID(employeeID int) (internal.Garage, error)
 	GetByID(ID int) (internal.Garage, error)
-	List(query string, page int) ([]internal.Garage, error)
+	List(page int, query string, latitude, longitude float64) ([]internal.Garage, error)
 }
 
 type Services interface {

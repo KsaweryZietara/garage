@@ -128,13 +128,20 @@ func (a *API) GetEmployeeGarage(writer http.ResponseWriter, request *http.Reques
 func (a *API) ListGarages(writer http.ResponseWriter, request *http.Request) {
 	queryParams := request.URL.Query()
 	query := queryParams.Get("query")
+
 	pageStr := queryParams.Get("page")
 	page, err := strconv.Atoi(pageStr)
 	if err != nil {
 		page = 1
 	}
 
-	garages, err := a.storage.Garages().List(query, page)
+	latitudeStr := queryParams.Get("latitude")
+	latitude, err := strconv.ParseFloat(latitudeStr, 64)
+
+	longitudeStr := queryParams.Get("longitude")
+	longitude, err := strconv.ParseFloat(longitudeStr, 64)
+
+	garages, err := a.storage.Garages().List(page, query, latitude, longitude)
 	if err != nil {
 		a.handleError(writer, err, 500)
 		return
