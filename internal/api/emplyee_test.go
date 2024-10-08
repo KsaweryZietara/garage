@@ -34,6 +34,8 @@ func TestGetEmployeesEndpoint(t *testing.T) {
 			PostalCode:  "postalCode",
 			PhoneNumber: "phoneNumber",
 			OwnerID:     owner.ID,
+			Latitude:    10,
+			Longitude:   10,
 		})
 	assert.NoError(t, err)
 
@@ -86,6 +88,8 @@ func TestGetEmployeeEndpoint(t *testing.T) {
 			PostalCode:  "postalCode",
 			PhoneNumber: "phoneNumber",
 			OwnerID:     owner.ID,
+			Latitude:    10,
+			Longitude:   10,
 		})
 	assert.NoError(t, err)
 

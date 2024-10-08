@@ -39,6 +39,8 @@ func TestGetAppointmentsByTimeSlot(t *testing.T) {
 		PostalCode:  "12345",
 		PhoneNumber: "1234567890",
 		OwnerID:     employee.ID,
+		Latitude:    10,
+		Longitude:   10,
 	}
 	garage, err := garageRepo.Insert(newGarage)
 	assert.NoError(t, err)
@@ -164,6 +166,8 @@ func TestGetAppointmentsByEmployeeIDOrCustomerID(t *testing.T) {
 		PostalCode:  "12345",
 		PhoneNumber: "1234567890",
 		OwnerID:     employee.ID,
+		Latitude:    10,
+		Longitude:   10,
 	}
 	garage, err := garageRepo.Insert(newGarage)
 	assert.NoError(t, err)

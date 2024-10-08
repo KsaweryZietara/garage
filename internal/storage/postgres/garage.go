@@ -28,7 +28,7 @@ func (g *Garage) Insert(garage internal.Garage) (internal.Garage, error) {
 
 	var id int
 	err := sess.InsertInto(garagesTable).
-		Columns("name", "city", "street", "number", "postal_code", "phone_number", "owner_id").
+		Columns("name", "city", "street", "number", "postal_code", "phone_number", "latitude", "longitude", "owner_id").
 		Record(garage).
 		Returning("id").
 		Load(&id)

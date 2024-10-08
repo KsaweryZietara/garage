@@ -33,6 +33,8 @@ func TestCreateGarageEndpoint(t *testing.T) {
 		Number:      "123",
 		PostalCode:  "94-103",
 		PhoneNumber: "123456789",
+		Latitude:    10,
+		Longitude:   10,
 		Services: []internal.ServiceDTO{
 			{
 				Name:  "Oil Change",
@@ -88,6 +90,8 @@ func TestOwnerGetGarageEndpoint(t *testing.T) {
 		Number:         "123",
 		PostalCode:     "94-103",
 		PhoneNumber:    "123456789",
+		Latitude:       10,
+		Longitude:      10,
 		Services:       []internal.ServiceDTO{},
 		EmployeeEmails: []string{},
 	}
@@ -126,6 +130,8 @@ func TestMechanicGetGarageEndpoint(t *testing.T) {
 			PostalCode:  "postalCode",
 			PhoneNumber: "phoneNumber",
 			OwnerID:     owner.ID,
+			Latitude:    10,
+			Longitude:   10,
 		})
 	assert.NoError(t, err)
 
@@ -169,6 +175,8 @@ func TestGetGaragesEndpoint(t *testing.T) {
 			PostalCode:  "postalCode",
 			PhoneNumber: "phoneNumber",
 			OwnerID:     owner.ID,
+			Latitude:    10,
+			Longitude:   10,
 		})
 	assert.NoError(t, err)
 
@@ -207,6 +215,8 @@ func TestGetGarageEndpoint(t *testing.T) {
 			PostalCode:  "postalCode",
 			PhoneNumber: "phoneNumber",
 			OwnerID:     owner.ID,
+			Latitude:    10,
+			Longitude:   10,
 		})
 	assert.NoError(t, err)
 

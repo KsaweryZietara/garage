@@ -62,6 +62,18 @@ func CreateGarageDTO(dto internal.CreateGarageDTO) error {
 		return errors.New("number, postal code and phone number cannot have more than 15 characters")
 	}
 
+	if dto.Latitude == 0 && dto.Longitude == 0 {
+		return errors.New("coordinates cannot be zeros")
+	}
+
+	if dto.Latitude < -90 || dto.Latitude > 90 {
+		return errors.New("latitude must be between -90 and 90 degrees")
+	}
+
+	if dto.Longitude < -180 || dto.Longitude > 180 {
+		return errors.New("longitude must be between -180 and 180 degrees")
+	}
+
 	if !isPostalCode(dto.PostalCode) {
 		return errors.New("invalid postal code format")
 	}

@@ -168,6 +168,8 @@ func TestCreateGarageDTO(t *testing.T) {
 			Number:      "Number",
 			PostalCode:  "12-345",
 			PhoneNumber: "123456789",
+			Latitude:    10,
+			Longitude:   10,
 		}
 		err := CreateGarageDTO(dto)
 		assert.EqualError(t, err, "fields cannot be empty")
@@ -182,9 +184,64 @@ func TestCreateGarageDTO(t *testing.T) {
 			Number:      "Number",
 			PostalCode:  "12-345",
 			PhoneNumber: "123456789",
+			Latitude:    10,
+			Longitude:   10,
 		}
 		err := CreateGarageDTO(dto)
 		assert.EqualError(t, err, "name, city and street cannot have more than 255 characters")
+	})
+
+	t.Run("should return error when both latitude and longitude are zero", func(t *testing.T) {
+		dto := internal.CreateGarageDTO{
+			Name:        "Name",
+			City:        "City",
+			Street:      "Street",
+			Number:      "Number",
+			PostalCode:  "12-345",
+			PhoneNumber: "123456789",
+			Latitude:    0,
+			Longitude:   0,
+		}
+		err := CreateGarageDTO(dto)
+		assert.EqualError(t, err, "coordinates cannot be zeros")
+	})
+
+	t.Run("should return error when latitude is out of bounds", func(t *testing.T) {
+		dto := internal.CreateGarageDTO{
+			Name:        "Name",
+			City:        "City",
+			Street:      "Street",
+			Number:      "Number",
+			PostalCode:  "12-345",
+			PhoneNumber: "123456789",
+			Latitude:    91,
+			Longitude:   45,
+		}
+		err := CreateGarageDTO(dto)
+		assert.EqualError(t, err, "latitude must be between -90 and 90 degrees")
+
+		dto.Latitude = -91
+		err = CreateGarageDTO(dto)
+		assert.EqualError(t, err, "latitude must be between -90 and 90 degrees")
+	})
+
+	t.Run("should return error when longitude is out of bounds", func(t *testing.T) {
+		dto := internal.CreateGarageDTO{
+			Name:        "Name",
+			City:        "City",
+			Street:      "Street",
+			Number:      "Number",
+			PostalCode:  "12-345",
+			PhoneNumber: "123456789",
+			Latitude:    45,
+			Longitude:   181,
+		}
+		err := CreateGarageDTO(dto)
+		assert.EqualError(t, err, "longitude must be between -180 and 180 degrees")
+
+		dto.Longitude = -181
+		err = CreateGarageDTO(dto)
+		assert.EqualError(t, err, "longitude must be between -180 and 180 degrees")
 	})
 
 	t.Run("should return error for invalid postal code format", func(t *testing.T) {
@@ -195,6 +252,8 @@ func TestCreateGarageDTO(t *testing.T) {
 			Number:      "Number",
 			PostalCode:  "12345",
 			PhoneNumber: "123456789",
+			Latitude:    10,
+			Longitude:   10,
 		}
 		err := CreateGarageDTO(dto)
 		assert.EqualError(t, err, "invalid postal code format")
@@ -208,6 +267,8 @@ func TestCreateGarageDTO(t *testing.T) {
 			Number:      "Number",
 			PostalCode:  "12-345",
 			PhoneNumber: "12345678901",
+			Latitude:    10,
+			Longitude:   10,
 		}
 		err := CreateGarageDTO(dto)
 		assert.EqualError(t, err, "invalid phone number format")
@@ -221,6 +282,8 @@ func TestCreateGarageDTO(t *testing.T) {
 			Number:      "Number",
 			PostalCode:  "12-345",
 			PhoneNumber: "123456789",
+			Latitude:    10,
+			Longitude:   10,
 			Services: []internal.ServiceDTO{
 				{Name: "", Time: 1, Price: 1},
 			},
@@ -237,6 +300,8 @@ func TestCreateGarageDTO(t *testing.T) {
 			Number:      "Number",
 			PostalCode:  "12-345",
 			PhoneNumber: "123456789",
+			Latitude:    10,
+			Longitude:   10,
 			Services: []internal.ServiceDTO{
 				{Name: "Service", Time: 0, Price: 1},
 			},
@@ -253,6 +318,8 @@ func TestCreateGarageDTO(t *testing.T) {
 			Number:      "Number",
 			PostalCode:  "12-345",
 			PhoneNumber: "123456789",
+			Latitude:    10,
+			Longitude:   10,
 			Services: []internal.ServiceDTO{
 				{Name: "Service", Time: 1, Price: 0},
 			},
@@ -269,6 +336,8 @@ func TestCreateGarageDTO(t *testing.T) {
 			Number:      "Number",
 			PostalCode:  "12-345",
 			PhoneNumber: "123456789",
+			Latitude:    10,
+			Longitude:   10,
 			EmployeeEmails: []string{
 				"johnexample.com",
 			},
@@ -285,6 +354,8 @@ func TestCreateGarageDTO(t *testing.T) {
 			Number:      "Number",
 			PostalCode:  "12-345",
 			PhoneNumber: "123456789",
+			Latitude:    10,
+			Longitude:   10,
 			Services: []internal.ServiceDTO{
 				{Name: "Service", Time: 1, Price: 1},
 			},

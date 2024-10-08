@@ -33,6 +33,8 @@ type CreateGarageDTO struct {
 	Number         string       `json:"number"`
 	PostalCode     string       `json:"postalCode"`
 	PhoneNumber    string       `json:"phoneNumber"`
+	Latitude       float64      `json:"latitude"`
+	Longitude      float64      `json:"longitude"`
 	Services       []ServiceDTO `json:"services"`
 	EmployeeEmails []string     `json:"employeeEmails"`
 }

@@ -34,6 +34,8 @@ func TestGarage(t *testing.T) {
 		PostalCode:  "12345",
 		PhoneNumber: "1234567890",
 		OwnerID:     employee.ID,
+		Latitude:    10,
+		Longitude:   10,
 	}
 	createdGarage, err := garageRepo.Insert(newGarage)
 	assert.NoError(t, err)
@@ -74,6 +76,8 @@ func TestListGarage(t *testing.T) {
 		PostalCode:  "12345",
 		PhoneNumber: "1234567890",
 		OwnerID:     employee.ID,
+		Latitude:    10,
+		Longitude:   10,
 	}
 	garage, err := garageRepo.Insert(newGarage)
 	assert.NoError(t, err)
