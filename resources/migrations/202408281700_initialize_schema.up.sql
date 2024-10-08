@@ -26,9 +26,9 @@ CREATE TABLE IF NOT EXISTS garages
     number VARCHAR(15) NOT NULL,
     postal_code VARCHAR(15) NOT NULL,
     phone_number VARCHAR(15) unique NOT NULL,
-    owner_id INT REFERENCES employees(id),
     latitude DECIMAL(9, 6) NOT NULL,
-    longitude DECIMAL(9, 6) NOT NULL
+    longitude DECIMAL(9, 6) NOT NULL,
+    owner_id INT REFERENCES employees(id)
 );
 
 DO $$

@@ -31,6 +31,8 @@ const CreatorScreen = () => {
     const [number, setNumber] = useState("");
     const [postalCode, setPostalCode] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
+    const [latitude, setLatitude] = useState("");
+    const [longitude, setLongitude] = useState("");
 
     const [services, setServices] = useState<Service[]>([]);
     const [serviceName, setServiceName] = useState("");
@@ -67,7 +69,9 @@ const CreatorScreen = () => {
             !street.trim() ||
             !number.trim() ||
             !postalCode.trim() ||
-            !phoneNumber.trim()
+            !phoneNumber.trim() ||
+            !latitude.trim() ||
+            !longitude.trim()
         ) {
             return "Wszystkie pola muszą być wypełnione.";
         }
@@ -88,6 +92,16 @@ const CreatorScreen = () => {
         const phoneRegex = /^\d{9}$/;
         if (!phoneRegex.test(phoneNumber)) {
             return "Nieprawidłowy format numeru telefonu.";
+        }
+
+        const latValue = parseFloat(latitude.replace(",", "."));
+        if (isNaN(latValue) || latValue < -90 || latValue > 90) {
+            return "Nieprawidłowa szerokość geograficzna. Powinna być liczbą od -90 do 90.";
+        }
+
+        const lonValue = parseFloat(longitude.replace(",", "."));
+        if (isNaN(lonValue) || lonValue < -180 || lonValue > 180) {
+            return "Nieprawidłowa długość geograficzna. Powinna być liczbą od -180 do 180.";
         }
 
         return null;
@@ -185,6 +199,8 @@ const CreatorScreen = () => {
 
     const handleSubmit = async () => {
         const token = await get(EMPLOYEE_JWT);
+        const latValue = parseFloat(latitude.replace(",", "."));
+        const lonValue = parseFloat(longitude.replace(",", "."));
         const data = {
             name,
             city,
@@ -192,6 +208,8 @@ const CreatorScreen = () => {
             number,
             postalCode,
             phoneNumber,
+            latitude: latValue,
+            longitude: lonValue,
             services: services.map(service => ({
                 name: service.name,
                 time: parseInt(service.time, 10),
@@ -249,7 +267,7 @@ const CreatorScreen = () => {
                             errors={errors}
                             removeBtnRow={buttonsVisible}
                         >
-                            <View className="flex-1 justify-center items-center px-6 mt-12">
+                            <View className="flex-1 justify-center items-center px-6">
                                 <View className="w-full max-w-xl">
                                     <CustomTextInput
                                         placeholder="Nazwa"
@@ -281,6 +299,18 @@ const CreatorScreen = () => {
                                         keyboardType="phone-pad"
                                         value={phoneNumber}
                                         onChangeText={setPhoneNumber}
+                                    />
+                                    <CustomTextInput
+                                        placeholder="Szerokość geograficzna (np. 52,237049)"
+                                        keyboardType="numeric"
+                                        value={latitude}
+                                        onChangeText={setLatitude}
+                                    />
+                                    <CustomTextInput
+                                        placeholder="Długość geograficzna (np. 21,017532)"
+                                        keyboardType="numeric"
+                                        value={longitude}
+                                        onChangeText={setLongitude}
                                     />
                                     {errorMessage && (
                                         <Text className="text-red-500 text-center mt-2">
