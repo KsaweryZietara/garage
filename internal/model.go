@@ -119,3 +119,14 @@ type TimeSlot struct {
 	StartTime time.Time `json:"startTime"`
 	EndTime   time.Time `json:"endTime"`
 }
+
+type Make struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+type Model struct {
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	MakeID int    `json:"makeId"`
+}

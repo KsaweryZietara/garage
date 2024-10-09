@@ -18,6 +18,7 @@ type IStorage interface {
 	ConfirmationCodes() ConfirmationCodes
 	Customers() Customers
 	Appointments() Appointments
+	Cars() Cars
 }
 
 type Employees interface {
@@ -63,6 +64,11 @@ type Appointments interface {
 	ListByGarageID(garageID int) ([]internal.Appointment, error)
 }
 
+type Cars interface {
+	ListMakes() ([]internal.Make, error)
+	ListModels(makeID int) ([]internal.Model, error)
+}
+
 type Storage struct {
 	employees         Employees
 	garages           Garages
@@ -70,6 +76,7 @@ type Storage struct {
 	confirmationCodes ConfirmationCodes
 	customers         Customers
 	appointments      Appointments
+	cars              Cars
 }
 
 func New(url string, log *slog.Logger) (Storage, error) {
@@ -90,6 +97,7 @@ func New(url string, log *slog.Logger) (Storage, error) {
 		confirmationCodes: postgres.NewConfirmationCode(connection),
 		customers:         postgres.NewCustomer(connection),
 		appointments:      postgres.NewAppointment(connection),
+		cars:              postgres.NewCar(connection),
 	}, nil
 }
 
@@ -119,6 +127,7 @@ func NewForTests(url string, log *slog.Logger) (Storage, func() error, error) {
 		confirmationCodes: postgres.NewConfirmationCode(connection),
 		customers:         postgres.NewCustomer(connection),
 		appointments:      postgres.NewAppointment(connection),
+		cars:              postgres.NewCar(connection),
 	}, cleanup, nil
 }
 
@@ -144,4 +153,8 @@ func (s Storage) Customers() Customers {
 
 func (s Storage) Appointments() Appointments {
 	return s.appointments
+}
+
+func (s Storage) Cars() Cars {
+	return s.cars
 }

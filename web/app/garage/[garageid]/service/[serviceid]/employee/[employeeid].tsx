@@ -9,9 +9,10 @@ import {get} from "@/utils/auth";
 import {getEmail} from "@/utils/jwt";
 import EmailDisplay from "@/components/EmailDisplay";
 import MenuModal from "@/components/MenuModal";
-import {Employee, Service, TimeSlot} from "@/types";
+import {Employee, Make, Model, Service, TimeSlot} from "@/types";
 import {CUSTOMER_JWT} from "@/constants/constants";
 import {formatDateTime, formatTime} from "@/utils/time";
+import {Picker} from "@react-native-picker/picker";
 
 moment.locale("pl");
 
@@ -23,6 +24,10 @@ const AppointmentScreen = () => {
     const [service, setService] = useState<Service | null>(null);
     const [employee, setEmployee] = useState<Employee | null>(null);
     const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
+    const [makes, setMakes] = useState<Make[]>([]);
+    const [selectedMake, setSelectedMake] = useState<number | undefined>(undefined);
+    const [models, setModels] = useState<Model[]>([]);
+    const [selectedModel, setSelectedModel] = useState<number | undefined>(undefined);
     const [loadingService, setLoadingService] = useState<boolean>(true);
     const [loadingEmployee, setLoadingEmployee] = useState<boolean>(true);
     const [loadingSlots, setLoadingSlots] = useState<boolean>(true);
@@ -31,6 +36,7 @@ const AppointmentScreen = () => {
     const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | null>(null);
     const [feedbackModalVisible, setFeedbackModalVisible] = useState<boolean>(false);
     const [feedbackMessage, setFeedbackMessage] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         const fetchEmail = async () => {
@@ -38,8 +44,38 @@ const AppointmentScreen = () => {
             setEmail(email);
         };
 
+        const fetchMakes = async () => {
+            await axios.get<Make[]>(
+                "/api/makes"
+            )
+                .then((response) => {
+                    setMakes(response.data);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        };
+
         fetchEmail();
+        fetchMakes()
     }, []);
+
+    useEffect(() => {
+        setSelectedModel(undefined)
+        const fetchModels = async () => {
+            await axios.get<Model[]>(
+                `/api/makes/${selectedMake}/models`
+            )
+                .then((response) => {
+                    setModels(response.data);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        };
+
+        fetchModels()
+    }, [selectedMake]);
 
     useEffect(() => {
         const fetchService = async () => {
@@ -99,6 +135,12 @@ const AppointmentScreen = () => {
     }, [selectedDate, serviceid, employeeid]);
 
     const handleSubmit = async () => {
+        if (!selectedModel) {
+            setErrorMessage("Wybierz model samochodu.")
+            return;
+        }
+        setErrorMessage("")
+        setModalVisible(false);
         const token = await get(CUSTOMER_JWT);
         if (token == null) {
             router.push("/login")
@@ -131,6 +173,8 @@ const AppointmentScreen = () => {
         <TouchableOpacity
             onPress={() => {
                 setSelectedTimeSlot(item);
+                setErrorMessage("")
+                setSelectedMake(undefined)
                 setModalVisible(true);
             }}
             className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg"
@@ -241,18 +285,56 @@ const AppointmentScreen = () => {
                                     <Text
                                         className="text-white text-xl mb-2">{formatDateTime(selectedTimeSlot.startTime)}</Text>
                                 </View>
-                                <View className="text-white text-xl mb-4 flex-row justify-between">
+                                <View className="text-white text-xl mb-2 flex-row justify-between">
                                     <Text className="text-white text-xl mb-2">Odbiór:</Text>
                                     <Text className="text-white text-xl mb-2">
                                         {formatDateTime(selectedTimeSlot.endTime)}
                                     </Text>
                                 </View>
+                                <View className="mb-2">
+                                    <Text className="text-white text-xl mb-2">Wybierz markę:</Text>
+                                    <Picker
+                                        selectedValue={selectedMake}
+                                        onValueChange={(itemValue) => setSelectedMake(itemValue)}
+                                        style={{
+                                            color: 'black',
+                                            fontSize: 15,
+                                            height: Platform.OS === 'web' ? 30 : undefined,
+                                            backgroundColor: 'white'
+                                        }}
+                                    >
+                                        <Picker.Item label="Wybierz markę" value={null}/>
+                                        {makes.map(make => (
+                                            <Picker.Item key={make.id} label={make.name} value={make.id}/>
+                                        ))}
+                                    </Picker>
+                                </View>
+                                <View className="mb-2">
+                                    <Text className="text-white text-xl mb-2">Wybierz model:</Text>
+                                    <Picker
+                                        selectedValue={selectedModel}
+                                        onValueChange={(itemValue) => setSelectedModel(itemValue)}
+                                        style={{
+                                            color: 'black',
+                                            fontSize: 15,
+                                            height: Platform.OS === 'web' ? 30 : undefined,
+                                            backgroundColor: 'white'
+                                        }}
+                                    >
+                                        <Picker.Item label="Wybierz model" value={null}/>
+                                        {models.map(make => (
+                                            <Picker.Item key={make.id} label={make.name} value={make.id}/>
+                                        ))}
+                                    </Picker>
+                                </View>
+                                {errorMessage && (
+                                    <Text className="text-red-500 text-center mt-2">
+                                        {errorMessage}
+                                    </Text>
+                                )}
                                 <TouchableOpacity
                                     className="bg-red-500 p-3 rounded-lg mt-5 mb-4"
-                                    onPress={() => {
-                                        handleSubmit()
-                                        setModalVisible(false);
-                                    }}
+                                    onPress={handleSubmit}
                                 >
                                     <Text className="text-white text-center">Potwierdź rezerwację</Text>
                                 </TouchableOpacity>

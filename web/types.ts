@@ -61,3 +61,13 @@ export interface Review {
     rating: number;
     comment?: string;
 }
+
+export interface Make {
+    id: number;
+    name: string;
+}
+
+export interface Model {
+    id: number;
+    name: string;
+}
