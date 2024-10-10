@@ -1,5 +1,9 @@
 DROP TABLE appointments;
 
+DROP TABLE models;
+
+DROP TABLE makes;
+
 DROP TABLE customers;
 
 DROP TABLE confirmation_codes;

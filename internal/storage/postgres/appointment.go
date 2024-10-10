@@ -25,7 +25,7 @@ func (a *Appointment) Insert(appointment internal.Appointment) (internal.Appoint
 
 	var id int
 	err := sess.InsertInto(appointmentsTable).
-		Columns("start_time", "end_time", "service_id", "employee_id", "customer_id").
+		Columns("start_time", "end_time", "service_id", "employee_id", "customer_id", "model_id").
 		Record(appointment).
 		Returning("id").
 		Load(&id)

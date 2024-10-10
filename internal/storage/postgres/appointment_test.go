@@ -82,6 +82,7 @@ func TestGetAppointmentsByTimeSlot(t *testing.T) {
 			ServiceID:  service.ID,
 			EmployeeID: employee2.ID,
 			CustomerID: customer.ID,
+			ModelID:    1,
 		},
 		{
 			StartTime:  startTime.Add(2 * time.Hour),
@@ -89,6 +90,7 @@ func TestGetAppointmentsByTimeSlot(t *testing.T) {
 			ServiceID:  service.ID,
 			EmployeeID: employee2.ID,
 			CustomerID: customer.ID,
+			ModelID:    1,
 		},
 		{
 			StartTime:  startTime.Add(4 * time.Hour),
@@ -96,6 +98,7 @@ func TestGetAppointmentsByTimeSlot(t *testing.T) {
 			ServiceID:  service.ID,
 			EmployeeID: employee2.ID,
 			CustomerID: customer.ID,
+			ModelID:    1,
 		},
 	}
 
@@ -226,6 +229,7 @@ func TestGetAppointmentsByEmployeeIDOrCustomerID(t *testing.T) {
 			ServiceID:  service.ID,
 			EmployeeID: employee2.ID,
 			CustomerID: customer.ID,
+			ModelID:    1,
 		},
 		{
 			StartTime:  time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 10, 0, 0, 0, time.Now().Location()).Add(-50 * time.Hour),
@@ -233,6 +237,7 @@ func TestGetAppointmentsByEmployeeIDOrCustomerID(t *testing.T) {
 			ServiceID:  service.ID,
 			EmployeeID: employee3.ID,
 			CustomerID: customer2.ID,
+			ModelID:    1,
 		},
 		{
 			StartTime:  time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 10, 0, 0, 0, time.Now().Location()),
@@ -240,6 +245,7 @@ func TestGetAppointmentsByEmployeeIDOrCustomerID(t *testing.T) {
 			ServiceID:  service.ID,
 			EmployeeID: employee2.ID,
 			CustomerID: customer.ID,
+			ModelID:    1,
 		},
 		{
 			StartTime:  time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 10, 0, 0, 0, time.Now().Location()),
@@ -247,6 +253,7 @@ func TestGetAppointmentsByEmployeeIDOrCustomerID(t *testing.T) {
 			ServiceID:  service.ID,
 			EmployeeID: employee3.ID,
 			CustomerID: customer2.ID,
+			ModelID:    1,
 		},
 		{
 			StartTime:  time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 10, 0, 0, 0, time.Now().Location()).Add(50 * time.Hour),
@@ -254,6 +261,7 @@ func TestGetAppointmentsByEmployeeIDOrCustomerID(t *testing.T) {
 			ServiceID:  service.ID,
 			EmployeeID: employee3.ID,
 			CustomerID: customer.ID,
+			ModelID:    1,
 		},
 	}
 

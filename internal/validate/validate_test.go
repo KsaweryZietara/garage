@@ -536,6 +536,7 @@ func TestCreateAppointmentDTO(t *testing.T) {
 			EndTime:    time.Now(),
 			ServiceID:  1,
 			EmployeeID: 1,
+			ModelID:    1,
 		}
 		err := CreateAppointmentDTO(dto)
 		assert.EqualError(t, err, "start time and end time cannot be empty")
@@ -547,6 +548,7 @@ func TestCreateAppointmentDTO(t *testing.T) {
 			EndTime:    time.Now().Add(time.Hour),
 			ServiceID:  1,
 			EmployeeID: 1,
+			ModelID:    1,
 		}
 		err := CreateAppointmentDTO(dto)
 		assert.EqualError(t, err, "start time cannot be in the past")
@@ -558,6 +560,7 @@ func TestCreateAppointmentDTO(t *testing.T) {
 			EndTime:    time.Now().Add(time.Hour),
 			ServiceID:  1,
 			EmployeeID: 1,
+			ModelID:    1,
 		}
 		err := CreateAppointmentDTO(dto)
 		assert.EqualError(t, err, "end time must be after start time")
@@ -569,6 +572,7 @@ func TestCreateAppointmentDTO(t *testing.T) {
 			EndTime:    time.Now().Add(2 * time.Hour),
 			ServiceID:  0,
 			EmployeeID: 1,
+			ModelID:    1,
 		}
 		err := CreateAppointmentDTO(dto)
 		assert.EqualError(t, err, "service ID must be greater than zero")
@@ -580,9 +584,22 @@ func TestCreateAppointmentDTO(t *testing.T) {
 			EndTime:    time.Now().Add(2 * time.Hour),
 			ServiceID:  1,
 			EmployeeID: 0,
+			ModelID:    1,
 		}
 		err := CreateAppointmentDTO(dto)
 		assert.EqualError(t, err, "employee ID must be greater than zero")
+	})
+
+	t.Run("should return error when model ID is less than or equal to zero", func(t *testing.T) {
+		dto := internal.CreateAppointmentDTO{
+			StartTime:  time.Now().Add(time.Hour),
+			EndTime:    time.Now().Add(2 * time.Hour),
+			ServiceID:  1,
+			EmployeeID: 1,
+			ModelID:    0,
+		}
+		err := CreateAppointmentDTO(dto)
+		assert.EqualError(t, err, "model ID must be greater than zero")
 	})
 
 	t.Run("should pass with valid input", func(t *testing.T) {
@@ -591,6 +608,7 @@ func TestCreateAppointmentDTO(t *testing.T) {
 			EndTime:    time.Now().Add(2 * time.Hour),
 			ServiceID:  1,
 			EmployeeID: 1,
+			ModelID:    1,
 		}
 		err := CreateAppointmentDTO(dto)
 		assert.NoError(t, err)

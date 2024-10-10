@@ -157,6 +157,10 @@ func CreateAppointmentDTO(dto internal.CreateAppointmentDTO) error {
 		return errors.New("employee ID must be greater than zero")
 	}
 
+	if dto.ModelID <= 0 {
+		return errors.New("model ID must be greater than zero")
+	}
+
 	return nil
 }
 

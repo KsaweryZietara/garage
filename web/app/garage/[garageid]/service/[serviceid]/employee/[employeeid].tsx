@@ -147,6 +147,7 @@ const AppointmentScreen = () => {
             return
         }
         const data = {
+            modelId: parseInt(String(selectedModel), 10),
             employeeId: parseInt(employeeid, 10),
             serviceId: parseInt(serviceid, 10),
             startTime: selectedTimeSlot?.startTime,

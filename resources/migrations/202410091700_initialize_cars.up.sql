@@ -1,16 +1,3 @@
-CREATE TABLE IF NOT EXISTS makes
-(
-    id   SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE
-);
-
-CREATE TABLE IF NOT EXISTS models
-(
-    id      SERIAL PRIMARY KEY,
-    name    VARCHAR(255) NOT NULL,
-    make_id INT REFERENCES makes (id)
-);
-
 INSERT INTO makes (id, name)
 VALUES (1, 'Seat'),
        (2, 'Renault'),

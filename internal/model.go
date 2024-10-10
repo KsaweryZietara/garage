@@ -103,6 +103,7 @@ type Appointment struct {
 	ServiceID  int
 	EmployeeID int
 	CustomerID int
+	ModelID    int
 }
 
 func NewAppointment(dto CreateAppointmentDTO, customerID int) Appointment {
@@ -112,6 +113,7 @@ func NewAppointment(dto CreateAppointmentDTO, customerID int) Appointment {
 		ServiceID:  dto.ServiceID,
 		EmployeeID: dto.EmployeeID,
 		CustomerID: customerID,
+		ModelID:    dto.ModelID,
 	}
 }
 

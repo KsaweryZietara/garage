@@ -64,13 +64,27 @@ CREATE TABLE IF NOT EXISTS customers
     password VARCHAR(255)
 );
 
+CREATE TABLE IF NOT EXISTS makes
+(
+    id   SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS models
+(
+    id      SERIAL PRIMARY KEY,
+    name    VARCHAR(255) NOT NULL,
+    make_id INT REFERENCES makes(id)
+);
+
 CREATE TABLE IF NOT EXISTS appointments (
     id SERIAL PRIMARY KEY,
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
     rating INT CHECK (rating BETWEEN 1 AND 5),
     comment TEXT,
-    service_id INTEGER NOT NULL,
-    employee_id INTEGER NOT NULL,
-    customer_id INTEGER NOT NULL
+    service_id INT REFERENCES services(id),
+    employee_id INT REFERENCES employees(id),
+    customer_id INT REFERENCES customers(id),
+    model_id INT REFERENCES models(id)
 );

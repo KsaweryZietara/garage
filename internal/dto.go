@@ -130,6 +130,7 @@ type CreateAppointmentDTO struct {
 	EndTime    time.Time `json:"endTime"`
 	ServiceID  int       `json:"serviceId"`
 	EmployeeID int       `json:"employeeId"`
+	ModelID    int       `json:"modelId"`
 }
 
 type AppointmentDTO struct {

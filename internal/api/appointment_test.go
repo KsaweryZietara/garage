@@ -75,6 +75,7 @@ func TestCreateAppointmentEndpoint(t *testing.T) {
 		EndTime:    time.Date(2030, 9, 24, 13, 0, 0, 0, time.UTC),
 		ServiceID:  service.ID,
 		EmployeeID: mechanic.ID,
+		ModelID:    1,
 	}
 	appointmentJSON, err := json.Marshal(appointment)
 	require.NoError(t, err)
@@ -168,6 +169,7 @@ func TestGetEmployeeAndCustomerAppointmentsEndpoint(t *testing.T) {
 			ServiceID:  service.ID,
 			EmployeeID: mechanic2.ID,
 			CustomerID: customer.ID,
+			ModelID:    1,
 		})
 	assert.NoError(t, err)
 
@@ -178,6 +180,7 @@ func TestGetEmployeeAndCustomerAppointmentsEndpoint(t *testing.T) {
 			ServiceID:  service.ID,
 			EmployeeID: mechanic1.ID,
 			CustomerID: customer.ID,
+			ModelID:    1,
 		})
 	assert.NoError(t, err)
 

@@ -78,6 +78,7 @@ func TestCreateAndDeleteReviewEndpoint(t *testing.T) {
 			ServiceID:  service.ID,
 			EmployeeID: mechanic.ID,
 			CustomerID: customer.ID,
+			ModelID:    1,
 		})
 	assert.NoError(t, err)
 
