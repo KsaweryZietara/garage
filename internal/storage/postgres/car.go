@@ -53,3 +53,20 @@ func (c *Car) ListModels(makeID int) ([]internal.Model, error) {
 
 	return models, nil
 }
+
+func (c *Car) GetByModelID(modelID int) (internal.Car, error) {
+	sess := c.connection.NewSession(nil)
+
+	var car internal.Car
+	_, err := sess.Select("ma.name AS make, mo.name AS model").
+		From(dbr.I(makesTable).As("ma")).
+		Join(dbr.I(modelsTable).As("mo"), "mo.make_id = ma.id").
+		Where(dbr.Eq("mo.id", modelID)).
+		Load(&car)
+
+	if err != nil {
+		return internal.Car{}, err
+	}
+
+	return car, nil
+}

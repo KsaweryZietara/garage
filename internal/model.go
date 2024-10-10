@@ -132,3 +132,8 @@ type Model struct {
 	Name   string `json:"name"`
 	MakeID int    `json:"makeId"`
 }
+
+type Car struct {
+	Make  string `json:"make"`
+	Model string `json:"model"`
+}

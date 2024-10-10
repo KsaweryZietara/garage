@@ -67,6 +67,7 @@ type Appointments interface {
 type Cars interface {
 	ListMakes() ([]internal.Make, error)
 	ListModels(makeID int) ([]internal.Model, error)
+	GetByModelID(modelID int) (internal.Car, error)
 }
 
 type Storage struct {

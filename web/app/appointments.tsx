@@ -111,6 +111,9 @@ const AppointmentsScreen = () => {
                             {formatDateTime(item.startTime)} - {formatDateTime(item.endTime)}
                         </Text>
                         <Text className="text-sm text-[#ddd]">
+                            {item.car.make} {item.car.model}
+                        </Text>
+                        <Text className="text-sm text-[#ddd]">
                             Cena: {item.service.price}
                         </Text>
                         <Text className="text-sm text-[#ddd]">

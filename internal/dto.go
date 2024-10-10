@@ -142,9 +142,10 @@ type AppointmentDTO struct {
 	Garage    *GarageDTO   `json:"garage,omitempty"`
 	Rating    *int         `json:"rating,omitempty"`
 	Comment   *string      `json:"comment,omitempty"`
+	Car       Car          `json:"car"`
 }
 
-func NewAppointmentDTO(appointment Appointment, service Service, employee Employee, garage Garage) AppointmentDTO {
+func NewAppointmentDTO(appointment Appointment, service Service, employee Employee, garage Garage, car Car) AppointmentDTO {
 	employeeDTO := NewEmployeeDTO(employee)
 	garageDTO := NewGarageDTO(garage)
 	return AppointmentDTO{
@@ -156,6 +157,7 @@ func NewAppointmentDTO(appointment Appointment, service Service, employee Employ
 		Garage:    &garageDTO,
 		Rating:    appointment.Rating,
 		Comment:   appointment.Comment,
+		Car:       car,
 	}
 }
 

@@ -20,4 +20,9 @@ func TestCar(t *testing.T) {
 	models, err := carRepo.ListModels(makes[0].ID)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, models)
+
+	car, err := carRepo.GetByModelID(1)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, car.Make)
+	assert.NotEmpty(t, car.Model)
 }

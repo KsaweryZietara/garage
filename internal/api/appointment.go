@@ -182,7 +182,12 @@ func (a *API) GetEmployeeAppointments(writer http.ResponseWriter, request *http.
 	for i, appointment := range appointments {
 		service, err := a.storage.Services().GetByID(appointment.ServiceID)
 		if err != nil {
-			a.handleError(writer, err, 500)
+			a.handleError(writer, err, 404)
+			return
+		}
+		car, err := a.storage.Cars().GetByModelID(appointment.ModelID)
+		if err != nil {
+			a.handleError(writer, err, 404)
 			return
 		}
 		appointmentDTOs[i] = internal.AppointmentDTO{
@@ -190,6 +195,7 @@ func (a *API) GetEmployeeAppointments(writer http.ResponseWriter, request *http.
 			StartTime: appointment.StartTime,
 			EndTime:   appointment.EndTime,
 			Service:   internal.NewServiceDTO(service),
+			Car:       car,
 		}
 		if employee.Role == internal.OwnerRole {
 			mechanic, err := a.storage.Employees().GetByID(appointment.EmployeeID)
@@ -241,7 +247,12 @@ func (a *API) GetCustomerAppointments(writer http.ResponseWriter, request *http.
 			a.handleError(writer, err, 404)
 			return
 		}
-		appointmentDTOs[i] = internal.NewAppointmentDTO(appointment, service, employee, garage)
+		car, err := a.storage.Cars().GetByModelID(appointment.ModelID)
+		if err != nil {
+			a.handleError(writer, err, 404)
+			return
+		}
+		appointmentDTOs[i] = internal.NewAppointmentDTO(appointment, service, employee, garage, car)
 	}
 
 	a.sendResponse(writer, internal.NewCustomerAppointmentDTOs(appointmentDTOs), 200)

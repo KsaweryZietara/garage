@@ -110,6 +110,9 @@ const HomeScreen = () => {
                 <Text className="text-sm text-white">
                     Usługa: {startHour === 16 ? "Przyjęcie samochodu" : item.service.name}
                 </Text>
+                <Text className="text-sm text-white">
+                    Samochód: {item.car.make} {item.car.model}
+                </Text>
             </View>
         );
     };

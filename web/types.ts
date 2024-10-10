@@ -38,6 +38,7 @@ export interface CustomerAppointment {
     garage: Garage;
     rating?: number;
     comment?: string;
+    car: Car;
 }
 
 export interface EmployeeAppointment {
@@ -46,6 +47,7 @@ export interface EmployeeAppointment {
     endTime: Date;
     service: Service;
     employee?: Employee;
+    car: Car;
 }
 
 export interface TimeSlot {
@@ -70,4 +72,9 @@ export interface Make {
 export interface Model {
     id: number;
     name: string;
+}
+
+export interface Car {
+    make: string;
+    model: string;
 }
