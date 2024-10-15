@@ -2,7 +2,7 @@ import {useLocalSearchParams, useRouter} from "expo-router";
 import React, {useEffect, useState} from "react";
 import {ActivityIndicator, FlatList, StatusBar, Text, TouchableOpacity, View} from "react-native";
 import axios from "axios";
-import {getEmail} from "@/utils/jwt";
+import {getJwtPayload} from "@/utils/jwt";
 import EmailDisplay from "@/components/EmailDisplay";
 import MenuModal from "@/components/MenuModal";
 import {Employee, Service} from "@/types";
@@ -20,8 +20,8 @@ const ServiceScreen = () => {
 
     useEffect(() => {
         const fetchEmail = async () => {
-            const email = await getEmail(CUSTOMER_JWT);
-            setEmail(email);
+            const jwtPayload = await getJwtPayload(CUSTOMER_JWT);
+            setEmail(jwtPayload?.email || null);
         };
 
         fetchEmail();

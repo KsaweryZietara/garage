@@ -653,3 +653,45 @@ func TestCreateReviewDTO(t *testing.T) {
 		assert.NoError(t, err)
 	})
 }
+
+func TestCreateServiceDTO(t *testing.T) {
+	t.Run("should return error when name is empty", func(t *testing.T) {
+		dto := internal.ServiceDTO{
+			Name:  "",
+			Time:  1,
+			Price: 1,
+		}
+		err := CreateServiceDTO(dto)
+		assert.EqualError(t, err, "service name cannot be empty")
+	})
+
+	t.Run("should return error when service time is zero", func(t *testing.T) {
+		dto := internal.ServiceDTO{
+			Name:  "service",
+			Time:  0,
+			Price: 1,
+		}
+		err := CreateServiceDTO(dto)
+		assert.EqualError(t, err, "service time must be greater than zero")
+	})
+
+	t.Run("should return error when service price is zero", func(t *testing.T) {
+		dto := internal.ServiceDTO{
+			Name:  "service",
+			Time:  1,
+			Price: 0,
+		}
+		err := CreateServiceDTO(dto)
+		assert.EqualError(t, err, "service price must be greater than zero")
+	})
+
+	t.Run("should pass with valid input", func(t *testing.T) {
+		dto := internal.ServiceDTO{
+			Name:  "service",
+			Time:  1,
+			Price: 1,
+		}
+		err := CreateServiceDTO(dto)
+		assert.NoError(t, err)
+	})
+}

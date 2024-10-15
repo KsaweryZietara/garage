@@ -5,26 +5,25 @@ import {
     Platform,
     ActivityIndicator,
     FlatList,
-    Modal,
-    TouchableWithoutFeedback,
-    TouchableOpacity
 } from "react-native";
 import axios from "axios";
 import {get, remove} from "@/utils/auth";
 import moment, {Moment} from "moment";
 import "moment/locale/pl";
 import CalendarStrip from "react-native-calendar-strip";
-import {getEmail} from "@/utils/jwt";
+import {getJwtPayload} from "@/utils/jwt";
 import {useRouter} from "expo-router";
 import {EmployeeAppointment} from "@/types";
 import {EMPLOYEE_JWT} from "@/constants/constants";
 import {formatTime} from "@/utils/time";
+import BusinessMenu from "@/components/BusinessMenu";
 
 moment.locale("pl");
 
 const HomeScreen = () => {
     const router = useRouter();
     const [email, setEmail] = useState<string | null>(null);
+    const [role, setRole] = useState<string | null>(null);
     const [menuVisible, setMenuVisible] = useState(false);
     const [garageName, setGarageName] = useState("garage");
     const [appointments, setAppointments] = useState<EmployeeAppointment[]>([]);
@@ -47,13 +46,14 @@ const HomeScreen = () => {
                 });
         };
 
-        const fetchEmail = async () => {
-            const email = await getEmail(EMPLOYEE_JWT);
-            setEmail(email);
+        const fetchJwtPayload = async () => {
+            const jwtPayload = await getJwtPayload(EMPLOYEE_JWT);
+            setEmail(jwtPayload?.email || null);
+            setRole(jwtPayload?.role || null)
         };
 
         fetchGarageName();
-        fetchEmail();
+        fetchJwtPayload();
     }, []);
 
     useEffect(() => {
@@ -76,17 +76,6 @@ const HomeScreen = () => {
 
         fetchAppointments();
     }, [selectedDate]);
-
-    const handleLogout = () => {
-        remove(EMPLOYEE_JWT);
-        setEmail(null);
-        setMenuVisible(false)
-        router.push("/business/login")
-    };
-
-    const handleMenuClose = () => {
-        setMenuVisible(false)
-    }
 
     const handleDateChange = (date: Moment) => {
         setSelectedDate(date);
@@ -182,42 +171,18 @@ const HomeScreen = () => {
                 />
             )}
 
-            <Modal
-                transparent={true}
-                animationType="fade"
-                visible={menuVisible}
-                onRequestClose={handleMenuClose}
-            >
-                <TouchableWithoutFeedback onPress={handleMenuClose}>
-                    <View style={{
-                        flex: 1,
-                        justifyContent: "flex-start",
-                        alignItems: "flex-end",
-                    }}>
-                        <View style={{
-                            marginRight: Platform.OS === "web" ? 32 : 27,
-                            marginTop: Platform.OS === "web" ? 52 : 50,
-                            backgroundColor: "white",
-                            borderRadius: 5,
-                            padding: Platform.OS === "web" ? 12 : 6,
-                            elevation: 5,
-                            shadowColor: "#000",
-                            shadowOffset: {
-                                width: 0,
-                                height: 2,
-                            },
-                            shadowOpacity: 0.25,
-                            shadowRadius: 4,
-                        }}>
-                            {email && (
-                                <TouchableOpacity onPress={handleLogout}>
-                                    <Text className="text-red-500 font-bold">Wyloguj</Text>
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                    </View>
-                </TouchableWithoutFeedback>
-            </Modal>
+            <BusinessMenu
+                menuVisible={menuVisible}
+                onClose={() => setMenuVisible(false)}
+                role={role}
+                email={email}
+                onLogout={() => {
+                    remove(EMPLOYEE_JWT);
+                    setEmail(null);
+                    setMenuVisible(false)
+                    router.push("/business/login")
+                }}
+            />
         </View>
     );
 };

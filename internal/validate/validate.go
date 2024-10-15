@@ -83,17 +83,8 @@ func CreateGarageDTO(dto internal.CreateGarageDTO) error {
 	}
 
 	for _, service := range dto.Services {
-		if service.Name == "" {
-			return errors.New("service name cannot be empty")
-		}
-		if len(service.Name) > 255 {
-			return errors.New("service name cannot have more than 255 characters")
-		}
-		if service.Time <= 0 {
-			return errors.New("service time must be greater than zero")
-		}
-		if service.Price <= 0 {
-			return errors.New("service price must be greater than zero")
+		if err := CreateServiceDTO(service); err != nil {
+			return err
 		}
 	}
 
@@ -171,6 +162,26 @@ func CreateReviewDTO(dto internal.CreateReviewDTO) error {
 
 	if len(dto.Comment) > 2048 {
 		return errors.New("comment must not exceed 2048 characters")
+	}
+
+	return nil
+}
+
+func CreateServiceDTO(dto internal.ServiceDTO) error {
+	if dto.Name == "" {
+		return errors.New("service name cannot be empty")
+	}
+
+	if len(dto.Name) > 255 {
+		return errors.New("service name cannot have more than 255 characters")
+	}
+
+	if dto.Time <= 0 {
+		return errors.New("service time must be greater than zero")
+	}
+
+	if dto.Price <= 0 {
+		return errors.New("service price must be greater than zero")
 	}
 
 	return nil

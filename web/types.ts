@@ -78,3 +78,8 @@ export interface Car {
     make: string;
     model: string;
 }
+
+export interface JwtPayload {
+    email?: string;
+    role?: string;
+}

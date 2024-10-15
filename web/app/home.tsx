@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {StatusBar, Text, View} from "react-native";
 import {Searchbar} from "react-native-paper";
 import {useRouter} from "expo-router";
-import {getEmail} from "@/utils/jwt";
+import {getJwtPayload} from "@/utils/jwt";
 import MenuModal from "@/components/MenuModal";
 import EmailDisplay from "@/components/EmailDisplay";
 import {CUSTOMER_JWT} from "@/constants/constants";
@@ -15,8 +15,8 @@ const HomeScreen = () => {
 
     useEffect(() => {
         const fetchEmail = async () => {
-            const email = await getEmail(CUSTOMER_JWT);
-            setEmail(email);
+            const jwtPayload = await getJwtPayload(CUSTOMER_JWT);
+            setEmail(jwtPayload?.email || null);
         };
 
         fetchEmail();

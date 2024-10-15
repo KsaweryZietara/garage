@@ -13,7 +13,7 @@ import axios from "axios";
 import {get} from "@/utils/auth";
 import EmailDisplay from "@/components/EmailDisplay";
 import MenuModal from "@/components/MenuModal";
-import {getEmail} from "@/utils/jwt";
+import {getJwtPayload} from "@/utils/jwt";
 import TabSwitcher from "@/components/TabSwitcher";
 import {CustomerAppointment, Appointments} from "@/types";
 import {CUSTOMER_JWT} from "@/constants/constants";
@@ -40,8 +40,8 @@ const AppointmentsScreen = () => {
     }, []);
 
     const fetchEmail = async () => {
-        const email = await getEmail(CUSTOMER_JWT);
-        setEmail(email);
+        const jwtPayload = await getJwtPayload(CUSTOMER_JWT);
+        setEmail(jwtPayload?.email || null);
     };
 
     const fetchAppointments = async () => {
