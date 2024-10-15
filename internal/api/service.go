@@ -84,3 +84,49 @@ func (a *API) CreateService(writer http.ResponseWriter, request *http.Request) {
 
 	a.sendResponse(writer, nil, 201)
 }
+
+func (a *API) DeleteService(writer http.ResponseWriter, request *http.Request) {
+	serviceIDStr := request.PathValue("id")
+	serviceID, err := strconv.Atoi(serviceIDStr)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	email, ok := a.emailFromContext(request.Context())
+	if !ok {
+		a.sendResponse(writer, nil, 401)
+		return
+	}
+
+	owner, err := a.storage.Employees().GetByEmail(email)
+	if err != nil {
+		a.handleError(writer, err, 401)
+		return
+	}
+
+	garage, err := a.storage.Garages().GetByOwnerID(owner.ID)
+	if err != nil {
+		a.handleError(writer, err, 404)
+		return
+	}
+
+	service, err := a.storage.Services().GetByID(serviceID)
+	if err != nil {
+		a.handleError(writer, err, 404)
+		return
+	}
+
+	if service.GarageID != garage.ID {
+		a.sendResponse(writer, nil, 404)
+		return
+	}
+
+	err = a.storage.Services().Delete(serviceID)
+	if err != nil {
+		a.handleError(writer, err, 500)
+		return
+	}
+
+	a.sendResponse(writer, nil, 200)
+}

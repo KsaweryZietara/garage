@@ -54,6 +54,11 @@ func (a *API) CreateAppointment(writer http.ResponseWriter, request *http.Reques
 		return
 	}
 
+	if service.IsDeleted {
+		a.sendResponse(writer, nil, 404)
+		return
+	}
+
 	slotFound := false
 	for _, slot := range createTimeSlots(dto.StartTime, service.Time) {
 		if slot.StartTime.Equal(dto.StartTime) && slot.EndTime.Equal(dto.EndTime) {

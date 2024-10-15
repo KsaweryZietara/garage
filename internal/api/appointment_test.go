@@ -90,6 +90,23 @@ func TestCreateAppointmentEndpoint(t *testing.T) {
 		nil,
 	)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
+
+	ownerToken, err := suite.api.auth.CreateToken("email", internal.OwnerRole)
+	require.NoError(t, err)
+	response = suite.CallAPI(http.MethodDelete, fmt.Sprintf("/api/services/%v", service.ID), []byte{}, &ownerToken)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+
+	newAppointment := internal.CreateAppointmentDTO{
+		StartTime:  time.Date(2030, 9, 25, 11, 0, 0, 0, time.UTC),
+		EndTime:    time.Date(2030, 9, 25, 13, 0, 0, 0, time.UTC),
+		ServiceID:  service.ID,
+		EmployeeID: mechanic.ID,
+		ModelID:    1,
+	}
+	newAppointmentJSON, err := json.Marshal(newAppointment)
+	require.NoError(t, err)
+	response = suite.CallAPI(http.MethodPost, "/api/appointments", newAppointmentJSON, token)
+	assert.Equal(t, http.StatusNotFound, response.StatusCode)
 }
 
 func TestGetEmployeeAndCustomerAppointmentsEndpoint(t *testing.T) {

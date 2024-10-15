@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS services
     name VARCHAR(255) NOT NULL,
     time int NOT NULL,
     price int NOT NULL,
+    is_deleted BOOLEAN DEFAULT FALSE,
     garage_id INT REFERENCES garages(id)
 );
 

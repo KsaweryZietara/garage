@@ -68,4 +68,16 @@ func TestService(t *testing.T) {
 	assert.Equal(t, service1.Name, service.Name)
 	assert.Equal(t, service1.Time, service.Time)
 	assert.Equal(t, service1.Price, service.Price)
+	assert.Equal(t, false, service1.IsDeleted)
+
+	err = serviceRepo.Delete(service1.ID)
+	assert.NoError(t, err)
+
+	deletedService, err := serviceRepo.GetByID(service1.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, true, deletedService.IsDeleted)
+
+	servicesAfterDeletion, err := serviceRepo.ListByGarageID(garage.ID)
+	assert.NoError(t, err)
+	assert.Len(t, servicesAfterDeletion, 1)
 }

@@ -127,6 +127,19 @@ const ServicesScreen = () => {
             });
     };
 
+    const handleDeleteService = async (Id: number) => {
+        const token = await get(EMPLOYEE_JWT);
+        await axios.delete(`/api/services/${Id}`, {
+            headers: {"Authorization": `Bearer ${token}`}
+        })
+            .then(() => {
+                fetchServices();
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
     const renderServiceItem = ({item}: { item: Service }) => (
         <View className="p-4 my-2 mx-4 bg-gray-700 rounded-lg">
             <View className="flex-col lg:flex-row justify-between lg:items-center">
@@ -145,6 +158,7 @@ const ServicesScreen = () => {
                 <CustomButton
                     title={"Usuń usługę"}
                     onPress={() => {
+                        handleDeleteService(item.id)
                     }}
                     containerStyles="bg-white self-center mt-3 lg:mt-0 w-2/5 lg:w-1/5"
                     textStyles="text-gray-700 font-bold"

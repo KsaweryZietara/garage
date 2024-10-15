@@ -42,7 +42,10 @@ func (s *Service) ListByGarageID(garageID int) ([]internal.Service, error) {
 	var services []internal.Service
 	_, err := sess.Select("*").
 		From(servicesTable).
-		Where(dbr.Eq("garage_id", garageID)).
+		Where(dbr.And(
+			dbr.Eq("garage_id", garageID),
+			dbr.Eq("is_deleted", false),
+		)).
 		Load(&services)
 
 	if err != nil {
@@ -66,4 +69,15 @@ func (s *Service) GetByID(ID int) (internal.Service, error) {
 	}
 
 	return service, nil
+}
+
+func (s *Service) Delete(ID int) error {
+	sess := s.connection.NewSession(nil)
+
+	_, err := sess.Update(servicesTable).
+		Where(dbr.Eq("id", ID)).
+		Set("is_deleted", true).
+		Exec()
+
+	return err
 }

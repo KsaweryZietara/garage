@@ -40,6 +40,7 @@ type Services interface {
 	Insert(service internal.Service) (internal.Service, error)
 	ListByGarageID(garageID int) ([]internal.Service, error)
 	GetByID(ID int) (internal.Service, error)
+	Delete(ID int) error
 }
 
 type ConfirmationCodes interface {

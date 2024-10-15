@@ -60,11 +60,12 @@ func NewGarage(dto CreateGarageDTO, ownerID int) Garage {
 }
 
 type Service struct {
-	ID       int
-	Name     string
-	Time     int
-	Price    int
-	GarageID int
+	ID        int
+	Name      string
+	Time      int
+	Price     int
+	IsDeleted bool
+	GarageID  int
 }
 
 func NewService(dto ServiceDTO, garageID int) Service {

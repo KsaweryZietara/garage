@@ -42,7 +42,7 @@ func TestGetServicesEndpoint(t *testing.T) {
 		})
 	assert.NoError(t, err)
 
-	_, err = suite.api.storage.Services().Insert(internal.Service{
+	service, err := suite.api.storage.Services().Insert(internal.Service{
 		Name:     "name",
 		Time:     30,
 		Price:    100,
@@ -60,6 +60,17 @@ func TestGetServicesEndpoint(t *testing.T) {
 	assert.Equal(t, "name", serviceDTOs[0].Name)
 	assert.Equal(t, 30, serviceDTOs[0].Time)
 	assert.Equal(t, 100, serviceDTOs[0].Price)
+
+	token, err := suite.api.auth.CreateToken("email", internal.OwnerRole)
+	require.NoError(t, err)
+	response = suite.CallAPI(http.MethodDelete, fmt.Sprintf("/api/services/%v", service.ID), []byte{}, &token)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+
+	response = suite.CallAPI(http.MethodGet, fmt.Sprintf("/api/garages/%v/services", garage.ID), []byte{}, nil)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+	var serviceDTOsAfterDeletion []internal.ServiceDTO
+	suite.ParseResponse(t, response, &serviceDTOsAfterDeletion)
+	assert.Len(t, serviceDTOsAfterDeletion, 0)
 }
 
 func TestGetServiceEndpoint(t *testing.T) {
@@ -106,6 +117,20 @@ func TestGetServiceEndpoint(t *testing.T) {
 	var serviceDTO internal.ServiceDTO
 	suite.ParseResponse(t, response, &serviceDTO)
 
+	assert.Equal(t, service.ID, serviceDTO.ID)
+	assert.Equal(t, service.Name, serviceDTO.Name)
+	assert.Equal(t, service.Time, serviceDTO.Time)
+	assert.Equal(t, service.Price, serviceDTO.Price)
+
+	token, err := suite.api.auth.CreateToken("email", internal.OwnerRole)
+	require.NoError(t, err)
+	response = suite.CallAPI(http.MethodDelete, fmt.Sprintf("/api/services/%v", service.ID), []byte{}, &token)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+
+	response = suite.CallAPI(http.MethodGet, fmt.Sprintf("/api/services/%v", service.ID), []byte{}, nil)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+	var deletedServiceDTO internal.ServiceDTO
+	suite.ParseResponse(t, response, &deletedServiceDTO)
 	assert.Equal(t, service.ID, serviceDTO.ID)
 	assert.Equal(t, service.Name, serviceDTO.Name)
 	assert.Equal(t, service.Time, serviceDTO.Time)
