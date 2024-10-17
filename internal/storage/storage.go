@@ -34,6 +34,7 @@ type Garages interface {
 	GetByOwnerID(employeeID int) (internal.Garage, error)
 	GetByID(ID int) (internal.Garage, error)
 	List(page int, query string, latitude, longitude float64) ([]internal.Garage, error)
+	Update(garage internal.Garage) error
 }
 
 type Services interface {

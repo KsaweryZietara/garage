@@ -6,7 +6,7 @@ import axios from "axios";
 import {getJwtPayload} from "@/utils/jwt";
 import {
     ActivityIndicator, FlatList, Modal,
-    Platform,
+    Platform, StatusBar,
     Text, TextInput, TouchableWithoutFeedback,
     View
 } from "react-native";
@@ -214,7 +214,7 @@ const ServicesScreen = () => {
                     keyExtractor={(item, index) => item?.id?.toString() || index.toString()}
                     ListEmptyComponent={
                         <View className="flex-1 justify-center items-center mb-40">
-                            <Text className="text-white text-xl">Brak usług.</Text>
+                            <Text className="text-gray-700 text-2xl mt-10">Brak usług.</Text>
                         </View>
                     }
                     showsHorizontalScrollIndicator={false}
@@ -286,6 +286,7 @@ const ServicesScreen = () => {
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
+            <StatusBar backgroundColor="#374151"/>
         </View>
     );
 };

@@ -97,6 +97,56 @@ func (a *API) CreateGarage(writer http.ResponseWriter, request *http.Request) {
 	a.sendResponse(writer, nil, 201)
 }
 
+func (a *API) UpdateGarage(writer http.ResponseWriter, request *http.Request) {
+	var dto internal.CreateGarageDTO
+	err := json.NewDecoder(request.Body).Decode(&dto)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	err = validate.CreateGarageDTO(dto)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	email, ok := a.emailFromContext(request.Context())
+	if !ok {
+		a.sendResponse(writer, nil, 401)
+		return
+	}
+
+	owner, err := a.storage.Employees().GetByEmail(email)
+	if err != nil {
+		a.handleError(writer, err, 401)
+		return
+	}
+
+	garage, err := a.storage.Garages().GetByOwnerID(owner.ID)
+	if err != nil {
+		a.handleError(writer, err, 404)
+		return
+	}
+
+	garage.Name = dto.Name
+	garage.City = dto.City
+	garage.Street = dto.Street
+	garage.Number = dto.Number
+	garage.PostalCode = dto.PostalCode
+	garage.PhoneNumber = dto.PhoneNumber
+	garage.Latitude = dto.Latitude
+	garage.Longitude = dto.Longitude
+
+	err = a.storage.Garages().Update(garage)
+	if err != nil {
+		a.handleError(writer, err, 500)
+		return
+	}
+
+	a.sendResponse(writer, nil, 200)
+}
+
 func (a *API) GetEmployeeGarage(writer http.ResponseWriter, request *http.Request) {
 	email, ok := a.emailFromContext(request.Context())
 	if !ok {

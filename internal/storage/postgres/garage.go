@@ -115,3 +115,21 @@ func (g *Garage) List(page int, query string, latitude, longitude float64) ([]in
 
 	return garages, nil
 }
+
+func (g *Garage) Update(garage internal.Garage) error {
+	sess := g.connection.NewSession(nil)
+
+	_, err := sess.Update(garagesTable).
+		Where(dbr.Eq("id", garage.ID)).
+		Set("name", garage.Name).
+		Set("city", garage.City).
+		Set("street", garage.Street).
+		Set("number", garage.Number).
+		Set("postal_code", garage.PostalCode).
+		Set("phone_number", garage.PhoneNumber).
+		Set("latitude", garage.Latitude).
+		Set("longitude", garage.Longitude).
+		Exec()
+
+	return err
+}

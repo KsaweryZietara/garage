@@ -51,9 +51,14 @@ const BusinessMenu: React.FC<MenuProps> = ({menuVisible, onClose, role, email, o
                         }}
                     >
                         {role === OWNER && (
-                            <TouchableOpacity onPress={() => router.push("/business/services")}>
-                                <Text className="text-gray-700 font-bold mb-3">Usługi</Text>
-                            </TouchableOpacity>
+                            <View>
+                                <TouchableOpacity onPress={() => router.push("/business/garage")}>
+                                    <Text className="text-gray-700 font-bold mb-3">Garaż</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => router.push("/business/services")}>
+                                    <Text className="text-gray-700 font-bold mb-3">Usługi</Text>
+                                </TouchableOpacity>
+                            </View>
                         )}
                         {email && (
                             <TouchableOpacity onPress={onLogout}>

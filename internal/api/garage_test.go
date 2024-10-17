@@ -67,6 +67,29 @@ func TestCreateGarageEndpoint(t *testing.T) {
 
 	response = suite.CallAPI(http.MethodPost, "/api/garages", garageJSON, nil)
 	assert.Equal(t, http.StatusUnauthorized, response.StatusCode)
+
+	updatedGarage := internal.CreateGarageDTO{
+		Name:        "new name",
+		City:        "new city",
+		Street:      "new street",
+		Number:      "111",
+		PostalCode:  "99-999",
+		PhoneNumber: "999999999",
+		Latitude:    20,
+		Longitude:   20,
+	}
+	updatedGarageJSON, err := json.Marshal(updatedGarage)
+	require.NoError(t, err)
+
+	response = suite.CallAPI(http.MethodPut, "/api/garages", updatedGarageJSON, token)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+
+	response = suite.CallAPI(http.MethodGet, "/api/employees/garages", []byte{}, token)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+
+	var garageDTO internal.GarageDTO
+	suite.ParseResponse(t, response, &garageDTO)
+	assert.Equal(t, "new name", garageDTO.Name)
 }
 
 func TestOwnerGetGarageEndpoint(t *testing.T) {

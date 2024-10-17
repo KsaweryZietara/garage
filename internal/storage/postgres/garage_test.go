@@ -47,6 +47,25 @@ func TestGarage(t *testing.T) {
 	garage, err = garageRepo.GetByID(createdGarage.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, createdGarage, garage)
+
+	updatedGarage := internal.Garage{
+		ID:          createdGarage.ID,
+		Name:        "new name",
+		City:        "new city",
+		Street:      "new street",
+		Number:      "new number",
+		PostalCode:  "99-999",
+		PhoneNumber: "999999999",
+		OwnerID:     employee.ID,
+		Latitude:    20,
+		Longitude:   20,
+	}
+	err = garageRepo.Update(updatedGarage)
+	assert.NoError(t, err)
+
+	garage, err = garageRepo.GetByID(createdGarage.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, garage, updatedGarage)
 }
 
 func TestListGarage(t *testing.T) {

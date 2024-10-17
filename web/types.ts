@@ -6,6 +6,8 @@ export interface Garage {
     number: string;
     postalCode: string;
     phoneNumber: string;
+    latitude: number;
+    longitude: number;
     rating: number;
     distance: number;
 }

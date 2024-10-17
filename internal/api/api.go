@@ -73,6 +73,7 @@ func (a *API) attachRoutes(router *http.ServeMux) {
 	router.Handle("GET /api/customers/appointments", a.authMiddleware(http.HandlerFunc(a.GetCustomerAppointments), []internal.Role{internal.CustomerRole}))
 
 	router.Handle("POST /api/garages", a.authMiddleware(http.HandlerFunc(a.CreateGarage), []internal.Role{internal.OwnerRole}))
+	router.Handle("PUT /api/garages", a.authMiddleware(http.HandlerFunc(a.UpdateGarage), []internal.Role{internal.OwnerRole}))
 	router.HandleFunc("GET /api/garages", a.ListGarages)
 	router.HandleFunc("GET /api/garages/{id}", a.GetGarage)
 	router.HandleFunc("GET /api/garages/{id}/services", a.ListServices)
