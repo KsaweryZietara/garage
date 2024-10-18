@@ -102,25 +102,32 @@ func NewGarageDTOs(garages []Garage) []GarageDTO {
 }
 
 type EmployeeDTO struct {
-	ID        int    `json:"id"`
-	Name      string `json:"name"`
-	Surname   string `json:"surname"`
-	Confirmed bool   `json:"confirmed"`
+	ID        int     `json:"id"`
+	Name      string  `json:"name"`
+	Surname   string  `json:"surname"`
+	Confirmed bool    `json:"confirmed"`
+	Email     *string `json:"email,omitempty"`
 }
 
-func NewEmployeeDTO(employee Employee) EmployeeDTO {
-	return EmployeeDTO{
+func NewEmployeeDTO(employee Employee, email bool) EmployeeDTO {
+	dto := EmployeeDTO{
 		ID:        employee.ID,
 		Name:      employee.Name,
 		Surname:   employee.Surname,
 		Confirmed: employee.Confirmed,
 	}
+
+	if email {
+		dto.Email = &employee.Email
+	}
+
+	return dto
 }
 
-func NewEmployeeDTOs(employees []Employee) []EmployeeDTO {
+func NewEmployeeDTOs(employees []Employee, email bool) []EmployeeDTO {
 	employeeDTOs := make([]EmployeeDTO, len(employees))
 	for i, employee := range employees {
-		employeeDTOs[i] = NewEmployeeDTO(employee)
+		employeeDTOs[i] = NewEmployeeDTO(employee, email)
 	}
 	return employeeDTOs
 }
@@ -152,7 +159,7 @@ type AppointmentDTO struct {
 }
 
 func NewAppointmentDTO(appointment Appointment, service Service, employee Employee, garage Garage, car Car) AppointmentDTO {
-	employeeDTO := NewEmployeeDTO(employee)
+	employeeDTO := NewEmployeeDTO(employee, false)
 	garageDTO := NewGarageDTO(garage)
 	return AppointmentDTO{
 		ID:        appointment.ID,
@@ -212,8 +219,12 @@ func NewReviewDTO(appointment Appointment, service Service, employee Employee) R
 		ID:       appointment.ID,
 		Time:     appointment.EndTime,
 		Service:  service.Name,
-		Employee: NewEmployeeDTO(employee),
+		Employee: NewEmployeeDTO(employee, false),
 		Rating:   *appointment.Rating,
 		Comment:  appointment.Comment,
 	}
+}
+
+type EmployeeEmailDTO struct {
+	Email string `json:"email"`
 }

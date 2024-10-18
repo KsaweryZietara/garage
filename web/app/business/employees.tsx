@@ -5,9 +5,9 @@ import {EMPLOYEE_JWT} from "@/constants/constants";
 import axios from "axios";
 import {getJwtPayload} from "@/utils/jwt";
 import {
-    ActivityIndicator, FlatList,
+    ActivityIndicator, FlatList, Modal,
     Platform, StatusBar,
-    Text,
+    Text, TextInput, TouchableWithoutFeedback,
     View
 } from "react-native";
 import BusinessMenu from "@/components/BusinessMenu";
@@ -22,6 +22,9 @@ const EmployeesScreen = () => {
     const [garage, setGarage] = useState<Garage | null>(null);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [loadingEmployees, setLoadingEmployees] = useState<boolean>(false);
+    const [createEmployeeVisible, setCreateEmployeeVisible] = useState<boolean>(false);
+    const [employeeEmail, setEmployeeEmail] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         const fetchGarageName = async () => {
@@ -71,17 +74,62 @@ const EmployeesScreen = () => {
             });
     };
 
+    const validateEmployee = () => {
+        if (!employeeEmail.trim()) {
+            return "Adres e-mail musi być wypełniony.";
+        }
+
+        if (employeeEmail.length > 255) {
+            return "Adres e-mail nie może przekraczać 255 znaków.";
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(employeeEmail)) {
+            return "Nieprawidłowy format adresu e-mail.";
+        }
+
+        return null;
+    };
+
+    const handleCreateEmployee = async () => {
+        const validationError = validateEmployee();
+        if (validationError) {
+            setErrorMessage(validationError);
+            return;
+        }
+        const token = await get(EMPLOYEE_JWT);
+        const data = {
+            email: employeeEmail
+        };
+        await axios.post("/api/employees", data, {headers: {"Authorization": `Bearer ${token}`}})
+            .then(() => {
+                setErrorMessage("");
+                setEmployeeEmail("")
+                setCreateEmployeeVisible(false)
+                fetchEmployees()
+            })
+            .catch((error) => {
+                console.error(error)
+                setErrorMessage(error.response.data.message);
+            });
+    };
+
     const renderEmployeeItem = ({item}: { item: Employee }) => (
         <View className="p-4 my-2 mx-4 bg-gray-700 rounded-lg">
             <View className="flex-col lg:flex-row justify-between lg:items-center">
                 <View className="flex-1">
-                    <Text className="text-lg text-white font-bold">
-                        {item.name} {item.surname}
+                    <Text className="text-2xl text-white font-bold">
+                        {item.email}
                     </Text>
                     {item.confirmed ? (
-                        <Text className={"text-sm text-green-500"}>
-                            Zarejestrowany
-                        </Text>
+                        <View>
+                            <Text className="text-lg text-white font-bold">
+                                {item.name} {item.surname}
+                            </Text>
+                            <Text className={"text-sm text-green-500"}>
+                                Zarejestrowany
+                            </Text>
+                        </View>
                     ) : (
                         <View>
                             <Text className={"text-sm text-red-500 underline"} onPress={() => {
@@ -130,6 +178,9 @@ const EmployeesScreen = () => {
                 <CustomButton
                     title={"Dodaj pracownika"}
                     onPress={() => {
+                        setEmployeeEmail("")
+                        setErrorMessage("")
+                        setCreateEmployeeVisible(true)
                     }}
                     containerStyles="bg-gray-700 self-center mt-3 w-2/5 lg:w-1/5 mr-3"
                     textStyles="text-white font-bold"
@@ -151,6 +202,45 @@ const EmployeesScreen = () => {
                     showsHorizontalScrollIndicator={false}
                 />
             )}
+
+            <Modal
+                visible={createEmployeeVisible}
+                animationType="fade"
+                transparent={true}
+                onRequestClose={() => setCreateEmployeeVisible(false)}
+            >
+                <TouchableWithoutFeedback onPress={() => setCreateEmployeeVisible(false)}>
+                    <View className="flex-1 justify-center items-center"
+                          style={{backgroundColor: 'rgba(0, 0, 0, 0.75)'}}>
+                        <TouchableWithoutFeedback onPress={() => {
+                        }}>
+                            <View className="bg-gray-700 p-5 rounded-lg w-4/5 lg:w-2/5">
+                                <View>
+                                    <Text className="text-white text-lg font-bold">Dodaj pracownika</Text>
+                                    <TextInput
+                                        value={employeeEmail}
+                                        onChangeText={setEmployeeEmail}
+                                        placeholder="Adres email pracownika"
+                                        className="border p-2 mt-5 rounded text-#2d2d2d bg-white align-text-top max-h-20"
+                                        placeholderTextColor="#2d2d2d"
+                                    />
+                                    {errorMessage && (
+                                        <Text className="text-red-500 text-center mt-3">
+                                            {errorMessage}
+                                        </Text>
+                                    )}
+                                    <CustomButton
+                                        title="Dodaj"
+                                        onPress={handleCreateEmployee}
+                                        containerStyles="bg-white self-center mt-5 px-10 lg:px-20"
+                                        textStyles="text-gray-700 font-bold"
+                                    />
+                                </View>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
 
             <BusinessMenu
                 menuVisible={menuVisible}

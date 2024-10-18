@@ -17,6 +17,7 @@ export interface Employee {
     name: string;
     surname: string;
     confirmed: boolean;
+    email: string;
 }
 
 export interface Service {

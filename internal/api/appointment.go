@@ -204,7 +204,7 @@ func (a *API) GetEmployeeAppointments(writer http.ResponseWriter, request *http.
 		}
 		if employee.Role == internal.OwnerRole {
 			mechanic, err := a.storage.Employees().GetByID(appointment.EmployeeID)
-			mechanicDTO := internal.NewEmployeeDTO(mechanic)
+			mechanicDTO := internal.NewEmployeeDTO(mechanic, false)
 			appointmentDTOs[i].Employee = &mechanicDTO
 			if err != nil {
 				a.handleError(writer, err, 500)

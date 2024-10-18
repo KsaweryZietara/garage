@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"testing"
@@ -132,4 +133,53 @@ func TestGetEmployeeEndpoint(t *testing.T) {
 	assert.Equal(t, employee.ID, employeeDTO.ID)
 	assert.Equal(t, employee.Name, employeeDTO.Name)
 	assert.Equal(t, employee.Surname, employeeDTO.Surname)
+}
+
+func TestCreateEmployeeEndpoint(t *testing.T) {
+	suite := NewSuite(t)
+	defer suite.Teardown()
+
+	owner, err := suite.api.storage.Employees().Insert(
+		internal.Employee{
+			Name:      "name",
+			Surname:   "surname",
+			Email:     "email",
+			Password:  "password",
+			Role:      internal.OwnerRole,
+			GarageID:  nil,
+			Confirmed: true,
+		})
+	assert.NoError(t, err)
+
+	_, err = suite.api.storage.Garages().Insert(
+		internal.Garage{
+			Name:        "name",
+			City:        "city",
+			Street:      "street",
+			Number:      "number",
+			PostalCode:  "postalCode",
+			PhoneNumber: "phoneNumber",
+			OwnerID:     owner.ID,
+			Latitude:    10,
+			Longitude:   10,
+		})
+	assert.NoError(t, err)
+
+	token, err := suite.api.auth.CreateToken("email", internal.OwnerRole)
+	require.NoError(t, err)
+
+	employeeEmail := internal.EmployeeEmailDTO{Email: "test@test.com"}
+	employeeEmailJSON, err := json.Marshal(employeeEmail)
+	require.NoError(t, err)
+
+	response := suite.CallAPI(http.MethodPost, "/api/employees", employeeEmailJSON, &token)
+	assert.Equal(t, http.StatusCreated, response.StatusCode)
+
+	response = suite.CallAPI(http.MethodGet, "/api/employees", []byte{}, &token)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+
+	var employeeDTOs []internal.EmployeeDTO
+	suite.ParseResponse(t, response, &employeeDTOs)
+
+	assert.Equal(t, 1, len(employeeDTOs))
 }

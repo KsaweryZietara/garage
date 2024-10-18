@@ -1,11 +1,16 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/KsaweryZietara/garage/internal"
+	"github.com/KsaweryZietara/garage/internal/mail"
+	"github.com/KsaweryZietara/garage/internal/validate"
+
+	"github.com/google/uuid"
 )
 
 func (a *API) ListConfirmedEmployees(writer http.ResponseWriter, request *http.Request) {
@@ -22,7 +27,7 @@ func (a *API) ListConfirmedEmployees(writer http.ResponseWriter, request *http.R
 		return
 	}
 
-	a.sendResponse(writer, internal.NewEmployeeDTOs(employees), 200)
+	a.sendResponse(writer, internal.NewEmployeeDTOs(employees, false), 200)
 }
 
 func (a *API) ListEmployees(writer http.ResponseWriter, request *http.Request) {
@@ -50,7 +55,7 @@ func (a *API) ListEmployees(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	a.sendResponse(writer, internal.NewEmployeeDTOs(employees), 200)
+	a.sendResponse(writer, internal.NewEmployeeDTOs(employees, true), 200)
 }
 
 func (a *API) GetEmployee(writer http.ResponseWriter, request *http.Request) {
@@ -72,5 +77,72 @@ func (a *API) GetEmployee(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	a.sendResponse(writer, internal.NewEmployeeDTO(employee), 200)
+	a.sendResponse(writer, internal.NewEmployeeDTO(employee, false), 200)
+}
+
+func (a *API) CreateEmployee(writer http.ResponseWriter, request *http.Request) {
+	var dto internal.EmployeeEmailDTO
+	err := json.NewDecoder(request.Body).Decode(&dto)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	if !validate.IsEmail(dto.Email) {
+		a.sendResponse(writer, nil, 400)
+		return
+	}
+
+	email, ok := a.emailFromContext(request.Context())
+	if !ok {
+		a.sendResponse(writer, nil, 401)
+		return
+	}
+
+	owner, err := a.storage.Employees().GetByEmail(email)
+	if err != nil {
+		a.handleError(writer, err, 401)
+		return
+	}
+
+	garage, err := a.storage.Garages().GetByOwnerID(owner.ID)
+	if err != nil {
+		a.handleError(writer, err, 404)
+		return
+	}
+
+	employee, err := a.storage.Employees().Insert(
+		internal.Employee{
+			Email:     dto.Email,
+			Role:      internal.MechanicRole,
+			GarageID:  &garage.ID,
+			Confirmed: false,
+		})
+	if err != nil {
+		a.handleError(writer, err, 500)
+		return
+	}
+
+	code, err := a.storage.ConfirmationCodes().Insert(
+		internal.ConfirmationCode{
+			ID:         uuid.New().String(),
+			EmployeeID: employee.ID,
+		})
+	if err != nil {
+		a.log.Error(err.Error())
+	}
+
+	if err = a.mail.Send(
+		dto.Email,
+		"Rejestracja",
+		mail.NewEmployeeTemplate,
+		mail.NewEmployee{
+			GarageName: garage.Name,
+			Code:       code.ID,
+		},
+	); err != nil {
+		a.log.Error(err.Error())
+	}
+
+	a.sendResponse(writer, nil, 201)
 }

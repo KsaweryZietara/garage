@@ -26,7 +26,7 @@ func CreateEmployeeDTO(dto internal.CreateEmployeeDTO, validateEmail bool) error
 		return errors.New("name and surname cannot contain numbers")
 	}
 
-	if !isEmail(dto.Email) && validateEmail {
+	if !IsEmail(dto.Email) && validateEmail {
 		return errors.New("invalid email format")
 	}
 
@@ -42,7 +42,7 @@ func LoginDTO(dto internal.LoginDTO) error {
 		return errors.New("fields cannot be empty")
 	}
 
-	if !isEmail(dto.Email) {
+	if !IsEmail(dto.Email) {
 		return errors.New("invalid email format")
 	}
 
@@ -95,7 +95,7 @@ func CreateGarageDTO(dto internal.CreateGarageDTO) error {
 		if len(email) > 255 {
 			return errors.New("email cannot have more than 255 characters")
 		}
-		if !isEmail(email) {
+		if !IsEmail(email) {
 			return errors.New("invalid email format")
 		}
 	}
@@ -116,7 +116,7 @@ func CreateCustomerDTO(dto internal.CreateCustomerDTO) error {
 		return errors.New("passwords must be identical")
 	}
 
-	if !isEmail(dto.Email) {
+	if !IsEmail(dto.Email) {
 		return errors.New("invalid email format")
 	}
 
@@ -196,7 +196,7 @@ func isAlpha(s string) bool {
 	return true
 }
 
-func isEmail(s string) bool {
+func IsEmail(s string) bool {
 	re := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 	return re.MatchString(s)
 }

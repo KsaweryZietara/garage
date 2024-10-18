@@ -370,32 +370,32 @@ func TestCreateGarageDTO(t *testing.T) {
 
 func TestIsEmail(t *testing.T) {
 	t.Run("should return true with valid email", func(t *testing.T) {
-		result := isEmail("test@example.com")
+		result := IsEmail("test@example.com")
 		assert.True(t, result)
 	})
 
 	t.Run("should return false with missing at symbol", func(t *testing.T) {
-		result := isEmail("testexample.com")
+		result := IsEmail("testexample.com")
 		assert.False(t, result)
 	})
 
 	t.Run("should return false with missing domain", func(t *testing.T) {
-		result := isEmail("test@")
+		result := IsEmail("test@")
 		assert.False(t, result)
 	})
 
 	t.Run("should return false with invalid domain", func(t *testing.T) {
-		result := isEmail("test@example")
+		result := IsEmail("test@example")
 		assert.False(t, result)
 	})
 
 	t.Run("should return false with special characters not allowed", func(t *testing.T) {
-		result := isEmail("test@exa$mple.com")
+		result := IsEmail("test@exa$mple.com")
 		assert.False(t, result)
 	})
 
 	t.Run("should return true with valid email including special characters", func(t *testing.T) {
-		result := isEmail("test.email+alex@leetcode.com")
+		result := IsEmail("test.email+alex@leetcode.com")
 		assert.True(t, result)
 	})
 }
