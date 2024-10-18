@@ -58,6 +58,9 @@ const BusinessMenu: React.FC<MenuProps> = ({menuVisible, onClose, role, email, o
                                 <TouchableOpacity onPress={() => router.push("/business/services")}>
                                     <Text className="text-gray-700 font-bold mb-3">Usługi</Text>
                                 </TouchableOpacity>
+                                <TouchableOpacity onPress={() => router.push("/business/employees")}>
+                                    <Text className="text-gray-700 font-bold mb-3">Pracownicy</Text>
+                                </TouchableOpacity>
                             </View>
                         )}
                         {email && (

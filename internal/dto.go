@@ -102,16 +102,18 @@ func NewGarageDTOs(garages []Garage) []GarageDTO {
 }
 
 type EmployeeDTO struct {
-	ID      int    `json:"id"`
-	Name    string `json:"name"`
-	Surname string `json:"surname"`
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Surname   string `json:"surname"`
+	Confirmed bool   `json:"confirmed"`
 }
 
 func NewEmployeeDTO(employee Employee) EmployeeDTO {
 	return EmployeeDTO{
-		ID:      employee.ID,
-		Name:    employee.Name,
-		Surname: employee.Surname,
+		ID:        employee.ID,
+		Name:      employee.Name,
+		Surname:   employee.Surname,
+		Confirmed: employee.Confirmed,
 	}
 }
 

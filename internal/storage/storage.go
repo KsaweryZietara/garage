@@ -25,6 +25,7 @@ type Employees interface {
 	Insert(employee internal.Employee) (internal.Employee, error)
 	GetByEmail(email string) (internal.Employee, error)
 	Update(employee internal.Employee) error
+	ListConfirmedByGarageID(garageID int) ([]internal.Employee, error)
 	ListByGarageID(garageID int) ([]internal.Employee, error)
 	GetByID(ID int) (internal.Employee, error)
 }

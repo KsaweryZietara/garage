@@ -6,7 +6,9 @@ import (
 	"testing"
 
 	"github.com/KsaweryZietara/garage/internal"
+
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetEmployeesEndpoint(t *testing.T) {
@@ -55,6 +57,19 @@ func TestGetEmployeesEndpoint(t *testing.T) {
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 
 	var employeeDTOs []internal.EmployeeDTO
+	suite.ParseResponse(t, response, &employeeDTOs)
+
+	assert.Equal(t, 1, len(employeeDTOs))
+	assert.Equal(t, employee.ID, employeeDTOs[0].ID)
+	assert.Equal(t, employee.Name, employeeDTOs[0].Name)
+	assert.Equal(t, employee.Surname, employeeDTOs[0].Surname)
+
+	token, err := suite.api.auth.CreateToken("email", internal.OwnerRole)
+	require.NoError(t, err)
+
+	response = suite.CallAPI(http.MethodGet, "/api/employees", []byte{}, &token)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+
 	suite.ParseResponse(t, response, &employeeDTOs)
 
 	assert.Equal(t, 1, len(employeeDTOs))

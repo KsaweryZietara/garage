@@ -63,7 +63,7 @@ func (e *Employee) Update(employee internal.Employee) error {
 	return err
 }
 
-func (e *Employee) ListByGarageID(garageID int) ([]internal.Employee, error) {
+func (e *Employee) ListConfirmedByGarageID(garageID int) ([]internal.Employee, error) {
 	sess := e.connection.NewSession(nil)
 
 	var employees []internal.Employee
@@ -73,6 +73,22 @@ func (e *Employee) ListByGarageID(garageID int) ([]internal.Employee, error) {
 			dbr.Eq("garage_id", garageID),
 			dbr.Eq("confirmed", true),
 		)).
+		Load(&employees)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return employees, nil
+}
+
+func (e *Employee) ListByGarageID(garageID int) ([]internal.Employee, error) {
+	sess := e.connection.NewSession(nil)
+
+	var employees []internal.Employee
+	_, err := sess.Select("*").
+		From(employeesTable).
+		Where(dbr.Eq("garage_id", garageID)).
 		Load(&employees)
 
 	if err != nil {

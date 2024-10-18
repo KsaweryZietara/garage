@@ -92,7 +92,7 @@ func TestEmployee(t *testing.T) {
 	assert.Equal(t, employee.Surname, updatedEmployee.Surname)
 	assert.Equal(t, employee.Password, updatedEmployee.Password)
 
-	employees, err := employeeRepo.ListByGarageID(garage.ID)
+	employees, err := employeeRepo.ListConfirmedByGarageID(garage.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(employees))
 
@@ -114,13 +114,21 @@ func TestEmployee(t *testing.T) {
 	_, err = employeeRepo.GetByEmail(employee4.Email)
 	assert.EqualError(t, err, "dbr: not found")
 
-	employees, err = employeeRepo.ListByGarageID(garage.ID)
+	employees, err = employeeRepo.ListConfirmedByGarageID(garage.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(employees))
+
+	employees, err = employeeRepo.ListByGarageID(garage.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, 3, len(employees))
 
 	employee4.Confirmed = true
 	err = employeeRepo.Update(employee4)
 	assert.NoError(t, err)
+
+	employees, err = employeeRepo.ListConfirmedByGarageID(garage.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, 3, len(employees))
 
 	employees, err = employeeRepo.ListByGarageID(garage.ID)
 	assert.NoError(t, err)
