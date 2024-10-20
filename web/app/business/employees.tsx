@@ -25,6 +25,8 @@ const EmployeesScreen = () => {
     const [createEmployeeVisible, setCreateEmployeeVisible] = useState<boolean>(false);
     const [employeeEmail, setEmployeeEmail] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [resendEmailModalVisible, setResendEmailModalVisible] = useState<boolean>(false);
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchGarageName = async () => {
@@ -71,6 +73,21 @@ const EmployeesScreen = () => {
                 console.error(error);
             }).finally(() => {
                 setLoadingEmployees(false);
+            });
+    };
+
+    const handleResendEmail = async () => {
+        if (!selectedEmployeeId) {
+            return;
+        }
+        setResendEmailModalVisible(false);
+        setSelectedEmployeeId(null);
+        const token = await get(EMPLOYEE_JWT);
+        await axios.get(`/api/employees/${selectedEmployeeId}/confirmation`, {
+            headers: {"Authorization": `Bearer ${token}`}
+        })
+            .catch((error) => {
+                console.error(error);
             });
     };
 
@@ -133,6 +150,8 @@ const EmployeesScreen = () => {
                     ) : (
                         <View>
                             <Text className={"text-sm text-red-500 underline"} onPress={() => {
+                                setSelectedEmployeeId(item.id);
+                                setResendEmailModalVisible(true);
                             }}>
                                 Nie zarejestrowany
                             </Text>
@@ -202,6 +221,35 @@ const EmployeesScreen = () => {
                     showsHorizontalScrollIndicator={false}
                 />
             )}
+
+            <Modal
+                visible={resendEmailModalVisible}
+                animationType="fade"
+                transparent={true}
+                onRequestClose={() => setResendEmailModalVisible(false)}
+            >
+                <TouchableWithoutFeedback onPress={() => setResendEmailModalVisible(false)}>
+                    <View className="flex-1 justify-center items-center"
+                          style={{backgroundColor: 'rgba(0, 0, 0, 0.75)'}}>
+                        <TouchableWithoutFeedback onPress={() => {
+                        }}>
+                            <View className="bg-gray-700 py-5 rounded-lg w-4/5 lg:w-2/5">
+                                <View>
+                                    <Text className="text-white text-lg font-bold self-center">
+                                        Czy na pewno chcesz wysłać ponownie e-mail potwierdzający?
+                                    </Text>
+                                    <CustomButton
+                                        title="Wyślij"
+                                        onPress={handleResendEmail}
+                                        containerStyles="bg-white self-center mt-5 px-10 lg:px-20"
+                                        textStyles="text-gray-700 font-bold"
+                                    />
+                                </View>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
 
             <Modal
                 visible={createEmployeeVisible}

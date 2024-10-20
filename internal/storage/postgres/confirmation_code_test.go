@@ -41,7 +41,7 @@ func TestConfirmationCode(t *testing.T) {
 	assert.Equal(t, newConfirmationCode.ID, confirmationCode.ID)
 	assert.Equal(t, newConfirmationCode.EmployeeID, confirmationCode.EmployeeID)
 
-	err = confirmationCodeRepo.DeleteByID(newConfirmationCode.ID)
+	err = confirmationCodeRepo.DeleteByEmployeeID(employee.ID)
 	assert.NoError(t, err)
 
 	_, err = confirmationCodeRepo.GetByID(newConfirmationCode.ID)

@@ -27,6 +27,7 @@ type Employees interface {
 	Update(employee internal.Employee) error
 	ListConfirmedByGarageID(garageID int) ([]internal.Employee, error)
 	ListByGarageID(garageID int) ([]internal.Employee, error)
+	GetConfirmedByID(ID int) (internal.Employee, error)
 	GetByID(ID int) (internal.Employee, error)
 }
 
@@ -48,7 +49,7 @@ type Services interface {
 type ConfirmationCodes interface {
 	Insert(code internal.ConfirmationCode) (internal.ConfirmationCode, error)
 	GetByID(ID string) (internal.ConfirmationCode, error)
-	DeleteByID(ID string) error
+	DeleteByEmployeeID(ID int) error
 }
 
 type Customers interface {

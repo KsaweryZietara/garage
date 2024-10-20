@@ -42,7 +42,7 @@ func (a *API) CreateAppointment(writer http.ResponseWriter, request *http.Reques
 		return
 	}
 
-	employee, err := a.storage.Employees().GetByID(dto.EmployeeID)
+	employee, err := a.storage.Employees().GetConfirmedByID(dto.EmployeeID)
 	if err != nil {
 		a.handleError(writer, err, 404)
 		return
@@ -111,7 +111,7 @@ func (a *API) GetAvailableSlots(writer http.ResponseWriter, request *http.Reques
 		a.handleError(writer, err, 400)
 		return
 	}
-	employee, err := a.storage.Employees().GetByID(employeeID)
+	employee, err := a.storage.Employees().GetConfirmedByID(employeeID)
 	if err != nil {
 		a.handleError(writer, err, 404)
 		return
@@ -203,7 +203,7 @@ func (a *API) GetEmployeeAppointments(writer http.ResponseWriter, request *http.
 			Car:       car,
 		}
 		if employee.Role == internal.OwnerRole {
-			mechanic, err := a.storage.Employees().GetByID(appointment.EmployeeID)
+			mechanic, err := a.storage.Employees().GetConfirmedByID(appointment.EmployeeID)
 			mechanicDTO := internal.NewEmployeeDTO(mechanic, false)
 			appointmentDTOs[i].Employee = &mechanicDTO
 			if err != nil {
@@ -242,7 +242,7 @@ func (a *API) GetCustomerAppointments(writer http.ResponseWriter, request *http.
 			a.handleError(writer, err, 404)
 			return
 		}
-		employee, err := a.storage.Employees().GetByID(appointment.EmployeeID)
+		employee, err := a.storage.Employees().GetConfirmedByID(appointment.EmployeeID)
 		if err != nil {
 			a.handleError(writer, err, 404)
 			return

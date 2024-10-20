@@ -98,7 +98,7 @@ func (e *Employee) ListByGarageID(garageID int) ([]internal.Employee, error) {
 	return employees, nil
 }
 
-func (e *Employee) GetByID(ID int) (internal.Employee, error) {
+func (e *Employee) GetConfirmedByID(ID int) (internal.Employee, error) {
 	sess := e.connection.NewSession(nil)
 
 	var employee internal.Employee
@@ -108,6 +108,22 @@ func (e *Employee) GetByID(ID int) (internal.Employee, error) {
 			dbr.Eq("id", ID),
 			dbr.Eq("confirmed", true),
 		)).
+		LoadOne(&employee)
+
+	if err != nil {
+		return internal.Employee{}, err
+	}
+
+	return employee, nil
+}
+
+func (e *Employee) GetByID(ID int) (internal.Employee, error) {
+	sess := e.connection.NewSession(nil)
+
+	var employee internal.Employee
+	err := sess.Select("*").
+		From(employeesTable).
+		Where(dbr.Eq("id", ID)).
 		LoadOne(&employee)
 
 	if err != nil {

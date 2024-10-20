@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -66,7 +67,7 @@ func (a *API) GetEmployee(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	employee, err := a.storage.Employees().GetByID(employeeID)
+	employee, err := a.storage.Employees().GetConfirmedByID(employeeID)
 	if err != nil {
 		a.handleError(writer, err, 404)
 		return
@@ -129,7 +130,8 @@ func (a *API) CreateEmployee(writer http.ResponseWriter, request *http.Request) 
 			EmployeeID: employee.ID,
 		})
 	if err != nil {
-		a.log.Error(err.Error())
+		a.handleError(writer, err, 500)
+		return
 	}
 
 	if err = a.mail.Send(
@@ -145,4 +147,65 @@ func (a *API) CreateEmployee(writer http.ResponseWriter, request *http.Request) 
 	}
 
 	a.sendResponse(writer, nil, 201)
+}
+
+func (a *API) ResendConfirmationEmail(writer http.ResponseWriter, request *http.Request) {
+	employeeIDStr := request.PathValue("id")
+	employeeID, err := strconv.Atoi(employeeIDStr)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	email, ok := a.emailFromContext(request.Context())
+	if !ok {
+		a.sendResponse(writer, nil, 401)
+		return
+	}
+
+	owner, err := a.storage.Employees().GetByEmail(email)
+	if err != nil {
+		a.handleError(writer, err, 401)
+		return
+	}
+
+	garage, err := a.storage.Garages().GetByOwnerID(owner.ID)
+	if err != nil {
+		a.handleError(writer, err, 404)
+		return
+	}
+
+	employee, err := a.storage.Employees().GetByID(employeeID)
+	if err != nil {
+		a.handleError(writer, err, 404)
+		return
+	}
+
+	if employee.Confirmed {
+		a.handleError(writer, errors.New("employee is already confirmed"), 400)
+	}
+
+	code, err := a.storage.ConfirmationCodes().Insert(
+		internal.ConfirmationCode{
+			ID:         uuid.New().String(),
+			EmployeeID: employee.ID,
+		})
+	if err != nil {
+		a.handleError(writer, err, 500)
+		return
+	}
+
+	if err = a.mail.Send(
+		employee.Email,
+		"Rejestracja",
+		mail.NewEmployeeTemplate,
+		mail.NewEmployee{
+			GarageName: garage.Name,
+			Code:       code.ID,
+		},
+	); err != nil {
+		a.log.Error(err.Error())
+	}
+
+	a.sendResponse(writer, nil, 200)
 }

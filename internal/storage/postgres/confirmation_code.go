@@ -42,10 +42,10 @@ func (c *ConfirmationCode) GetByID(ID string) (internal.ConfirmationCode, error)
 	return code, err
 }
 
-func (c *ConfirmationCode) DeleteByID(ID string) error {
+func (c *ConfirmationCode) DeleteByEmployeeID(ID int) error {
 	sess := c.connection.NewSession(nil)
 	_, err := sess.DeleteFrom(confirmationCodesTable).
-		Where(dbr.Eq("id", ID)).
+		Where(dbr.Eq("employee_id", ID)).
 		Exec()
 
 	return err

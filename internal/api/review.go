@@ -141,7 +141,7 @@ func (a *API) ListReviews(writer http.ResponseWriter, request *http.Request) {
 			a.handleError(writer, err, 404)
 			return
 		}
-		employee, err := a.storage.Employees().GetByID(appointment.EmployeeID)
+		employee, err := a.storage.Employees().GetConfirmedByID(appointment.EmployeeID)
 		if err != nil {
 			a.handleError(writer, err, 404)
 			return

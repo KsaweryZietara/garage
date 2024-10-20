@@ -79,7 +79,7 @@ func (a *API) CreateMechanic(writer http.ResponseWriter, request *http.Request) 
 		return
 	}
 
-	if err = a.storage.ConfirmationCodes().DeleteByID(codeID); err != nil {
+	if err = a.storage.ConfirmationCodes().DeleteByEmployeeID(employee.ID); err != nil {
 		a.log.Error(err.Error())
 	}
 
