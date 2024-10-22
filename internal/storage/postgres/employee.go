@@ -54,7 +54,10 @@ func (e *Employee) GetByEmail(email string) (internal.Employee, error) {
 func (e *Employee) Update(employee internal.Employee) error {
 	sess := e.connection.NewSession(nil)
 	_, err := sess.Update(employeesTable).
-		Where(dbr.Eq("id", employee.ID)).
+		Where(dbr.And(
+			dbr.Eq("id", employee.ID),
+			dbr.Eq("is_deleted", false),
+		)).
 		Set("name", employee.Name).
 		Set("surname", employee.Surname).
 		Set("password", employee.Password).

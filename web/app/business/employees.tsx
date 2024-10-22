@@ -131,6 +131,17 @@ const EmployeesScreen = () => {
             });
     };
 
+    const handleDeleteEmployee = async (id: number) => {
+        const token = await get(EMPLOYEE_JWT);
+        await axios.delete(`/api/employees/${id}`, {headers: {"Authorization": `Bearer ${token}`}})
+            .then(() => {
+                fetchEmployees()
+            })
+            .catch((error) => {
+                console.error(error)
+            });
+    }
+
     const renderEmployeeItem = ({item}: { item: Employee }) => (
         <View className="p-4 my-2 mx-4 bg-gray-700 rounded-lg">
             <View className="flex-col lg:flex-row justify-between lg:items-center">
@@ -162,6 +173,7 @@ const EmployeesScreen = () => {
                 <CustomButton
                     title={"Usuń pracownika"}
                     onPress={() => {
+                        handleDeleteEmployee(item.id)
                     }}
                     containerStyles="bg-white self-center mt-3 lg:mt-0 w-3/5 lg:w-1/5"
                     textStyles="text-gray-700 font-bold"
@@ -191,7 +203,7 @@ const EmployeesScreen = () => {
 
             <View className="flex-row justify-between lg:items-center">
                 <View className="flex-1">
-                    <Text className="text-gray-700 text-3xl font-bold mt-5 ml-4 mb-3">Usługi</Text>
+                    <Text className="text-gray-700 text-3xl font-bold mt-5 ml-4 mb-3">Pracownicy</Text>
                 </View>
 
                 <CustomButton
