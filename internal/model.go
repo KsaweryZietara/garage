@@ -19,6 +19,7 @@ type Employee struct {
 	Role      Role
 	GarageID  *int
 	Confirmed bool
+	IsDeleted bool
 }
 
 func NewEmployee(dto CreateEmployeeDTO, role Role) Employee {

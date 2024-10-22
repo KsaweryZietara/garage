@@ -181,8 +181,14 @@ func (a *API) ResendConfirmationEmail(writer http.ResponseWriter, request *http.
 		return
 	}
 
+	if employee.GarageID != nil && *employee.GarageID != garage.ID {
+		a.handleError(writer, errors.New("employee not found"), 404)
+		return
+	}
+
 	if employee.Confirmed {
 		a.handleError(writer, errors.New("employee is already confirmed"), 400)
+		return
 	}
 
 	code, err := a.storage.ConfirmationCodes().Insert(
@@ -205,6 +211,52 @@ func (a *API) ResendConfirmationEmail(writer http.ResponseWriter, request *http.
 		},
 	); err != nil {
 		a.log.Error(err.Error())
+	}
+
+	a.sendResponse(writer, nil, 200)
+}
+
+func (a *API) DeleteEmployee(writer http.ResponseWriter, request *http.Request) {
+	employeeIDStr := request.PathValue("id")
+	employeeID, err := strconv.Atoi(employeeIDStr)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	email, ok := a.emailFromContext(request.Context())
+	if !ok {
+		a.sendResponse(writer, nil, 401)
+		return
+	}
+
+	owner, err := a.storage.Employees().GetByEmail(email)
+	if err != nil {
+		a.handleError(writer, err, 401)
+		return
+	}
+
+	garage, err := a.storage.Garages().GetByOwnerID(owner.ID)
+	if err != nil {
+		a.handleError(writer, err, 404)
+		return
+	}
+
+	employee, err := a.storage.Employees().GetByID(employeeID)
+	if err != nil {
+		a.handleError(writer, err, 404)
+		return
+	}
+
+	if employee.GarageID != nil && *employee.GarageID != garage.ID {
+		a.handleError(writer, errors.New("employee not found"), 404)
+		return
+	}
+
+	err = a.storage.Employees().Delete(employee.ID)
+	if err != nil {
+		a.handleError(writer, err, 500)
+		return
 	}
 
 	a.sendResponse(writer, nil, 200)

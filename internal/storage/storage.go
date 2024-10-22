@@ -29,6 +29,7 @@ type Employees interface {
 	ListByGarageID(garageID int) ([]internal.Employee, error)
 	GetConfirmedByID(ID int) (internal.Employee, error)
 	GetByID(ID int) (internal.Employee, error)
+	Delete(ID int) error
 }
 
 type Garages interface {

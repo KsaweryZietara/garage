@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS employees
     password VARCHAR(255),
     role roles NOT NULL,
     garage_id INT,
-    confirmed BOOLEAN
+    confirmed BOOLEAN,
+    is_deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS garages

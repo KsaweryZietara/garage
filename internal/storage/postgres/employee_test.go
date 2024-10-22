@@ -141,4 +141,22 @@ func TestEmployee(t *testing.T) {
 	employees, err = employeeRepo.ListByGarageID(garage.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, 3, len(employees))
+
+	err = employeeRepo.Delete(employee2.ID)
+	assert.NoError(t, err)
+
+	deletedEmployee, err := employeeRepo.GetByID(employee2.ID)
+	assert.NoError(t, err)
+	assert.True(t, deletedEmployee.IsDeleted)
+
+	_, err = employeeRepo.GetByEmail(employee2.Email)
+	assert.EqualError(t, err, "dbr: not found")
+
+	employees, err = employeeRepo.ListConfirmedByGarageID(garage.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(employees))
+
+	employees, err = employeeRepo.ListByGarageID(garage.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(employees))
 }

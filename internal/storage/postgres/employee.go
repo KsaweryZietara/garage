@@ -42,6 +42,7 @@ func (e *Employee) GetByEmail(email string) (internal.Employee, error) {
 		Where(dbr.And(
 			dbr.Eq("email", email),
 			dbr.Eq("confirmed", true),
+			dbr.Eq("is_deleted", false),
 		)).
 		LoadOne(&employee)
 	if err != nil {
@@ -72,6 +73,7 @@ func (e *Employee) ListConfirmedByGarageID(garageID int) ([]internal.Employee, e
 		Where(dbr.And(
 			dbr.Eq("garage_id", garageID),
 			dbr.Eq("confirmed", true),
+			dbr.Eq("is_deleted", false),
 		)).
 		Load(&employees)
 
@@ -88,7 +90,10 @@ func (e *Employee) ListByGarageID(garageID int) ([]internal.Employee, error) {
 	var employees []internal.Employee
 	_, err := sess.Select("*").
 		From(employeesTable).
-		Where(dbr.Eq("garage_id", garageID)).
+		Where(dbr.And(
+			dbr.Eq("garage_id", garageID),
+			dbr.Eq("is_deleted", false),
+		)).
 		Load(&employees)
 
 	if err != nil {
@@ -131,4 +136,15 @@ func (e *Employee) GetByID(ID int) (internal.Employee, error) {
 	}
 
 	return employee, nil
+}
+
+func (e *Employee) Delete(ID int) error {
+	sess := e.connection.NewSession(nil)
+
+	_, err := sess.Update(employeesTable).
+		Where(dbr.Eq("id", ID)).
+		Set("is_deleted", true).
+		Exec()
+
+	return err
 }

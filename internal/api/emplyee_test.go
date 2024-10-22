@@ -228,3 +228,48 @@ func TestResendConfirmationMailEndpoint(t *testing.T) {
 	response := suite.CallAPI(http.MethodGet, fmt.Sprintf("/api/employees/%v/confirmation", employee.ID), []byte{}, &token)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 }
+
+func TestDeleteEmployeeEndpoint(t *testing.T) {
+	suite := NewSuite(t)
+	defer suite.Teardown()
+
+	owner, err := suite.api.storage.Employees().Insert(
+		internal.Employee{
+			Name:      "name",
+			Surname:   "surname",
+			Email:     "email",
+			Password:  "password",
+			Role:      internal.OwnerRole,
+			GarageID:  nil,
+			Confirmed: true,
+		})
+	assert.NoError(t, err)
+
+	garage, err := suite.api.storage.Garages().Insert(
+		internal.Garage{
+			Name:        "name",
+			City:        "city",
+			Street:      "street",
+			Number:      "number",
+			PostalCode:  "postalCode",
+			PhoneNumber: "phoneNumber",
+			OwnerID:     owner.ID,
+			Latitude:    10,
+			Longitude:   10,
+		})
+	assert.NoError(t, err)
+
+	employee, err := suite.api.storage.Employees().Insert(
+		internal.Employee{
+			Role:      internal.MechanicRole,
+			GarageID:  &garage.ID,
+			Confirmed: false,
+		})
+	assert.NoError(t, err)
+
+	token, err := suite.api.auth.CreateToken("email", internal.OwnerRole)
+	require.NoError(t, err)
+
+	response := suite.CallAPI(http.MethodDelete, fmt.Sprintf("/api/employees/%v", employee.ID), []byte{}, &token)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+}
