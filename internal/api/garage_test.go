@@ -90,6 +90,12 @@ func TestCreateGarageEndpoint(t *testing.T) {
 	var garageDTO internal.GarageDTO
 	suite.ParseResponse(t, response, &garageDTO)
 	assert.Equal(t, "new name", garageDTO.Name)
+
+	logo := internal.LogoDTO{Base64Logo: "logo"}
+	logoJSON, err := json.Marshal(logo)
+	require.NoError(t, err)
+	response = suite.CallAPI(http.MethodPost, "/api/garages/logo", logoJSON, token)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
 }
 
 func TestOwnerGetGarageEndpoint(t *testing.T) {

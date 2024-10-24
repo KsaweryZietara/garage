@@ -228,3 +228,7 @@ func NewReviewDTO(appointment Appointment, service Service, employee Employee) R
 type EmployeeEmailDTO struct {
 	Email string `json:"email"`
 }
+
+type LogoDTO struct {
+	Base64Logo string `json:"logo"`
+}

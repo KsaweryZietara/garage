@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS garages
     phone_number VARCHAR(15) unique NOT NULL,
     latitude DECIMAL(9, 6) NOT NULL,
     longitude DECIMAL(9, 6) NOT NULL,
+    logo BYTEA,
     owner_id INT REFERENCES employees(id)
 );
 

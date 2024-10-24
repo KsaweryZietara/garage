@@ -133,3 +133,14 @@ func (g *Garage) Update(garage internal.Garage) error {
 
 	return err
 }
+
+func (g *Garage) UpdateLogo(garageID int, logo []byte) error {
+	sess := g.connection.NewSession(nil)
+
+	_, err := sess.Update(garagesTable).
+		Where(dbr.Eq("id", garageID)).
+		Set("logo", logo).
+		Exec()
+
+	return err
+}

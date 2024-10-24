@@ -38,6 +38,7 @@ type Garages interface {
 	GetByID(ID int) (internal.Garage, error)
 	List(page int, query string, latitude, longitude float64) ([]internal.Garage, error)
 	Update(garage internal.Garage) error
+	UpdateLogo(ID int, logo []byte) error
 }
 
 type Services interface {

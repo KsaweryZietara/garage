@@ -66,6 +66,14 @@ func TestGarage(t *testing.T) {
 	garage, err = garageRepo.GetByID(createdGarage.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, garage, updatedGarage)
+
+	logo := []byte("logo")
+	err = garageRepo.UpdateLogo(createdGarage.ID, logo)
+	assert.NoError(t, err)
+
+	garage, err = garageRepo.GetByID(createdGarage.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, logo, garage.Logo)
 }
 
 func TestListGarage(t *testing.T) {

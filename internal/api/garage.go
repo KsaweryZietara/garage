@@ -1,16 +1,22 @@
 package api
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/KsaweryZietara/garage/internal"
 	"github.com/KsaweryZietara/garage/internal/mail"
 	"github.com/KsaweryZietara/garage/internal/validate"
 
 	"github.com/google/uuid"
+)
+
+const (
+	base64Prefix = "data:image/png;base64,"
 )
 
 func (a *API) CreateGarage(writer http.ResponseWriter, request *http.Request) {
@@ -215,4 +221,53 @@ func (a *API) GetGarage(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	a.sendResponse(writer, internal.NewGarageDTO(garage), 200)
+}
+
+func (a *API) UpdateLogo(writer http.ResponseWriter, request *http.Request) {
+	var dto internal.LogoDTO
+	err := json.NewDecoder(request.Body).Decode(&dto)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	if len(dto.Base64Logo) == 0 {
+		a.sendResponse(writer, nil, 400)
+		return
+	}
+
+	if strings.HasPrefix(dto.Base64Logo, base64Prefix) {
+		dto.Base64Logo = strings.TrimPrefix(dto.Base64Logo, base64Prefix)
+	}
+
+	decodedLogo, err := base64.StdEncoding.DecodeString(dto.Base64Logo)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	email, ok := a.emailFromContext(request.Context())
+	if !ok {
+		a.sendResponse(writer, nil, 401)
+		return
+	}
+
+	owner, err := a.storage.Employees().GetByEmail(email)
+	if err != nil {
+		a.handleError(writer, err, 401)
+		return
+	}
+
+	garage, err := a.storage.Garages().GetByOwnerID(owner.ID)
+	if err != nil {
+		a.handleError(writer, err, 404)
+		return
+	}
+
+	if err = a.storage.Garages().UpdateLogo(garage.ID, decodedLogo); err != nil {
+		a.handleError(writer, err, 500)
+		return
+	}
+
+	a.sendResponse(writer, nil, 200)
 }
