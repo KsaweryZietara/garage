@@ -76,7 +76,8 @@ const RegisterScreen = () => {
     return (
         <View className="flex-1 bg-black">
             <View className="flex-row justify-start p-4 bg-black">
-                <Text className="text-white text-2xl lg:text-4xl font-bold lg:mt-1.5">GARAGE</Text>
+                <Text className="text-white text-2xl lg:text-4xl font-bold lg:mt-1.5"
+                      onPress={() => router.push("/home")}>GARAGE</Text>
             </View>
             <View className="flex-1 justify-center items-center px-6">
                 <View className="w-full max-w-xl">

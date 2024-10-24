@@ -25,7 +25,7 @@ const HomeScreen = () => {
     const [email, setEmail] = useState<string | null>(null);
     const [role, setRole] = useState<string | null>(null);
     const [menuVisible, setMenuVisible] = useState(false);
-    const [garageName, setGarageName] = useState("garage");
+    const [garageName, setGarageName] = useState("");
     const [appointments, setAppointments] = useState<EmployeeAppointment[]>([]);
     const [loadingAppointments, setLoadingAppointments] = useState<boolean>(true);
     const [selectedDate, setSelectedDate] = useState<Moment>(moment());
@@ -109,7 +109,9 @@ const HomeScreen = () => {
     return (
         <View className="flex-1">
             <View className="flex-row justify-between p-4 bg-gray-700">
-                <Text className="text-2xl lg:text-4xl font-bold text-white lg:mt-1.5">
+                <Text className="text-2xl lg:text-4xl font-bold text-white lg:mt-1.5" onPress={() => {
+                    router.push("/business/home")
+                }}>
                     {garageName.toUpperCase()}
                 </Text>
                 <Text

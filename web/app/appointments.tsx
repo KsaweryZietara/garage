@@ -20,8 +20,10 @@ import {CUSTOMER_JWT} from "@/constants/constants";
 import {formatDateTime} from "@/utils/time";
 import CustomButton from "@/components/CustomButton";
 import {AirbnbRating} from "react-native-ratings";
+import {useRouter} from "expo-router";
 
 const AppointmentsScreen = () => {
+    const router = useRouter();
     const [email, setEmail] = useState<string | null>(null);
     const [menuVisible, setMenuVisible] = useState(false);
     const [appointments, setAppointments] = useState<Appointments | null>(null);
@@ -171,7 +173,8 @@ const AppointmentsScreen = () => {
     return (
         <View className="flex-1 bg-black">
             <View className="flex-row justify-between p-4 bg-black">
-                <Text className="text-white text-2xl lg:text-4xl font-bold lg:mt-1.5">GARAGE</Text>
+                <Text className="text-white text-2xl lg:text-4xl font-bold lg:mt-1.5"
+                      onPress={() => router.push("/home")}>GARAGE</Text>
                 <EmailDisplay email={email} setMenuVisible={setMenuVisible}/>
             </View>
 
