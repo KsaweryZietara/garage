@@ -67,10 +67,10 @@ const ServiceScreen = () => {
     const renderEmployeeItem = ({item}: { item: Employee }) => (
         <TouchableOpacity
             onPress={() => router.push(`/garage/${garageid}/service/${serviceid}/employee/${item.id}`)}
-            className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg border border-[#444]"
+            className="my-2 mx-4 bg-[#2d2d2d] rounded-lg border border-[#444]"
         >
-            <View className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg">
-                <Text className="text-lg font-bold text-white">{item.name} {item.surname}</Text>
+            <View className="p-4 my-2 mx-2 bg-[#2d2d2d] rounded-lg">
+                <Text className="text-xl font-bold text-white">{item.name} {item.surname}</Text>
             </View>
         </TouchableOpacity>
     );
@@ -78,7 +78,7 @@ const ServiceScreen = () => {
     return (
         <View className="flex-1 bg-black">
             <View className="flex-row justify-between p-4 bg-black">
-                <Text className="text-white text-2xl font-bold">GARAGE</Text>
+                <Text className="text-white text-2xl lg:text-4xl font-bold lg:mt-1.5">GARAGE</Text>
                 <EmailDisplay email={email} setMenuVisible={setMenuVisible}/>
             </View>
 
@@ -88,8 +88,8 @@ const ServiceScreen = () => {
                 service && (
                     <View className="p-6 bg-[#1a1a1a] rounded-lg mx-4 mt-4 shadow-lg">
                         <Text className="text-3xl font-extrabold text-white mb-2">{service.name}</Text>
-                        <Text className="text-xl text-[#ddd] mb-1">Czas trwania: {service.time}</Text>
-                        <Text className="text-lg text-[#bbb]">Cena: {service.price}</Text>
+                        <Text className="text-xl text-[#aaa]">Czas: {service.time} godz.</Text>
+                        <Text className="text-xl text-[#aaa]">Cena: {service.price} zł</Text>
                     </View>
                 )
             )}

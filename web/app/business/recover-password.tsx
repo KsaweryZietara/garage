@@ -31,7 +31,7 @@ const RecoverPasswordScreen = () => {
     return (
         <View className="flex-1 bg-white">
             <View className="flex-row justify-start p-4">
-                <Text className="text-lg lg:text-4xl font-bold text-gray-700">
+                <Text className="text-2xl lg:text-4xl font-bold text-gray-700 lg:mt-1.5">
                     GARAGE DLA BIZNESU
                 </Text>
             </View>

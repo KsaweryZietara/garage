@@ -132,8 +132,8 @@ const GaragesScreen = () => {
                     />
                 </View>
             )}
-            <Text className="text-[#ddd]">{item.street} {item.number}</Text>
-            <Text className="text-[#ddd]">{item.city}, {item.postalCode}</Text>
+            <Text className="text-[#ddd] mt-1">ul. {item.street} {item.number}</Text>
+            <Text className="text-[#ddd] mt-0.5">{item.city}, {item.postalCode}</Text>
             {item.distance !== 0 && (
                 <Text className="text-[#ddd] mt-1">{item.distance} km</Text>
             )}
@@ -149,7 +149,7 @@ const GaragesScreen = () => {
     return (
         <View className="flex-1 bg-black">
             <View className="flex-row justify-between p-4 bg-black">
-                <Text className="text-white text-2xl font-bold">GARAGE</Text>
+                <Text className="text-white text-2xl lg:text-4xl font-bold lg:mt-1.5">GARAGE</Text>
                 <EmailDisplay email={email} setMenuVisible={setMenuVisible}/>
             </View>
 

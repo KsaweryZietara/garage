@@ -183,7 +183,7 @@ const AppointmentScreen = () => {
             <Text className="text-lg font-bold text-white">
                 {formatTime(item.startTime)}
             </Text>
-            <Text className="text-sm text-gray-400">
+            <Text className="text-md text-gray-400">
                 {formatDateTime(item.endTime)}
             </Text>
         </TouchableOpacity>
@@ -192,7 +192,7 @@ const AppointmentScreen = () => {
     return (
         <View className="flex-1 bg-black">
             <View className="flex-row justify-between p-4 bg-black">
-                <Text className="text-white text-2xl font-bold">GARAGE</Text>
+                <Text className="text-white text-2xl lg:text-4xl font-bold lg:mt-1.5">GARAGE</Text>
                 <EmailDisplay email={email} setMenuVisible={setMenuVisible}/>
             </View>
 
@@ -202,9 +202,9 @@ const AppointmentScreen = () => {
                 service && (
                     <View className="p-6 bg-[#1a1a1a] rounded-lg mx-4 mt-4 shadow-lg">
                         <Text className="text-3xl font-extrabold text-white mb-2">{service.name}</Text>
-                        <Text className="text-xl text-[#ddd] mb-1">Cena: {service.price}</Text>
-                        <Text className="text-lg text-[#bbb]">Czas trwania: {service.time}</Text>
-                        <Text className="text-lg text-[#bbb]">Mechanik: {employee?.name} {employee?.surname}</Text>
+                        <Text className="text-xl text-[#aaa]">Czas: {service.time} godz.</Text>
+                        <Text className="text-xl text-[#aaa]">Cena: {service.price} zł</Text>
+                        <Text className="text-xl text-[#aaa]">Mechanik: {employee?.name} {employee?.surname}</Text>
                     </View>
                 )
             )}
@@ -275,7 +275,7 @@ const AppointmentScreen = () => {
                                 </View>
                                 <View className="text-white text-xl mb-2 flex-row justify-between">
                                     <Text className="text-white text-xl mb-2">Cena:</Text>
-                                    <Text className="text-white text-xl mb-2">{service.price}</Text>
+                                    <Text className="text-white text-xl mb-2">{service.price} zł</Text>
                                 </View>
                                 <View className="text-white text-xl mb-2 flex-row justify-between">
                                     <Text className="text-white text-xl mb-2">Mechanik:</Text>

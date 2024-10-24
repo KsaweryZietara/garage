@@ -4,7 +4,7 @@ import {
     Text,
     Platform,
     ActivityIndicator,
-    FlatList,
+    FlatList, StatusBar,
 } from "react-native";
 import axios from "axios";
 import {get, remove} from "@/utils/auth";
@@ -109,11 +109,11 @@ const HomeScreen = () => {
     return (
         <View className="flex-1">
             <View className="flex-row justify-between p-4 bg-gray-700">
-                <Text className="text-lg lg:text-4xl font-bold text-white">
+                <Text className="text-2xl lg:text-4xl font-bold text-white lg:mt-1.5">
                     {garageName.toUpperCase()}
                 </Text>
                 <Text
-                    className="text-white font-bold"
+                    className="text-white font-bold lg:text-xl"
                     onPress={() => setMenuVisible(true)}
                     style={{
                         borderRadius: 5,
@@ -183,6 +183,7 @@ const HomeScreen = () => {
                     router.push("/business/login")
                 }}
             />
+            <StatusBar backgroundColor="#374151"/>
         </View>
     );
 };

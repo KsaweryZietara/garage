@@ -100,12 +100,12 @@ const GarageScreen = () => {
     const renderServiceItem = ({item}: { item: Service }) => (
         <TouchableOpacity
             onPress={() => router.push(`/garage/${garageid}/service/${item.id}`)}
-            className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg border border-[#444]"
+            className="my-2 mx-4 bg-[#2d2d2d] rounded-lg border border-[#444]"
         >
-            <View className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg">
-                <Text className="text-lg font-bold text-white">{item.name}</Text>
-                <Text className="text-[#ddd]">Czas: {item.time}</Text>
-                <Text className="text-[#bbb]">Cena: {item.price}</Text>
+            <View className="p-2 my-2 mx-3 bg-[#2d2d2d] rounded-lg">
+                <Text className="text-xl font-bold text-white">{item.name}</Text>
+                <Text className="text-[#ddd] mt-1">Czas: {item.time} godz.</Text>
+                <Text className="text-[#ddd] mt-0.5">Cena: {item.price} zł</Text>
             </View>
         </TouchableOpacity>
     );
@@ -114,7 +114,6 @@ const GarageScreen = () => {
         <View>
             <View className="p-2 my-2 mx-4 bg-[#2d2d2d] rounded-lg">
                 <Text className="text-lg font-bold text-white">{item.service}</Text>
-                <Text className="text-[#aaa]">Mechanik: {item.employee.name} {item.employee.surname}</Text>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                     <Text className="text-[#ddd]">{item.rating}</Text>
                     <AirbnbRating
@@ -128,8 +127,9 @@ const GarageScreen = () => {
                     />
                     <Text className="text-[#aaa]"> {formatDate(item.time)}</Text>
                 </View>
+                <Text className="text-[#aaa] mt-1">Mechanik: {item.employee.name} {item.employee.surname}</Text>
                 {item.comment && (
-                    <Text className="text-white mt-3">{item.comment}</Text>
+                    <Text className="text-white mt-2">{item.comment}</Text>
                 )}
             </View>
             <View style={{height: 1, backgroundColor: '#444', marginHorizontal: 16}}/>
@@ -139,7 +139,7 @@ const GarageScreen = () => {
     return (
         <View className="flex-1 bg-black">
             <View className="flex-row justify-between p-4 bg-black">
-                <Text className="text-white text-2xl font-bold">GARAGE</Text>
+                <Text className="text-white text-2xl lg:text-4xl font-bold lg:mt-1.5">GARAGE</Text>
                 <EmailDisplay email={email} setMenuVisible={setMenuVisible}/>
             </View>
 
@@ -149,9 +149,9 @@ const GarageScreen = () => {
                 garage && (
                     <View className="p-6 bg-[#1a1a1a] rounded-lg mx-4 mt-4 shadow-lg">
                         <Text className="text-3xl font-extrabold text-white mb-2">{garage.name}</Text>
-                        <Text className="text-xl text-[#ddd] mb-1">{garage.street} {garage.number}</Text>
-                        <Text className="text-lg text-[#aaa] mb-1">{garage.city}, {garage.postalCode}</Text>
-                        <Text className="text-lg text-[#aaa]">Telefon: {garage.phoneNumber}</Text>
+                        <Text className="text-xl text-[#aaa]">ul. {garage.street} {garage.number}</Text>
+                        <Text className="text-xl text-[#aaa]">{garage.city}, {garage.postalCode}</Text>
+                        <Text className="text-xl text-[#aaa]">Telefon: {garage.phoneNumber}</Text>
                         <Text onPress={handleReviews} className="text-xl text-white mt-4 underline">
                             Opinie
                         </Text>
@@ -195,7 +195,7 @@ const GarageScreen = () => {
                           style={{backgroundColor: 'rgba(0, 0, 0, 0.75)'}}>
                         <TouchableWithoutFeedback onPress={() => {
                         }}>
-                            <View className="bg-[#2d2d2d] p-5 rounded-lg w-4/5 h-4/5 lg:w-2/5">
+                            <View className="bg-[#2d2d2d] rounded-lg w-4/5 h-4/5 lg:w-2/5">
                                 {loadingReviews ? (
                                     <ActivityIndicator size="large" color="#ff5c5c"/>
                                 ) : (

@@ -14,7 +14,7 @@ const EmailDisplay: React.FC<EmailDisplayProps> = ({email, setMenuVisible}) => {
         <>
             {email ? (
                 <Text
-                    className="text-red-500 font-bold"
+                    className="text-red-500 font-bold lg:text-xl"
                     onPress={() => setMenuVisible(true)}
                     style={{
                         borderRadius: 5,

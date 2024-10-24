@@ -148,10 +148,10 @@ const ServicesScreen = () => {
                         {item.name}
                     </Text>
                     <Text className="text-sm text-[#ddd]">
-                        Czas: {item.time}
+                        Czas: {item.time} godz.
                     </Text>
                     <Text className="text-sm text-[#ddd]">
-                        Cena: {item.price}
+                        Cena: {item.price} zł
                     </Text>
                 </View>
 
@@ -170,11 +170,11 @@ const ServicesScreen = () => {
     return (
         <View className="flex-1">
             <View className="flex-row justify-between p-4 bg-gray-700">
-                <Text className="text-lg lg:text-4xl font-bold text-white">
-                    {(garage?.name ? garage.name.toUpperCase() : "GARAGE")}
+                <Text className="text-2xl lg:text-4xl font-bold text-white lg:mt-1.5">
+                    {(garage?.name ? garage.name.toUpperCase() : "")}
                 </Text>
                 <Text
-                    className="text-white font-bold"
+                    className="text-white font-bold lg:text-xl"
                     onPress={() => setMenuVisible(true)}
                     style={{
                         borderRadius: 5,

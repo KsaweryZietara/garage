@@ -104,17 +104,26 @@ const AppointmentsScreen = () => {
             <View className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg">
                 <View className="flex-col lg:flex-row justify-between lg:items-center">
                     <View className="flex-1">
-                        <Text className="text-lg text-white font-bold">
+                        <Text className="text-xl text-white font-bold">
                             {item.service.name}
                         </Text>
                         <Text className="text-sm text-[#ddd]">
                             {formatDateTime(item.startTime)} - {formatDateTime(item.endTime)}
                         </Text>
                         <Text className="text-sm text-[#ddd]">
-                            {item.car.make} {item.car.model}
+                            Cena: {item.service.price} zł
                         </Text>
                         <Text className="text-sm text-[#ddd]">
-                            Cena: {item.service.price}
+                            Samochód: {item.car.make} {item.car.model}
+                        </Text>
+                        <Text className="text-sm text-[#ddd]">
+                            Mechanik: {item.employee.name} {item.employee.surname}
+                        </Text>
+                        <Text className="text-sm text-[#ddd]">
+                            Telefon: {item.garage.phoneNumber}
+                        </Text>
+                        <Text className="text-lg text-[#ddd] mt-1">
+                            Adres:
                         </Text>
                         <Text className="text-sm text-[#ddd]">
                             {item.garage.name}
@@ -124,12 +133,6 @@ const AppointmentsScreen = () => {
                         </Text>
                         <Text className="text-sm text-[#ddd]">
                             {item.garage.postalCode} {item.garage.city}
-                        </Text>
-                        <Text className="text-sm text-[#ddd]">
-                            {item.garage.phoneNumber}
-                        </Text>
-                        <Text className="text-sm text-[#ddd]">
-                            Mechanik: {item.employee.name} {item.employee.surname}
                         </Text>
                     </View>
 
@@ -168,7 +171,7 @@ const AppointmentsScreen = () => {
     return (
         <View className="flex-1 bg-black">
             <View className="flex-row justify-between p-4 bg-black">
-                <Text className="text-white text-2xl lg:text-4xl font-bold">GARAGE</Text>
+                <Text className="text-white text-2xl lg:text-4xl font-bold lg:mt-1.5">GARAGE</Text>
                 <EmailDisplay email={email} setMenuVisible={setMenuVisible}/>
             </View>
 

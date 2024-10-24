@@ -39,7 +39,7 @@ const BusinessMenu: React.FC<MenuProps> = ({menuVisible, onClose, role, email, o
                     <View
                         style={{
                             marginRight: Platform.OS === "web" ? 32 : 27,
-                            marginTop: Platform.OS === "web" ? 52 : 50,
+                            marginTop: Platform.OS === "web" ? 57 : 50,
                             backgroundColor: "white",
                             borderRadius: 5,
                             padding: Platform.OS === "web" ? 12 : 6,
