@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -16,7 +17,7 @@ import (
 )
 
 const (
-	base64Prefix = "data:image/png;base64,"
+	base64Prefix = "data:image/"
 )
 
 func (a *API) CreateGarage(writer http.ResponseWriter, request *http.Request) {
@@ -237,7 +238,13 @@ func (a *API) UpdateLogo(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	if strings.HasPrefix(dto.Base64Logo, base64Prefix) {
-		dto.Base64Logo = strings.TrimPrefix(dto.Base64Logo, base64Prefix)
+		separatorIndex := strings.Index(dto.Base64Logo, ",")
+		if separatorIndex == -1 {
+			a.handleError(writer, fmt.Errorf("invalid base64 format"), 400)
+			return
+		}
+
+		dto.Base64Logo = dto.Base64Logo[separatorIndex+1:]
 	}
 
 	decodedLogo, err := base64.StdEncoding.DecodeString(dto.Base64Logo)

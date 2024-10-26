@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"encoding/base64"
 	"math"
 	"time"
 )
@@ -75,6 +76,7 @@ type GarageDTO struct {
 	Longitude   float64 `json:"longitude"`
 	Rating      float64 `json:"rating"`
 	Distance    float64 `json:"distance"`
+	Logo        string  `json:"logo"`
 }
 
 func NewGarageDTO(garage Garage) GarageDTO {
@@ -90,6 +92,7 @@ func NewGarageDTO(garage Garage) GarageDTO {
 		Longitude:   garage.Longitude,
 		Rating:      math.Round(garage.Rating*10) / 10,
 		Distance:    math.Round(garage.Distance*10) / 10,
+		Logo:        base64.StdEncoding.EncodeToString(garage.Logo),
 	}
 }
 

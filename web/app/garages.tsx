@@ -1,6 +1,6 @@
 import {useGlobalSearchParams, useRouter} from "expo-router";
 import React, {useEffect, useState} from "react";
-import {ActivityIndicator, FlatList, StatusBar, Text, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, FlatList, StatusBar, Text, TouchableOpacity, View, Image} from "react-native";
 import {Searchbar} from "react-native-paper";
 import axios from "axios";
 import {getJwtPayload} from "@/utils/jwt";
@@ -117,26 +117,52 @@ const GaragesScreen = () => {
             onPress={() => router.push(`/garage/${item.id}`)}
             className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg border border-[#444]"
         >
-            <Text className="text-xl font-bold text-white">{item.name}</Text>
-            {item.rating !== 0 && (
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <Text className="text-[#ddd] text-lg">{item.rating}</Text>
-                    <AirbnbRating
-                        isDisabled={true}
-                        count={5}
-                        defaultRating={item.rating}
-                        size={15}
-                        showRating={false}
-                        selectedColor="#ef4444"
-                        starContainerStyle={{marginLeft: 3}}
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                {item.logo ? (
+                    <Image
+                        source={{uri: `data:image/png;base64,${item.logo}`}}
+                        style={{width: 120, height: 120, borderRadius: 25, marginRight: 12}}
                     />
+                ) : (
+                    <View
+                        style={{
+                            width: 120,
+                            height: 120,
+                            borderRadius: 25,
+                            marginRight: 12,
+                            backgroundColor: '#555',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Text style={{color: '#fff', fontSize: 20, fontWeight: 'bold', textAlign: 'center'}}>
+                            {item.name}
+                        </Text>
+                    </View>
+                )}
+                <View style={{flex: 1}}>
+                    <Text className="text-xl font-bold text-white">{item.name}</Text>
+                    {item.rating !== 0 && (
+                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                            <Text className="text-[#ddd] text-lg">{item.rating}</Text>
+                            <AirbnbRating
+                                isDisabled={true}
+                                count={5}
+                                defaultRating={item.rating}
+                                size={15}
+                                showRating={false}
+                                selectedColor="#ef4444"
+                                starContainerStyle={{marginLeft: 3}}
+                            />
+                        </View>
+                    )}
+                    <Text className="text-[#ddd] mt-1">ul. {item.street} {item.number}</Text>
+                    <Text className="text-[#ddd] mt-0.5">{item.city}, {item.postalCode}</Text>
+                    {item.distance !== 0 && (
+                        <Text className="text-[#ddd] mt-1">{item.distance} km</Text>
+                    )}
                 </View>
-            )}
-            <Text className="text-[#ddd] mt-1">ul. {item.street} {item.number}</Text>
-            <Text className="text-[#ddd] mt-0.5">{item.city}, {item.postalCode}</Text>
-            {item.distance !== 0 && (
-                <Text className="text-[#ddd] mt-1">{item.distance} km</Text>
-            )}
+            </View>
         </TouchableOpacity>
     );
 

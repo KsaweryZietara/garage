@@ -10,6 +10,7 @@ export interface Garage {
     longitude: number;
     rating: number;
     distance: number;
+    logo: string;
 }
 
 export interface Employee {
