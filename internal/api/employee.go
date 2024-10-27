@@ -1,11 +1,13 @@
 package api
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/KsaweryZietara/garage/internal"
 	"github.com/KsaweryZietara/garage/internal/mail"
@@ -255,6 +257,55 @@ func (a *API) DeleteEmployee(writer http.ResponseWriter, request *http.Request) 
 
 	err = a.storage.Employees().Delete(employee.ID)
 	if err != nil {
+		a.handleError(writer, err, 500)
+		return
+	}
+
+	a.sendResponse(writer, nil, 200)
+}
+
+func (a *API) UpdateProfilePicture(writer http.ResponseWriter, request *http.Request) {
+	var dto internal.ProfilePictureDTO
+	err := json.NewDecoder(request.Body).Decode(&dto)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	if len(dto.Base64Picture) == 0 {
+		a.sendResponse(writer, nil, 400)
+		return
+	}
+
+	if strings.HasPrefix(dto.Base64Picture, base64Prefix) {
+		separatorIndex := strings.Index(dto.Base64Picture, ",")
+		if separatorIndex == -1 {
+			a.handleError(writer, fmt.Errorf("invalid base64 format"), 400)
+			return
+		}
+
+		dto.Base64Picture = dto.Base64Picture[separatorIndex+1:]
+	}
+
+	decodedProfilePicture, err := base64.StdEncoding.DecodeString(dto.Base64Picture)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	email, ok := a.emailFromContext(request.Context())
+	if !ok {
+		a.sendResponse(writer, nil, 401)
+		return
+	}
+
+	employee, err := a.storage.Employees().GetByEmail(email)
+	if err != nil {
+		a.handleError(writer, err, 401)
+		return
+	}
+
+	if err = a.storage.Employees().UpdateProfilePicture(employee.ID, decodedProfilePicture); err != nil {
 		a.handleError(writer, err, 500)
 		return
 	}

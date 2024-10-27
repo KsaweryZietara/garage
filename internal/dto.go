@@ -105,19 +105,21 @@ func NewGarageDTOs(garages []Garage) []GarageDTO {
 }
 
 type EmployeeDTO struct {
-	ID        int     `json:"id"`
-	Name      string  `json:"name"`
-	Surname   string  `json:"surname"`
-	Confirmed bool    `json:"confirmed"`
-	Email     *string `json:"email,omitempty"`
+	ID             int     `json:"id"`
+	Name           string  `json:"name"`
+	Surname        string  `json:"surname"`
+	Confirmed      bool    `json:"confirmed"`
+	Email          *string `json:"email,omitempty"`
+	ProfilePicture string  `json:"profilePicture"`
 }
 
 func NewEmployeeDTO(employee Employee, email bool) EmployeeDTO {
 	dto := EmployeeDTO{
-		ID:        employee.ID,
-		Name:      employee.Name,
-		Surname:   employee.Surname,
-		Confirmed: employee.Confirmed,
+		ID:             employee.ID,
+		Name:           employee.Name,
+		Surname:        employee.Surname,
+		Confirmed:      employee.Confirmed,
+		ProfilePicture: base64.StdEncoding.EncodeToString(employee.ProfilePicture),
 	}
 
 	if email {
@@ -234,4 +236,8 @@ type EmployeeEmailDTO struct {
 
 type LogoDTO struct {
 	Base64Logo string `json:"logo"`
+}
+
+type ProfilePictureDTO struct {
+	Base64Picture string `json:"profilePicture"`
 }

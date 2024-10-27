@@ -11,15 +11,16 @@ const (
 )
 
 type Employee struct {
-	ID        int
-	Name      string
-	Surname   string
-	Email     string
-	Password  string
-	Role      Role
-	GarageID  *int
-	Confirmed bool
-	IsDeleted bool
+	ID             int
+	Name           string
+	Surname        string
+	Email          string
+	Password       string
+	Role           Role
+	ProfilePicture []byte
+	GarageID       *int
+	Confirmed      bool
+	IsDeleted      bool
 }
 
 func NewEmployee(dto CreateEmployeeDTO, role Role) Employee {

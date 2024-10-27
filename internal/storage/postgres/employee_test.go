@@ -159,4 +159,12 @@ func TestEmployee(t *testing.T) {
 	employees, err = employeeRepo.ListByGarageID(garage.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(employees))
+
+	profilePicture := []byte("profile-picture")
+	err = employeeRepo.UpdateProfilePicture(employee4.ID, profilePicture)
+	assert.NoError(t, err)
+
+	employee, err = employeeRepo.GetByID(employee4.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, profilePicture, employee.ProfilePicture)
 }

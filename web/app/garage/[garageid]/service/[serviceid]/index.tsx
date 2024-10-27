@@ -1,6 +1,6 @@
 import {useLocalSearchParams, useRouter} from "expo-router";
 import React, {useEffect, useState} from "react";
-import {ActivityIndicator, FlatList, StatusBar, Text, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, FlatList, Image, StatusBar, Text, TouchableOpacity, View} from "react-native";
 import axios from "axios";
 import {getJwtPayload} from "@/utils/jwt";
 import EmailDisplay from "@/components/EmailDisplay";
@@ -70,7 +70,19 @@ const ServiceScreen = () => {
             className="my-2 mx-4 bg-[#2d2d2d] rounded-lg border border-[#444]"
         >
             <View className="p-4 my-2 mx-2 bg-[#2d2d2d] rounded-lg">
-                <Text className="text-xl font-bold text-white">{item.name} {item.surname}</Text>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Image
+                        source={{
+                            uri: item.profilePicture ?
+                                `data:image/png;base64,${item.profilePicture}` :
+                                "/assets/profile-picture-placeholder.png"
+                        }}
+                        style={{width: 60, height: 60, borderRadius: 20, marginRight: 12}}
+                    />
+                    <View style={{flex: 1}}>
+                        <Text className="text-xl font-bold text-white">{item.name} {item.surname}</Text>
+                    </View>
+                </View>
             </View>
         </TouchableOpacity>
     );

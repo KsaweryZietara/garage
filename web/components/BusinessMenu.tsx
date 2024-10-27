@@ -8,7 +8,7 @@ import {
     View
 } from "react-native";
 import {useRouter} from "expo-router";
-import {OWNER} from "@/constants/constants";
+import {MECHANIC, OWNER} from "@/constants/constants";
 
 interface MenuProps {
     menuVisible: boolean;
@@ -63,6 +63,13 @@ const BusinessMenu: React.FC<MenuProps> = ({menuVisible, onClose, role, email, o
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => router.push("/business/employees")}>
                                     <Text className="text-gray-700 font-bold mb-3">Pracownicy</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                        {role === MECHANIC && (
+                            <View>
+                                <TouchableOpacity onPress={() => router.push("/business/profile-picture")}>
+                                    <Text className="text-gray-700 font-bold mb-3">Zdjęcie profilowe</Text>
                                 </TouchableOpacity>
                             </View>
                         )}

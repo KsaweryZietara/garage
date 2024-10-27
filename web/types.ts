@@ -19,6 +19,7 @@ export interface Employee {
     surname: string;
     confirmed: boolean;
     email: string;
+    profilePicture: string;
 }
 
 export interface Service {

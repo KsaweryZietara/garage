@@ -151,3 +151,14 @@ func (e *Employee) Delete(ID int) error {
 
 	return err
 }
+
+func (e *Employee) UpdateProfilePicture(ID int, profilePicture []byte) error {
+	sess := e.connection.NewSession(nil)
+
+	_, err := sess.Update(employeesTable).
+		Where(dbr.Eq("id", ID)).
+		Set("profile_picture", profilePicture).
+		Exec()
+
+	return err
+}

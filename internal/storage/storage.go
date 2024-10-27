@@ -30,6 +30,7 @@ type Employees interface {
 	GetConfirmedByID(ID int) (internal.Employee, error)
 	GetByID(ID int) (internal.Employee, error)
 	Delete(ID int) error
+	UpdateProfilePicture(ID int, profilePicture []byte) error
 }
 
 type Garages interface {

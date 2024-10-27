@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -271,5 +272,60 @@ func TestDeleteEmployeeEndpoint(t *testing.T) {
 	require.NoError(t, err)
 
 	response := suite.CallAPI(http.MethodDelete, fmt.Sprintf("/api/employees/%v", employee.ID), []byte{}, &token)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+}
+
+func TestUpdateProfilePictureEndpoint(t *testing.T) {
+	suite := NewSuite(t)
+	defer suite.Teardown()
+
+	owner, err := suite.api.storage.Employees().Insert(
+		internal.Employee{
+			Name:      "name",
+			Surname:   "surname",
+			Email:     "email",
+			Password:  "password",
+			Role:      internal.OwnerRole,
+			GarageID:  nil,
+			Confirmed: true,
+		})
+	assert.NoError(t, err)
+
+	garage, err := suite.api.storage.Garages().Insert(
+		internal.Garage{
+			Name:        "name",
+			City:        "city",
+			Street:      "street",
+			Number:      "number",
+			PostalCode:  "postalCode",
+			PhoneNumber: "phoneNumber",
+			OwnerID:     owner.ID,
+			Latitude:    10,
+			Longitude:   10,
+		})
+	assert.NoError(t, err)
+
+	employee, err := suite.api.storage.Employees().Insert(
+		internal.Employee{
+			Name:      "name",
+			Surname:   "surname",
+			Email:     "email2",
+			Password:  "password",
+			Role:      internal.MechanicRole,
+			GarageID:  &garage.ID,
+			Confirmed: true,
+		})
+	assert.NoError(t, err)
+
+	token, err := suite.api.auth.CreateToken(employee.Email, internal.MechanicRole)
+	assert.NoError(t, err)
+
+	profilePicture := internal.ProfilePictureDTO{
+		Base64Picture: base64.StdEncoding.EncodeToString([]byte("profile-picture")),
+	}
+	profilePictureJSON, err := json.Marshal(profilePicture)
+	require.NoError(t, err)
+
+	response := suite.CallAPI(http.MethodPost, "/api/employees/profile-picture", profilePictureJSON, &token)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 }

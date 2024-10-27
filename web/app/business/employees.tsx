@@ -5,7 +5,7 @@ import {EMPLOYEE_JWT} from "@/constants/constants";
 import axios from "axios";
 import {getJwtPayload} from "@/utils/jwt";
 import {
-    ActivityIndicator, FlatList, Modal,
+    ActivityIndicator, FlatList, Image, Modal,
     Platform, StatusBar,
     Text, TextInput, TouchableWithoutFeedback,
     View
@@ -146,28 +146,40 @@ const EmployeesScreen = () => {
         <View className="p-4 my-2 mx-4 bg-gray-700 rounded-lg">
             <View className="flex-col lg:flex-row justify-between lg:items-center">
                 <View className="flex-1">
-                    <Text className="text-2xl text-white font-bold">
-                        {item.email}
-                    </Text>
-                    {item.confirmed ? (
-                        <View>
-                            <Text className="text-lg text-white font-bold">
-                                {item.name} {item.surname}
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <Image
+                            source={{
+                                uri: item.profilePicture ?
+                                    `data:image/png;base64,${item.profilePicture}` :
+                                    "/assets/profile-picture-placeholder.png"
+                            }}
+                            style={{width: 60, height: 60, borderRadius: 20, marginRight: 12}}
+                        />
+                        <View style={{flex: 1}}>
+                            <Text className="text-2xl text-white font-bold">
+                                {item.email}
                             </Text>
-                            <Text className={"text-sm text-green-500"}>
-                                Zarejestrowany
-                            </Text>
+                            {item.confirmed ? (
+                                <View>
+                                    <Text className="text-lg text-white font-bold">
+                                        {item.name} {item.surname}
+                                    </Text>
+                                    <Text className={"text-sm text-green-500"}>
+                                        Zarejestrowany
+                                    </Text>
+                                </View>
+                            ) : (
+                                <View>
+                                    <Text className={"text-sm text-red-500 underline"} onPress={() => {
+                                        setSelectedEmployeeId(item.id);
+                                        setResendEmailModalVisible(true);
+                                    }}>
+                                        Nie zarejestrowany
+                                    </Text>
+                                </View>
+                            )}
                         </View>
-                    ) : (
-                        <View>
-                            <Text className={"text-sm text-red-500 underline"} onPress={() => {
-                                setSelectedEmployeeId(item.id);
-                                setResendEmailModalVisible(true);
-                            }}>
-                                Nie zarejestrowany
-                            </Text>
-                        </View>
-                    )}
+                    </View>
                 </View>
 
                 <CustomButton

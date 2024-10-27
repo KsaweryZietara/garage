@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS employees
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255),
     role roles NOT NULL,
+    profile_picture BYTEA,
     garage_id INT,
     confirmed BOOLEAN,
     is_deleted BOOLEAN DEFAULT FALSE
