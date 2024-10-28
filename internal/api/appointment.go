@@ -263,6 +263,56 @@ func (a *API) GetCustomerAppointments(writer http.ResponseWriter, request *http.
 	a.sendResponse(writer, internal.NewCustomerAppointmentDTOs(appointmentDTOs), 200)
 }
 
+func (a *API) DeleteAppointment(writer http.ResponseWriter, request *http.Request) {
+	idStr := request.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		a.handleError(writer, err, 400)
+		return
+	}
+
+	email, ok := a.emailFromContext(request.Context())
+	if !ok {
+		a.sendResponse(writer, nil, 401)
+		return
+	}
+
+	customer, err := a.storage.Customers().GetByEmail(email)
+	if err != nil {
+		a.handleError(writer, err, 401)
+		return
+	}
+
+	appointment, err := a.storage.Appointments().GetByID(id)
+	if err != nil {
+		a.handleError(writer, err, 404)
+		return
+	}
+
+	if customer.ID != appointment.CustomerID {
+		a.handleError(writer, errors.New("appointment not found for this customer"), 404)
+		return
+	}
+
+	if time.Now().After(appointment.StartTime) {
+		a.handleError(writer, errors.New("appointment has already started"), 400)
+		return
+	}
+
+	if time.Until(appointment.StartTime) <= 24*time.Hour {
+		a.handleError(writer, errors.New("appointment cannot be deleted less than 24 hours before it starts"), 400)
+		return
+	}
+
+	err = a.storage.Appointments().Delete(id)
+	if err != nil {
+		a.handleError(writer, err, 500)
+		return
+	}
+
+	a.sendResponse(writer, nil, 200)
+}
+
 func createTimeSlots(date time.Time, serviceDuration int) []internal.TimeSlot {
 	var timeSlots []internal.TimeSlot
 

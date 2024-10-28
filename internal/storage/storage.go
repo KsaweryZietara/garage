@@ -69,6 +69,7 @@ type Appointments interface {
 	GetByID(ID int) (internal.Appointment, error)
 	Update(appointment internal.Appointment) error
 	ListByGarageID(garageID int) ([]internal.Appointment, error)
+	Delete(ID int) error
 }
 
 type Cars interface {

@@ -245,6 +245,79 @@ func TestGetEmployeeAndCustomerAppointmentsEndpoint(t *testing.T) {
 	assert.Len(t, customerAppointments.Completed, 2)
 }
 
+func TestDeleteAppointmentEndpoint(t *testing.T) {
+	suite := NewSuite(t)
+	defer suite.Teardown()
+
+	customer, err := suite.api.storage.Customers().Insert(internal.Customer{
+		Email:    "john.doe@example.com",
+		Password: "Password123",
+	})
+	assert.NoError(t, err)
+
+	owner, err := suite.api.storage.Employees().Insert(
+		internal.Employee{
+			Name:      "name",
+			Surname:   "surname",
+			Email:     "email",
+			Password:  "password",
+			Role:      internal.OwnerRole,
+			GarageID:  nil,
+			Confirmed: true,
+		})
+	assert.NoError(t, err)
+
+	garage, err := suite.api.storage.Garages().Insert(
+		internal.Garage{
+			Name:        "name",
+			City:        "city",
+			Street:      "street",
+			Number:      "number",
+			PostalCode:  "postalCode",
+			PhoneNumber: "phoneNumber",
+			OwnerID:     owner.ID,
+			Latitude:    10,
+			Longitude:   10,
+		})
+	assert.NoError(t, err)
+
+	mechanic, err := suite.api.storage.Employees().Insert(
+		internal.Employee{
+			Name:      "name",
+			Surname:   "surname",
+			Email:     "email2",
+			Password:  "password",
+			Role:      internal.MechanicRole,
+			GarageID:  &garage.ID,
+			Confirmed: true,
+		})
+	assert.NoError(t, err)
+
+	service, err := suite.api.storage.Services().Insert(
+		internal.Service{
+			Name:     "name",
+			Time:     2,
+			Price:    10,
+			GarageID: garage.ID,
+		})
+	assert.NoError(t, err)
+
+	appointment, err := suite.api.storage.Appointments().Insert(internal.Appointment{
+		StartTime:  time.Now().Add(46 * time.Hour),
+		EndTime:    time.Now().Add(48 * time.Hour),
+		ServiceID:  service.ID,
+		EmployeeID: mechanic.ID,
+		CustomerID: customer.ID,
+		ModelID:    1,
+	})
+	assert.NoError(t, err)
+
+	token, err := suite.api.auth.CreateToken("john.doe@example.com", internal.CustomerRole)
+	require.NoError(t, err)
+	response := suite.CallAPI(http.MethodDelete, fmt.Sprintf("/api/appointments/%v", appointment.ID), []byte{}, &token)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+}
+
 func TestCreateTimeSlots(t *testing.T) {
 	t.Run("working days", func(t *testing.T) {
 		date := time.Date(2024, 9, 23, 0, 0, 0, 0, time.UTC)

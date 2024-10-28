@@ -188,3 +188,13 @@ func (a *Appointment) ListByGarageID(garageID int) ([]internal.Appointment, erro
 
 	return appointments, nil
 }
+
+func (a *Appointment) Delete(ID int) error {
+	sess := a.connection.NewSession(nil)
+
+	_, err := sess.DeleteFrom(appointmentsTable).
+		Where(dbr.Eq("id", ID)).
+		Exec()
+
+	return err
+}

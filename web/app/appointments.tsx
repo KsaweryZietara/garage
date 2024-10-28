@@ -101,7 +101,23 @@ const AppointmentsScreen = () => {
             });
     };
 
+    const handleAppointmentDelete = async (id: number) => {
+        const token = await get(CUSTOMER_JWT);
+        await axios.delete(`/api/appointments/${id}`, {
+            headers: {"Authorization": `Bearer ${token}`}
+        })
+            .then(() => {
+                fetchAppointments();
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
     const renderAppointmentItem = ({item}: { item: CustomerAppointment }) => {
+        const timeUntilStart = new Date(item.startTime).getTime() - new Date().getTime();
+        const isMoreThan24Hours = timeUntilStart > 24 * 60 * 60 * 1000;
+
         return (
             <View className="p-4 my-2 mx-4 bg-[#2d2d2d] rounded-lg">
                 <View className="flex-col lg:flex-row justify-between lg:items-center">
@@ -147,6 +163,16 @@ const AppointmentsScreen = () => {
                                 setSelectedAppointmentId(item.id);
                                 setReviewSubmitted(false);
                                 setReviewVisible(true);
+                            }}
+                            containerStyles="bg-red-500 self-center mt-3 lg:mt-0 w-2/5 lg:w-1/5"
+                            textStyles="text-white font-bold"
+                        />
+                    )}
+                    {activeTab === "upcoming" && isMoreThan24Hours && (
+                        <CustomButton
+                            title={"Anuluj wizytę"}
+                            onPress={() => {
+                                handleAppointmentDelete(item.id)
                             }}
                             containerStyles="bg-red-500 self-center mt-3 lg:mt-0 w-2/5 lg:w-1/5"
                             textStyles="text-white font-bold"

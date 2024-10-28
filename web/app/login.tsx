@@ -43,7 +43,11 @@ const LoginScreen = () => {
             .then((response) => {
                 setErrorMessage("");
                 save(CUSTOMER_JWT, response.data.jwt);
-                router.push("/home");
+                if (router.canGoBack()) {
+                    router.back();
+                } else {
+                    router.push("/home")
+                }
             })
             .catch((error) => {
                 console.error(error)
