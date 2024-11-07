@@ -198,7 +198,12 @@ func (a *API) ListGarages(writer http.ResponseWriter, request *http.Request) {
 	longitudeStr := queryParams.Get("longitude")
 	longitude, err := strconv.ParseFloat(longitudeStr, 64)
 
-	garages, err := a.storage.Garages().List(page, query, latitude, longitude)
+	sortBy := queryParams.Get("sortBy")
+	if sortBy != "rating" && sortBy != "distance" {
+		sortBy = "rating"
+	}
+
+	garages, err := a.storage.Garages().List(page, query, latitude, longitude, sortBy)
 	if err != nil {
 		a.handleError(writer, err, 500)
 		return

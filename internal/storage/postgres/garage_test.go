@@ -134,7 +134,7 @@ func TestListGarage(t *testing.T) {
 		{"invalid service", 0},
 	}
 	for _, tc := range testCases {
-		garages, err := garageRepo.List(1, tc.query, 0, 0)
+		garages, err := garageRepo.List(1, tc.query, 0, 0, "rating")
 		assert.NoError(t, err)
 		assert.Equal(t, tc.expectedCount, len(garages))
 	}

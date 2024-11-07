@@ -1,6 +1,6 @@
 import {useGlobalSearchParams, useRouter} from "expo-router";
 import React, {useEffect, useState} from "react";
-import {ActivityIndicator, FlatList, StatusBar, Text, TouchableOpacity, View, Image} from "react-native";
+import {ActivityIndicator, FlatList, StatusBar, Text, TouchableOpacity, View, Image, Platform} from "react-native";
 import {Searchbar} from "react-native-paper";
 import axios from "axios";
 import {getJwtPayload} from "@/utils/jwt";
@@ -11,6 +11,7 @@ import {CUSTOMER_JWT} from "@/constants/constants";
 import {AirbnbRating} from "react-native-ratings";
 import * as Location from 'expo-location';
 import {LocationObject} from "expo-location";
+import {Picker} from "@react-native-picker/picker";
 
 const GaragesScreen = () => {
     const router = useRouter();
@@ -24,6 +25,7 @@ const GaragesScreen = () => {
     const [hasMore, setHasMore] = useState<boolean>(true);
     const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
     const [location, setLocation] = useState<LocationObject | null>(null);
+    const [sortBy, setSortBy] = useState('rating');
 
     useEffect(() => {
         const fetchEmail = async () => {
@@ -65,6 +67,7 @@ const GaragesScreen = () => {
         const params: any = {
             query,
             page,
+            sortBy
         };
 
         if (location) {
@@ -97,7 +100,7 @@ const GaragesScreen = () => {
 
     useEffect(() => {
         fetchGarages(query.search, page);
-    }, [page, location]);
+    }, [page, location, sortBy]);
 
     const loadMoreGarages = () => {
         if (!loading && hasMore) {
@@ -180,7 +183,7 @@ const GaragesScreen = () => {
                 <EmailDisplay email={email} setMenuVisible={setMenuVisible}/>
             </View>
 
-            <View className="items-center mb-4">
+            <View className="items-center mb-2">
                 <Searchbar
                     className="w-4/5 lg:w-2/5 bg-[#2d2d2d] col-white"
                     placeholder="Szukaj warsztatów lub usługi"
@@ -191,6 +194,33 @@ const GaragesScreen = () => {
                     onSubmitEditing={handleSearch}
                     value={search}
                 />
+            </View>
+
+            <View className="p-4">
+                <Picker
+                    selectedValue={sortBy}
+                    onValueChange={(itemValue) => {
+                        setSortBy(itemValue);
+                        setPage(1);
+                        setHasMore(true);
+                        fetchGarages(query.search, 1);
+                    }}
+                    style={{
+                        color: 'white',
+                        fontSize: 20,
+                        height: Platform.OS === 'web' ? 40 : undefined,
+                        backgroundColor: '#2d2d2d',
+                        borderWidth: 0,
+                        borderRadius: 10,
+                        minWidth: 100,
+                        alignSelf: Platform.OS === 'web' ? "flex-end" : undefined,
+                        paddingLeft: 15,
+                        paddingRight: 5
+                    }}
+                >
+                    <Picker.Item label="Dystans" value="distance"/>
+                    <Picker.Item label="Ocena" value="rating"/>
+                </Picker>
             </View>
 
             {garages.length === 0 && !loading ? (
