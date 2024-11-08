@@ -302,19 +302,34 @@ func TestDeleteAppointmentEndpoint(t *testing.T) {
 		})
 	assert.NoError(t, err)
 
-	appointment, err := suite.api.storage.Appointments().Insert(internal.Appointment{
+	appointment := internal.Appointment{
 		StartTime:  time.Now().Add(46 * time.Hour),
 		EndTime:    time.Now().Add(48 * time.Hour),
 		ServiceID:  service.ID,
 		EmployeeID: mechanic.ID,
 		CustomerID: customer.ID,
 		ModelID:    1,
-	})
-	assert.NoError(t, err)
+	}
 
-	token, err := suite.api.auth.CreateToken("john.doe@example.com", internal.CustomerRole)
+	appointment1, err := suite.api.storage.Appointments().Insert(appointment)
+	assert.NoError(t, err)
+	customerToken, err := suite.api.auth.CreateToken("john.doe@example.com", internal.CustomerRole)
 	require.NoError(t, err)
-	response := suite.CallAPI(http.MethodDelete, fmt.Sprintf("/api/appointments/%v", appointment.ID), []byte{}, &token)
+	response := suite.CallAPI(http.MethodDelete, fmt.Sprintf("/api/appointments/%v", appointment1.ID), []byte{}, &customerToken)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+
+	appointment2, err := suite.api.storage.Appointments().Insert(appointment)
+	assert.NoError(t, err)
+	mechanicToken, err := suite.api.auth.CreateToken("email2", internal.MechanicRole)
+	require.NoError(t, err)
+	response = suite.CallAPI(http.MethodDelete, fmt.Sprintf("/api/appointments/%v", appointment2.ID), []byte{}, &mechanicToken)
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+
+	appointment3, err := suite.api.storage.Appointments().Insert(appointment)
+	assert.NoError(t, err)
+	ownerToken, err := suite.api.auth.CreateToken("email", internal.OwnerRole)
+	require.NoError(t, err)
+	response = suite.CallAPI(http.MethodDelete, fmt.Sprintf("/api/appointments/%v", appointment3.ID), []byte{}, &ownerToken)
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 }
 

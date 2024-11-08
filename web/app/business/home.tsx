@@ -17,6 +17,7 @@ import {EmployeeAppointment} from "@/types";
 import {EMPLOYEE_JWT} from "@/constants/constants";
 import {formatTime} from "@/utils/time";
 import BusinessMenu from "@/components/BusinessMenu";
+import CustomButton from "@/components/CustomButton";
 
 moment.locale("pl");
 
@@ -57,25 +58,38 @@ const HomeScreen = () => {
     }, []);
 
     useEffect(() => {
-        const fetchAppointments = async () => {
-            setLoadingAppointments(true);
-            const token = await get(EMPLOYEE_JWT);
-            await axios.get<EmployeeAppointment[]>(`/api/employees/appointments?date=${selectedDate.format("YYYY-MM-DD")}`, {
-                headers: {"Authorization": `Bearer ${token}`}
-            })
-                .then((response) => {
-                    setAppointments(response.data);
-                })
-                .catch((error) => {
-                    console.error(error);
-                })
-                .finally(() => {
-                    setLoadingAppointments(false);
-                });
-        };
-
         fetchAppointments();
     }, [selectedDate]);
+
+    const fetchAppointments = async () => {
+        setLoadingAppointments(true);
+        const token = await get(EMPLOYEE_JWT);
+        await axios.get<EmployeeAppointment[]>(`/api/employees/appointments?date=${selectedDate.format("YYYY-MM-DD")}`, {
+            headers: {"Authorization": `Bearer ${token}`}
+        })
+            .then((response) => {
+                setAppointments(response.data);
+            })
+            .catch((error) => {
+                console.error(error);
+            })
+            .finally(() => {
+                setLoadingAppointments(false);
+            });
+    };
+
+    const handleAppointmentDelete = async (id: number) => {
+        const token = await get(EMPLOYEE_JWT);
+        await axios.delete(`/api/appointments/${id}`, {
+            headers: {"Authorization": `Bearer ${token}`}
+        })
+            .then(() => {
+                fetchAppointments();
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
 
     const handleDateChange = (date: Moment) => {
         setSelectedDate(date);
@@ -83,25 +97,39 @@ const HomeScreen = () => {
 
     const renderAppointmentItem = ({item}: { item: EmployeeAppointment }) => {
         const startHour = new Date(item.startTime).getUTCHours();
+        const timeUntilStart = new Date(item.startTime).getTime() - new Date().getTime();
+        const isMoreThan24Hours = timeUntilStart > 24 * 60 * 60 * 1000;
 
         return (
-            <View className="p-4 my-2 mx-4 bg-gray-700 rounded-lg">
-                <Text className="text-lg font-bold text-white">
-                    {startHour === 16
-                        ? `${formatTime(item.startTime)}`
-                        : `${formatTime(item.startTime)} - ${formatTime(item.endTime)}`}
-                </Text>
-                {item.employee && (
-                    <Text className="text-sm text-white">
-                        Mechanik: {item.employee.name} {item.employee.surname}
+            <View className="p-4 my-2 mx-4 bg-gray-700 rounded-lg flex-col lg:flex-row justify-between lg:items-center">
+                <View>
+                    <Text className="text-lg font-bold text-white">
+                        {startHour === 16
+                            ? `${formatTime(item.startTime)}`
+                            : `${formatTime(item.startTime)} - ${formatTime(item.endTime)}`}
                     </Text>
+                    {item.employee && (
+                        <Text className="text-sm text-white">
+                            Mechanik: {item.employee.name} {item.employee.surname}
+                        </Text>
+                    )}
+                    <Text className="text-sm text-white">
+                        Usługa: {startHour === 16 ? "Przyjęcie samochodu" : item.service.name}
+                    </Text>
+                    <Text className="text-sm text-white">
+                        Samochód: {item.car.make} {item.car.model}
+                    </Text>
+                </View>
+                {isMoreThan24Hours && (
+                    <CustomButton
+                        title={"Anuluj wizytę"}
+                        onPress={() => {
+                            handleAppointmentDelete(item.id)
+                        }}
+                        containerStyles="bg-white self-center mt-3 lg:mt-0 w-3/5 lg:w-1/5"
+                        textStyles="text-gray-700 font-bold"
+                    />
                 )}
-                <Text className="text-sm text-white">
-                    Usługa: {startHour === 16 ? "Przyjęcie samochodu" : item.service.name}
-                </Text>
-                <Text className="text-sm text-white">
-                    Samochód: {item.car.make} {item.car.model}
-                </Text>
             </View>
         );
     };

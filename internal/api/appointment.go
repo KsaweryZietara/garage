@@ -271,26 +271,9 @@ func (a *API) DeleteAppointment(writer http.ResponseWriter, request *http.Reques
 		return
 	}
 
-	email, ok := a.emailFromContext(request.Context())
-	if !ok {
-		a.sendResponse(writer, nil, 401)
-		return
-	}
-
-	customer, err := a.storage.Customers().GetByEmail(email)
-	if err != nil {
-		a.handleError(writer, err, 401)
-		return
-	}
-
 	appointment, err := a.storage.Appointments().GetByID(id)
 	if err != nil {
 		a.handleError(writer, err, 404)
-		return
-	}
-
-	if customer.ID != appointment.CustomerID {
-		a.handleError(writer, errors.New("appointment not found for this customer"), 404)
 		return
 	}
 
@@ -302,6 +285,63 @@ func (a *API) DeleteAppointment(writer http.ResponseWriter, request *http.Reques
 	if time.Until(appointment.StartTime) <= 24*time.Hour {
 		a.handleError(writer, errors.New("appointment cannot be deleted less than 24 hours before it starts"), 400)
 		return
+	}
+
+	role, ok := a.roleFromContext(request.Context())
+	if !ok {
+		a.sendResponse(writer, nil, 401)
+		return
+	}
+
+	email, ok := a.emailFromContext(request.Context())
+	if !ok {
+		a.sendResponse(writer, nil, 401)
+		return
+	}
+
+	switch role {
+	case internal.CustomerRole:
+		customer, err := a.storage.Customers().GetByEmail(email)
+		if err != nil {
+			a.handleError(writer, err, 401)
+			return
+		}
+		if customer.ID != appointment.CustomerID {
+			a.handleError(writer, errors.New("appointment not found for this customer"), 404)
+			return
+		}
+
+	case internal.MechanicRole:
+		employee, err := a.storage.Employees().GetByEmail(email)
+		if err != nil {
+			a.handleError(writer, err, 401)
+			return
+		}
+		if employee.ID != appointment.EmployeeID {
+			a.handleError(writer, errors.New("appointment not found for this employee"), 404)
+			return
+		}
+
+	case internal.OwnerRole:
+		owner, err := a.storage.Employees().GetByEmail(email)
+		if err != nil {
+			a.handleError(writer, err, 401)
+			return
+		}
+		garage, err := a.storage.Garages().GetByOwnerID(owner.ID)
+		if err != nil {
+			a.handleError(writer, err, 404)
+			return
+		}
+		employee, err := a.storage.Employees().GetByID(appointment.EmployeeID)
+		if err != nil {
+			a.handleError(writer, err, 404)
+			return
+		}
+		if *employee.GarageID != garage.ID {
+			a.handleError(writer, errors.New("appointment not found for this employee"), 404)
+			return
+		}
 	}
 
 	err = a.storage.Appointments().Delete(id)
