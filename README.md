@@ -42,7 +42,7 @@ http://localhost:8081
 ```
 
 > [!NOTE]
-> To use application on mobile device download [expo](https://play.google.com/store/apps/details?id=host.exp.exponent&referrer=docs) and replace `localhost` with server IP address.
+> To use application on mobile device download [expo](https://play.google.com/store/apps/details?id=host.exp.exponent&referrer=docs) and replace [`localhost`](https://github.com/KsaweryZietara/garage/blob/main/web/app/index.tsx#L9) with server IP address.
 
 6. Stop the application.
 ```bash
