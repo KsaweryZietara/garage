@@ -6,6 +6,8 @@ import axios from "axios";
 import {get} from "@/utils/auth";
 import {EMPLOYEE_JWT} from "@/constants/constants";
 
+axios.defaults.baseURL = "http://localhost:8080"
+
 const App = () => {
     const router = useRouter();
     const isMobile = Platform.OS === "android" || Platform.OS === "ios";

@@ -1,6 +1,10 @@
 .PHONY: run
 run:
-	go run cmd/main.go
+	docker compose up -d
+
+.PHONY: stop
+stop:
+	docker compose down
 
 .PHONY: test
 test:
